@@ -233,7 +233,7 @@ void rpmcheck() {
      engine_hrev = 0;
      attachInterrupt(2, engine_rpm, FALLING); //enable interrupt
  }
- // For N3
+ // For N2
  if (n2_hrev >= 20) { 
      detachInterrupt(0); //Disable interrupt when calculating
      engine_rpm = 30*1000/(millis() - n2_timeold)*n2_hrev;
@@ -241,7 +241,7 @@ void rpmcheck() {
      n2_hrev = 0;
      attachInterrupt(0, n2_rpm, FALLING); //enable interrupt
  }
- // For N4
+ // For N3
  if (n3_hrev >= 20) {
      detachInterrupt(1); //Disable interrupt when calculating
      engine_rpm = 30*1000/(millis() - n3_timeold)*n3_hrev;
