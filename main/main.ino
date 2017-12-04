@@ -4,7 +4,7 @@ int y4 = 7;
 int y5 = 8;
 int mpc = 5;
 int spc = 6;
-int tcc = 3;
+int tcc = 9;
 
 // Stick input
 int whitepin = 14;
@@ -21,12 +21,21 @@ int gear = 1;
 int prevgear = 1;
 const char* message = "unused";
 const char* pin = "nothing";
+unsigned int n3_rpmCount = 0;
+unsigned long n3_timeold;
+volatile byte n3_hrev;
+unsigned int n4_rpmCount = 0;
+unsigned long n4_timeold;
+volatile byte n4_hrev;
+unsigned int engine_rpmCount = 0;
+unsigned long engine_timeold;
+volatile byte engine_hrev;
 
 // Switches
 int tempSwitch = 22;
 int gdownSwitch = 20;
-int gupSwitch = 21;
-int tccSwitch = 2;
+int gupSwitch = 23;
+int tccSwitch = 24;
 
 // States
 int prevtempState = 0;
@@ -63,7 +72,13 @@ void setup() {
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
   Serial.begin(9600);
-  
+ 
+  // Interrupt for RPM read, check RISING/FALLING on live setup.
+  // We assume there are two FALLING edges per revolution.
+  attachInterrupt(0, n3_rpm, FALLING); // pin 2
+  attachInterrupt(1, n4_rpm, FALLING); // pin 3 
+  attachInterrupt(2, engine_rpm, FALLING); // pin 21
+ 
   // Solenoid outputs
   pinMode(y3, OUTPUT); // 1-2/4-5 solenoid
   pinMode(y4,OUTPUT); // 2-3
@@ -207,6 +222,34 @@ pollkeys() {
     }
   }
 }
+void rpmcheck() {
+ //Update RPM every 20 counts, increase this for better RPM resolution,
+ //decrease for faster update
+ // For engine RPM
+ if (engine_hrev >= 20) {
+     detachInterrupt(2); //Disable interrupt when calculating
+     engine_rpm = 30*1000/(millis() - engine_timeold)*engine_hrev;
+     engine_timeold = millis();
+     engine_hrev = 0;
+     attachInterrupt(2, engine_rpm, FALLING); //enable interrupt
+ }
+ // For N3
+ if (n3_hrev >= 20) { 
+     detachInterrupt(0); //Disable interrupt when calculating
+     engine_rpm = 30*1000/(millis() - n3_timeold)*n3_hrev;
+     n3_timeold = millis();
+     n3_hrev = 0;
+     attachInterrupt(0, n3_rpm, FALLING); //enable interrupt
+ }
+ // For N4
+ if (n4_hrev >= 20) {
+     detachInterrupt(1); //Disable interrupt when calculating
+     engine_rpm = 30*1000/(millis() - n4_timeold)*n4_hrev;
+     n4_timeold = millis();
+     n4_hrev = 0;
+     attachInterrupt(1, n4_rpm, FALLING); //enable interrupt
+ }
+}
 
 void loop() {
   // Get temperature
@@ -217,5 +260,19 @@ void loop() {
     if ( manual == true) { pollkeys(); } // using manual control
     if ( tccEnabled == true { tccState = digitalRead(tccSwitch); } // Torque lock requested 
   }
-
+  rpmcheck();
 }
+
+// Interrupt value increment when hit
+void engine_rpm() {
+  engine_hrev++;
+}
+
+void n3_rpm() {
+  n3_hrev++;
+}
+
+void n4_rpm() {
+  n4_hrev++;
+}
+
