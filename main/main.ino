@@ -1,19 +1,31 @@
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
 // Solenoid output
-int y3 = 4;
-int y4 = 7;
-int y5 = 8;
+int y3 = 2;
+int y4 = 3;
+int y5 = 4;
 int mpc = 5;
 int spc = 6;
-int tcc = 9;
+int tcc = 7;
+
+// pins 8-12 reserved for oled
+#define OLED_MOSI  11   //D1
+#define OLED_CLK   12   //D0
+#define OLED_DC    9
+#define OLED_CS    8
+#define OLED_RESET 10
 
 // Stick input
-int whitepin = 14;
-int bluepin = 15;
-int greenpin = 16;
-int yellowpin = 17;
+int whitepin = 27;
+int bluepin = 29;
+int greenpin = 33;
+int yellowpin = 35;
 
 // Car sensor input
-int tpspin = 18;
+int tpspin = A0;
 // map & rpm and load input coming here also.
 
 // Internals
@@ -30,12 +42,15 @@ volatile byte n3_hrev;
 unsigned int engine_rpmCount = 0;
 unsigned long engine_timeold;
 volatile byte engine_hrev;
+Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+static unsigned long thisMicros = 0;
+static unsigned long lastMicros = 0;
 
 // Switches
 int tempSwitch = 22;
-int gdownSwitch = 20;
-int gupSwitch = 23;
-int tccSwitch = 24;
+int gdownSwitch = 23;
+int gupSwitch = 24;
+int tccSwitch = 25;
 
 // States
 int prevtempState = 0;
@@ -63,8 +78,6 @@ boolean incar = false; // no.
 // Do we use stick control?
 boolean stick = true; // yes.
 
-LiquidCrystal lcd(19, 13, 12, 11, 10, 9);
-
 void setup() {
   
    // TCCR2B = TCCR2B & 0b11111000 | 0x07;
@@ -72,6 +85,13 @@ void setup() {
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
   Serial.begin(9600);
+
+  display.begin(SSD1306_SWITCHCAPVCC);
+  display.display();
+  delay(1000);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
  
   // Interrupt for RPM read, check RISING/FALLING on live setup.
   // We assume there are two FALLING edges per revolution.
@@ -109,21 +129,14 @@ void setup() {
   //Internals
   pinMode(tpspin,INPUT); // throttle position sensor
   
-  lcd.begin(16, 2);
   Serial.println("Started.");
 }
 
-void updateLCD() {
-  delay(500); // get rid of delay, actually get proper OLED.
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Vaihde: ");
-  lcd.print(gear);
-  lcd.print(" ");
-  lcd.print(prevgear);
-  lcd.print("->");
-  lcd.print(gear);
-  lcd.setCursor(0,1);
+void updateDisplay() {
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.print(gear);
+  display.display();
 }
 
 // Drive solenoid state change (replace delay() with something else that does not block everything.)
@@ -187,6 +200,7 @@ gearchange(int gear) {
     default:
     break;
   }
+  updateDisplay();
 }
 
 // Polling for stick control
