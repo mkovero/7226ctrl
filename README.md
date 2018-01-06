@@ -24,6 +24,7 @@ spc|6
 tcc|7
 
 Gearstick|Arduino pin (through voltage regulators)
+------------ | -------------
 white|27
 blue|29
 green|33
