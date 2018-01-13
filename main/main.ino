@@ -13,10 +13,10 @@ int tcc = 7;
 
 // pins 8-12 reserved for oled
 #define OLED_MOSI  11   //D1
-#define OLED_CLK   12   //D0
+#define OLED_CLK   13   //D0
 #define OLED_DC    9
-#define OLED_CS    8
-#define OLED_RESET 10
+#define OLED_CS    10
+#define OLED_RESET 8
 
 // Stick input
 int whitepin = 27;
@@ -29,8 +29,8 @@ int tpspin = A0;
 // map & rpm and load input coming here also.
 
 // Internals
-int gear = 1;
-int prevgear = 1;
+int gear = 2; // Start on gear 2
+int prevgear = 2;
 int *pin;
 Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 static unsigned long thisMicros = 0;
@@ -89,7 +89,7 @@ void setup() {
   display.display();
   delay(1000);
   display.clearDisplay();
-  display.setTextSize(1);
+  display.setTextSize(5);
   display.setTextColor(WHITE);
  
   // Solenoid outputs
@@ -131,8 +131,16 @@ void setup() {
 // Display update
 void updateDisplay() {
   display.clearDisplay();
-  display.setCursor(0,0);
-  display.print(gear);
+  display.setCursor(3,0);
+  if ( ! prevgear > 5 ) { display.print(prevgear); };
+  if ( prevgear == 6 ) { display.print("N"); };
+  if ( prevgear == 7 ) { display.print("R"); };
+  if ( prevgear == 8 ) { display.print("P"); };
+  display.print("->");
+  if ( ! gear > 5 ) { display.print(gear); };
+  if ( gear == 6 ) { display.print("N"); };
+  if ( gear == 7 ) { display.print("R"); };
+  if ( gear == 8 ) { display.print("P"); };
   display.display();
 }
 
@@ -144,6 +152,8 @@ void pollstick() {
   blueState = digitalRead(bluepin);
   greenState = digitalRead(greenpin);
   yellowState = digitalRead(yellowpin);
+  prevgear = gear; // Make sure previous gear is known
+
   // Determine position
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW ) { gear = 8; } // P
   if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH ) { gear = 7; } // R
@@ -154,21 +164,6 @@ void pollstick() {
   if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW ) { gear = 2; }
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { gear = 1; }
   gearchange();
-}
-// For manual control, gear up
-void gearup() {
-  prevgear = gear;
-  gear = gear+1;
-  if (gear > 4) { gear = 5; } // Make sure not to switch more than 5.
-  if ( ! prevgear == gear) { gearchange(); }
-}
-
-// For manual control, gear down
-void geardown() {
-  prevgear = gear;
-  gear = gear-1;
-  if (gear < 2) { gear = 1; } // Make sure not to switch less than 1.
-  if ( ! prevgear == gear) { gearchange(); }
 }
 
 // Polling for manual switch keys
@@ -186,6 +181,27 @@ void pollkeys() {
     }
   }
 }
+
+// For manual control, gear up
+void gearup() {
+  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
+    prevgear = gear;
+    gear++;
+    if (gear > 4) { gear = 5; } // Make sure not to switch more than 5.
+    if ( ! prevgear == gear) { gearchange(); }
+  }
+}
+
+// For manual control, gear down
+void geardown() {
+  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
+    prevgear = gear;
+    gear--;
+    if (gear < 2) { gear = 1; } // Make sure not to switch less than 1.
+    if ( ! prevgear == gear) { gearchange(); }
+  }
+}
+
 
 // END OF UI STAGE / INPUT
 
@@ -212,31 +228,35 @@ void switchGearStop() {
 void polltrans() {
    shiftDuration = millis() - shiftStartTime;
    if ( shiftDuration > shiftDelay) { switchGearStop(); };
+ 
+   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
+   // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
+   if ( gear > 5 ) {
+     analogWrite(spc, 102); 
+   }
 }
 
-// Solenoid logic
 void gearchange() {
-  prevgear = gear; // Make sure previous gear is known
   shiftStartTime = millis(); 
   if ( switchBlocker == false ) { 
     switch (gear) {
       case 1: 
-        if ( prevgear == 2 ) { pin = &y3; switchGear(); gear = 1; };
+        if ( prevgear == 2 ) { pin = &y3; switchGear(); };
         break;
       case 2:
-        if ( prevgear == 1 ) { pin = &y3; switchGear(); gear = 2; };
-        if ( prevgear == 3 ) { pin = &y5; switchGear(); gear = 2; };
+        if ( prevgear == 1 ) { pin = &y3; switchGear(); };
+        if ( prevgear == 3 ) { pin = &y5; switchGear(); };
         break;
       case 3:
-        if ( prevgear == 2 ) { pin = &y5; switchGear(); gear = 3; };
-        if ( prevgear == 4 ) { pin = &y4; switchGear(); gear = 3; };
+        if ( prevgear == 2 ) { pin = &y5; switchGear(); };
+        if ( prevgear == 4 ) { pin = &y4; switchGear(); };
         break;
       case 4:
-        if ( prevgear == 3 ) { pin = &y4; switchGear(); gear = 4; };
-        if ( prevgear == 5 ) { pin = &y3; switchGear(); gear = 4; };
+        if ( prevgear == 3 ) { pin = &y4; switchGear(); };
+        if ( prevgear == 5 ) { pin = &y3; switchGear(); };
         break;
       case 5:
-        if ( prevgear == 4 ) { pin = &y3; switchGear(); gear = 5; };
+        if ( prevgear == 4 ) { pin = &y3; switchGear(); };
         break;
       case 6:
         // mechanical "N" gear
@@ -253,6 +273,7 @@ void gearchange() {
   }
   updateDisplay();
 }
+
 // END OF CORE
 
 
@@ -260,10 +281,9 @@ void loop() {
   // Get temperature
   tempState = digitalRead(tempSwitch);
   // If we have a temperature, we can assume P/N switch has moved to R/N. (Lever switch and temp sensor are in series)
-  if ( tempState == HIGH ) {
-    if ( stick == true ) { pollstick(); } // using stick
-    if ( manual == true ) { pollkeys(); } // using manual control
-    if ( trans == true ) { polltrans(); } // using transmission
-
+  if (( incar && tempState == HIGH ) || ( ! incar )) {
+    if ( stick ) { pollstick(); } // using stick
+    if ( manual ) { pollkeys(); } // using manual control
+    if ( trans ) { polltrans(); } // using transmission
   }
 }
