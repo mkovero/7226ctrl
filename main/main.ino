@@ -2,44 +2,44 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
-// Solenoid output
-int y3 = 2;
-int y4 = 3;
-int y5 = 4;
-int mpc = 5;
-int spc = 6;
-int tcc = 7;
-
 // pins 8-12 reserved for oled
+// SPI display setup
 #define OLED_MOSI  11   //D1
 #define OLED_CLK   13   //D0
 #define OLED_DC    9
 #define OLED_CS    10
 #define OLED_RESET 8
 
+// Solenoid output
+const int y3 = 2;
+const int y4 = 3;
+const int y5 = 4;
+const int mpc = 5;
+const int spc = 6;
+const int tcc = 7;
+
 // Stick input
-int whitepin = 27;
-int bluepin = 29;
-int greenpin = 33;
-int yellowpin = 35;
+const int whitepin = 27;
+const int bluepin = 29;
+const int greenpin = 33;
+const int yellowpin = 35;
 
 // Car sensor input
-int tpspin = A0;
+const int tpspin = A0;
 // map & rpm and load input coming here also.
 
 // Internals
 int gear = 2; // Start on gear 2
 int prevgear = 2;
-int *pin;
+int const *pin;
 Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 static unsigned long thisMicros = 0;
 static unsigned long lastMicros = 0;
 
 // Switches
-int tempSwitch = 22;
-int gdownSwitch = 23;
-int gupSwitch = 24;
+const int tempSwitch = 22;
+const int gdownSwitch = 23;
+const int gupSwitch = 24;
 
 // States
 int prevtempState = 0;
