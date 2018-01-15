@@ -77,6 +77,9 @@ boolean trans = true;
 boolean switchBlocker = false;
 // Default for health (do not change.)
 boolean health = false;
+// Output to serial console
+boolean debugEnabled = true;
+
 // End of environment conf
 
 void setup() {
@@ -124,6 +127,7 @@ void setup() {
   pinMode(tpspin,INPUT); // throttle position sensor
   
   Serial.println("Started.");
+  updateDisplay();
 }
 
 // UI STAGE
@@ -165,9 +169,20 @@ void pollstick() {
   if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW ) { wantedGear = 3; }
   if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW ) { wantedGear = 2; }
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { wantedGear = 1; }
-
+  
   for ( int newGear = gear; wantedGear >= gear++; newGear++ ); { gearchange(); }
   for ( int newGear = gear; wantedGear <= gear--; newGear-- ); { gearchange(); }
+  
+  if ( debugEnabled ) {
+    Serial.println("pollstick: Stick says");
+    Serial.println(whiteState);
+    Serial.println(blueState);
+    Serial.println(greenState);
+    Serial.println(yellowState);
+    Serial.println("pollstick: Requested gear");
+    Serial.println(wantedGear);
+    Serial.println(gear);
+  }
 }
 
 // Polling for manual switch keys
@@ -179,9 +194,11 @@ void pollkeys() {
   if (gdownState != prevgdownState || gupState != prevgupState ) {
     if (gdownState == LOW && gupState == HIGH) {
       prevgupState = gupState;
+      if ( debugEnabled ) { Serial.println("pollkeys: Gear up button"); }
       gearup();
     } else if (gupState == LOW && gdownState == HIGH) {
       prevgdownState = gdownState;
+      if ( debugEnabled ) { Serial.println("pollkeys: Gear down button"); }
       geardown();
     }
   }
@@ -193,7 +210,10 @@ void gearup() {
     prevgear = gear;
     gear++;
     if (gear > 4) { gear = 5; } // Make sure not to switch more than 5.
-    if ( ! prevgear == gear) { gearchange(); }
+    if ( ! prevgear == gear) { 
+      if ( debugEnabled ) { Serial.println("gearup: Gear up requested"); }
+      gearchange(); 
+    }
   }
 }
 
@@ -203,7 +223,9 @@ void geardown() {
     prevgear = gear;
     gear--;
     if (gear < 2) { gear = 1; } // Make sure not to switch less than 1.
-    if ( ! prevgear == gear) { gearchange(); }
+    if ( ! prevgear == gear) {
+      if ( debugEnabled ) { Serial.println("geardown: Gear down requested"); }
+      gearchange(); }
   }
 }
 
@@ -214,14 +236,11 @@ void geardown() {
 // no pressure alteration happening yet
 //  
 // gearSwitch logic
-void switchGear() {
+void switchGearStart() {
    shiftStartTime = millis(); 
    switchBlocker = true;
    Serial.print(switchBlocker);
-   switchGearStart();
-}
-
-void switchGearStart() {
+   if ( debugEnabled ) { Serial.println("switchGearStart: Begin of gear change:"); Serial.println(*pin); }
    analogWrite(spc,255); // We could change shift pressure here 
    analogWrite(*pin,255); // Beginning of gear change
 }
@@ -230,6 +249,7 @@ void switchGearStop() {
    analogWrite(*pin,0); // End of gear change
    analogWrite(spc,0); // let go of shift pressure
    switchBlocker = false;
+   if ( debugEnabled ) { Serial.println("switchGearStop: End of gear change:"); Serial.println(*pin); }
    prevgear = gear; // Make sure previous gear is known
 }
 
@@ -249,34 +269,40 @@ void gearchange() {
     if ( switchBlocker == false ) { 
       switch (newGear) {
       case 1: 
-        if ( prevgear == 2 ) { pin = &y3; switchGear(); gear = 1; };
+        if ( prevgear == 2 ) { pin = &y3; switchGearStart(); gear = 1; };
         break;
       case 2:
-        if ( prevgear == 1 ) { pin = &y3; switchGear(); gear = 2; };
-        if ( prevgear == 3 ) { pin = &y5; switchGear(); gear = 2; };
+        if ( prevgear == 1 ) { pin = &y3; switchGearStart(); gear = 2; };
+        if ( prevgear == 3 ) { pin = &y5; switchGearStart(); gear = 2; };
         break;
       case 3:
-        if ( prevgear == 2 ) { pin = &y5; switchGear(); gear = 3; };
-        if ( prevgear == 4 ) { pin = &y4; switchGear(); gear = 3; };
+        if ( prevgear == 2 ) { pin = &y5; switchGearStart(); gear = 3; };
+        if ( prevgear == 4 ) { pin = &y4; switchGearStart(); gear = 3; };
         break;
       case 4:
-        if ( prevgear == 3 ) { pin = &y4; switchGear(); gear = 4; };
-        if ( prevgear == 5 ) { pin = &y3; switchGear(); gear = 4; };
+        if ( prevgear == 3 ) { pin = &y4; switchGearStart(); gear = 4; };
+        if ( prevgear == 5 ) { pin = &y3; switchGearStart(); gear = 4; };
         break;
       case 5:
-        if ( prevgear == 4 ) { pin = &y3; switchGear(); gear = 5; };
+        if ( prevgear == 4 ) { pin = &y3; switchGearStart(); gear = 5; };
         break;
       case 6:
-        // mechanical "N" gear
+        gear = 6; // mechanical "N"
         break;
       case 7:
-        // mechanical "R" gear
+        gear = 7; // mechanical "R" 
         break;
       case 8:
-        // mechanical "P" gear
+        gear = 8; // mechanical "P" 
         break;
       default:
       break;
+    }
+    if ( debugEnabled ) { 
+      Serial.println("gearChange: requested change from:"); 
+      Serial.println(prevgear);
+      Serial.println("to");
+      Serial.println(gear);
     }
   }
   updateDisplay();
