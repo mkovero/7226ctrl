@@ -53,7 +53,7 @@ int gdownState = 0;
 // End of internals
 
 // Environment configuration
-// Shit delay
+// Shift delay
 int shiftDelay = 500;
 int shiftStartTime = 0;
 int shiftDuration = 0;
