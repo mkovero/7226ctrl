@@ -2,7 +2,8 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-// pins 8-12 reserved for oled
+
+
 // SPI display setup
 #define OLED_MOSI  11   //D1
 #define OLED_CLK   13   //D0
@@ -10,7 +11,7 @@
 #define OLED_CS    10
 #define OLED_RESET 8
 
-// Solenoid output
+// Solenoid output pins
 const int y3 = 2;
 const int y4 = 3;
 const int y5 = 4;
@@ -18,45 +19,42 @@ const int mpc = 5;
 const int spc = 6;
 const int tcc = 7;
 
-// Stick input
-const int whitepin = 27;
+// INPUT PINS
+// Stick input 
+const int whitepin = 31;
 const int bluepin = 29;
-const int greenpin = 33;
-const int yellowpin = 35;
-
-// Car sensor input
-const int tpspin = A0;
-// map & rpm and load input coming here also.
-
-// Internals
-int gear = 2; // Start on gear 2
-int prevgear = 2;
-int const *pin;
-Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
-static unsigned long thisMicros = 0;
-static unsigned long lastMicros = 0;
+const int greenpin = 27;
+const int yellowpin = 33;
 
 // Switches
 const int tempSwitch = 22;
 const int gdownSwitch = 23;
 const int gupSwitch = 24;
 
-// States
-int prevtempState = 0;
-int tempState = 0;
-int gdownState = 0;
-int gupState = 0;
-int prevgdownState = 0;
-int prevgupState = 0;
+// Car sensor input pins
+const int tpspin = A0;
+// map & rpm and load input coming here also.
+// END INPUT PINS
+
+// Internals, states
+int newGear;
+int gear = 2; // Start on gear 2
+int prevgear = 1;
+int const *pin;
+Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+static unsigned long thisMicros = 0;
+static unsigned long lastMicros = 0;
 int tccState = 0;
 int prevtccState = 0;
-int whiteState = 0;
-int blueState = 0;
-int greenState = 0;
-int yellowState = 0;
+int prevgdownState = 0;
+int prevgupState = 0;
+int gupState = 0;
+int gdownState = 0;
+// End of internals
 
+// Environment configuration
 // Shit delay
-int shiftDelay = 1000;
+int shiftDelay = 500;
 int shiftStartTime = 0;
 int shiftDuration = 0;
 
@@ -70,12 +68,16 @@ boolean incar = false; // no.
 boolean stick = true; // yes.
 
 // Manual control?
-boolean manual = true;
+boolean manual = false;
 
 // Actual transmission there?
 boolean trans = true;
 
+// Default for blocking gear switches (do not change.)
 boolean switchBlocker = false;
+// Default for health (do not change.)
+boolean health = false;
+// End of environment conf
 
 void setup() {
   
@@ -132,15 +134,15 @@ void setup() {
 void updateDisplay() {
   display.clearDisplay();
   display.setCursor(3,0);
-  if ( ! prevgear > 5 ) { display.print(prevgear); };
+  if ( prevgear <= 5 ) { display.print(prevgear); };
   if ( prevgear == 6 ) { display.print("N"); };
   if ( prevgear == 7 ) { display.print("R"); };
   if ( prevgear == 8 ) { display.print("P"); };
   display.print("->");
-  if ( ! gear > 5 ) { display.print(gear); };
+  if ( gear <= 5 ) { display.print(gear); };
   if ( gear == 6 ) { display.print("N"); };
   if ( gear == 7 ) { display.print("R"); };
-  if ( gear == 8 ) { display.print("P"); };
+  if ( gear == 8 ) { display.print("P"); }; 
   display.display();
 }
 
@@ -148,28 +150,31 @@ void updateDisplay() {
 // Polling for stick control
 void pollstick() {
   // Read the stick.
-  whiteState = digitalRead(whitepin);
-  blueState = digitalRead(bluepin);
-  greenState = digitalRead(greenpin);
-  yellowState = digitalRead(yellowpin);
-  prevgear = gear; // Make sure previous gear is known
+  int whiteState = digitalRead(whitepin);
+  int blueState = digitalRead(bluepin);
+  int greenState = digitalRead(greenpin);
+  int yellowState = digitalRead(yellowpin);
+  int wantedGear = gear;
 
   // Determine position
-  if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW ) { gear = 8; } // P
-  if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH ) { gear = 7; } // R
-  if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH ) { gear = 6; } // N
-  if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW ) { gear = 5; }
-  if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH ) { gear = 4; }
-  if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW ) { gear = 3; }
-  if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW ) { gear = 2; }
-  if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { gear = 1; }
-  gearchange();
+  if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW ) { wantedGear = 8; } // P
+  if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH ) { wantedGear = 7; } // R
+  if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH ) { wantedGear = 6; } // N
+  if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW ) { wantedGear = 5; }
+  if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH ) { wantedGear = 4; }
+  if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW ) { wantedGear = 3; }
+  if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW ) { wantedGear = 2; }
+  if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { wantedGear = 1; }
+
+  for ( int newGear = gear; wantedGear >= gear++; newGear++ ); { gearchange(); }
+  for ( int newGear = gear; wantedGear <= gear--; newGear-- ); { gearchange(); }
 }
 
 // Polling for manual switch keys
 void pollkeys() {
   gupState == digitalRead(gupSwitch); // Gear up
   gdownState == digitalRead(gdownSwitch); // Gear down
+
 
   if (gdownState != prevgdownState || gupState != prevgupState ) {
     if (gdownState == LOW && gupState == HIGH) {
@@ -210,7 +215,9 @@ void geardown() {
 //  
 // gearSwitch logic
 void switchGear() {
+   shiftStartTime = millis(); 
    switchBlocker = true;
+   Serial.print(switchBlocker);
    switchGearStart();
 }
 
@@ -223,6 +230,7 @@ void switchGearStop() {
    analogWrite(*pin,0); // End of gear change
    analogWrite(spc,0); // let go of shift pressure
    switchBlocker = false;
+   prevgear = gear; // Make sure previous gear is known
 }
 
 void polltrans() {
@@ -237,26 +245,26 @@ void polltrans() {
 }
 
 void gearchange() {
-  shiftStartTime = millis(); 
-  if ( switchBlocker == false ) { 
-    switch (gear) {
+ 
+    if ( switchBlocker == false ) { 
+      switch (newGear) {
       case 1: 
-        if ( prevgear == 2 ) { pin = &y3; switchGear(); };
+        if ( prevgear == 2 ) { pin = &y3; switchGear(); gear = 1; };
         break;
       case 2:
-        if ( prevgear == 1 ) { pin = &y3; switchGear(); };
-        if ( prevgear == 3 ) { pin = &y5; switchGear(); };
+        if ( prevgear == 1 ) { pin = &y3; switchGear(); gear = 2; };
+        if ( prevgear == 3 ) { pin = &y5; switchGear(); gear = 2; };
         break;
       case 3:
-        if ( prevgear == 2 ) { pin = &y5; switchGear(); };
-        if ( prevgear == 4 ) { pin = &y4; switchGear(); };
+        if ( prevgear == 2 ) { pin = &y5; switchGear(); gear = 3; };
+        if ( prevgear == 4 ) { pin = &y4; switchGear(); gear = 3; };
         break;
       case 4:
-        if ( prevgear == 3 ) { pin = &y4; switchGear(); };
-        if ( prevgear == 5 ) { pin = &y3; switchGear(); };
+        if ( prevgear == 3 ) { pin = &y4; switchGear(); gear = 4; };
+        if ( prevgear == 5 ) { pin = &y3; switchGear(); gear = 4; };
         break;
       case 5:
-        if ( prevgear == 4 ) { pin = &y3; switchGear(); };
+        if ( prevgear == 4 ) { pin = &y3; switchGear(); gear = 5; };
         break;
       case 6:
         // mechanical "N" gear
@@ -272,16 +280,22 @@ void gearchange() {
     }
   }
   updateDisplay();
+  
 }
 
 // END OF CORE
 
+void checkHealth() {
+  // Get temperature
+  int tempState = digitalRead(tempSwitch);
+  int prevtempState = 0;
+ // if ( tempState ==  ) { health == true; };
+}
 
 void loop() {
-  // Get temperature
-  tempState = digitalRead(tempSwitch);
+  checkHealth();
   // If we have a temperature, we can assume P/N switch has moved to R/N. (Lever switch and temp sensor are in series)
-  if (( incar && tempState == HIGH ) || ( ! incar )) {
+  if (( incar && health ) || ( ! incar )) {
     if ( stick ) { pollstick(); } // using stick
     if ( manual ) { pollkeys(); } // using manual control
     if ( trans ) { polltrans(); } // using transmission
