@@ -178,8 +178,8 @@ void pollstick() {
   if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW ) { wantedGear = 2; }
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { wantedGear = 1; }
   
-  for ( int newGear = gear; wantedGear >= gear++; newGear++ ); { gearchange(newGear); }
-  for ( int newGear = gear; wantedGear <= gear--; newGear-- ); { gearchange(newGear); }
+  for ( int newGear = gear; wantedGear >= gear++; newGear++ ) { gearchange(newGear); }
+  for ( int newGear = gear; wantedGear <= gear--; newGear-- ) { gearchange(newGear); }
   
   if ( debugEnabled ) {
     Serial.println("pollstick: Stick says");
