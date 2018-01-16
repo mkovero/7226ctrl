@@ -3,7 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-
+// OUTPUT PINS
 // SPI display setup
 #define OLED_MOSI  11   //D1
 #define OLED_CLK   13   //D0
@@ -18,6 +18,7 @@ const int y5 = 4;
 const int mpc = 5;
 const int spc = 6;
 const int tcc = 7;
+// END OUTPUT PINS
 
 // INPUT PINS
 // Stick input 
@@ -37,19 +38,12 @@ const int tpspin = A0;
 // END INPUT PINS
 
 // Internals, states
-int newGear;
 int gear = 2; // Start on gear 2
-int prevgear = 1;
-int const *pin;
+int wantedGear = gear; // Gear that is requested
+int newGear = gear; // Gear that is going to be changed
+int prevgear = 1; // Previously changed gear
+int cSolenoid = 0; // Change solenoid pin to be controlled.
 Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
-static unsigned long thisMicros = 0;
-static unsigned long lastMicros = 0;
-int tccState = 0;
-int prevtccState = 0;
-int prevgdownState = 0;
-int prevgupState = 0;
-int gupState = 0;
-int gdownState = 0;
 // End of internals
 
 // Environment configuration
@@ -57,9 +51,7 @@ int gdownState = 0;
 int shiftDelay = 500;
 int shiftStartTime = 0;
 int shiftDuration = 0;
-
-// Do we want torque lock?
-boolean tccEnabled = false; // no
+int cSolenoidEnabled = 0;
 
 // Are we in a real car?
 boolean incar = false; // no.
@@ -75,8 +67,10 @@ boolean trans = true;
 
 // Default for blocking gear switches (do not change.)
 boolean switchBlocker = false;
+
 // Default for health (do not change.)
 boolean health = false;
+
 // Output to serial console
 boolean debugEnabled = true;
 
@@ -158,7 +152,6 @@ void pollstick() {
   int blueState = digitalRead(bluepin);
   int greenState = digitalRead(greenpin);
   int yellowState = digitalRead(yellowpin);
-  int wantedGear = gear;
 
   // Determine position
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW ) { wantedGear = 8; } // P
@@ -170,8 +163,8 @@ void pollstick() {
   if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW ) { wantedGear = 2; }
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { wantedGear = 1; }
   
-  for ( int newGear = gear; wantedGear >= gear++; newGear++ ); { gearchange(); }
-  for ( int newGear = gear; wantedGear <= gear--; newGear-- ); { gearchange(); }
+  for ( int newGear = gear; wantedGear >= gear++; newGear++ ); { gearchange(newGear); }
+  for ( int newGear = gear; wantedGear <= gear--; newGear-- ); { gearchange(newGear); }
   
   if ( debugEnabled ) {
     Serial.println("pollstick: Stick says");
@@ -187,75 +180,27 @@ void pollstick() {
 
 // Polling for manual switch keys
 void pollkeys() {
-  gupState == digitalRead(gupSwitch); // Gear up
-  gdownState == digitalRead(gdownSwitch); // Gear down
-
-
+  int gupState = digitalRead(gupSwitch); // Gear up
+  int gdownState = digitalRead(gdownSwitch); // Gear down
+  int prevgdownState = 0;
+  int prevgupState = 0;
+  
   if (gdownState != prevgdownState || gupState != prevgupState ) {
     if (gdownState == LOW && gupState == HIGH) {
-      prevgupState = gupState;
+      int prevgupState = gupState;
       if ( debugEnabled ) { Serial.println("pollkeys: Gear up button"); }
       gearup();
     } else if (gupState == LOW && gdownState == HIGH) {
-      prevgdownState = gdownState;
+      int prevgdownState = gdownState;
       if ( debugEnabled ) { Serial.println("pollkeys: Gear down button"); }
       geardown();
     }
   }
 }
-
-// For manual control, gear up
-void gearup() {
-  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
-    prevgear = gear;
-    gear++;
-    if (gear > 4) { gear = 5; } // Make sure not to switch more than 5.
-    if ( ! prevgear == gear) { 
-      if ( debugEnabled ) { Serial.println("gearup: Gear up requested"); }
-      gearchange(); 
-    }
-  }
-}
-
-// For manual control, gear down
-void geardown() {
-  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
-    prevgear = gear;
-    gear--;
-    if (gear < 2) { gear = 1; } // Make sure not to switch less than 1.
-    if ( ! prevgear == gear) {
-      if ( debugEnabled ) { Serial.println("geardown: Gear down requested"); }
-      gearchange(); }
-  }
-}
-
-
-// END OF UI STAGE / INPUT
-
-// CORE
-// no pressure alteration happening yet
-//  
-// gearSwitch logic
-void switchGearStart() {
-   shiftStartTime = millis(); 
-   switchBlocker = true;
-   Serial.print(switchBlocker);
-   if ( debugEnabled ) { Serial.println("switchGearStart: Begin of gear change:"); Serial.println(*pin); }
-   analogWrite(spc,255); // We could change shift pressure here 
-   analogWrite(*pin,255); // Beginning of gear change
-}
-
-void switchGearStop() {
-   analogWrite(*pin,0); // End of gear change
-   analogWrite(spc,0); // let go of shift pressure
-   switchBlocker = false;
-   if ( debugEnabled ) { Serial.println("switchGearStop: End of gear change:"); Serial.println(*pin); }
-   prevgear = gear; // Make sure previous gear is known
-}
-
+// Polling time for transmission control
 void polltrans() {
    shiftDuration = millis() - shiftStartTime;
-   if ( shiftDuration > shiftDelay) { switchGearStop(); };
+   if ( shiftDuration > shiftDelay) { switchGearStop(cSolenoidEnabled); };
  
    //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
    // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
@@ -264,27 +209,72 @@ void polltrans() {
    }
 }
 
-void gearchange() {
+
+// For manual microswitch control, gear up
+void gearup() {
+  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
+    if ( ! switchBlocker) { newGear++; };
+    if (gear > 4) { newGear = 5; } // Make sure not to switch more than 5.
+    if ( debugEnabled ) { Serial.println("gearup: Gear up requested"); }
+      gearchange(newGear); 
+  }
+}
+
+// For manual microswitch control, gear down
+void geardown() {
+  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
+    if ( ! switchBlocker) { newGear--; };
+    if (gear < 2) { newGear = 1; } // Make sure not to switch less than 1.
+    if ( debugEnabled ) { Serial.println("gearup: Gear down requested"); }
+      gearchange(newGear); 
+  }
+}
+
+// END OF UI STAGE / INPUT
+
+// CORE
+// no pressure alteration happening yet
+//  
+// gearSwitch logic
+void switchGearStart(int cSolenoid) {
+   shiftStartTime = millis(); 
+   switchBlocker = true;
+   Serial.print(switchBlocker);
+   if ( debugEnabled ) { Serial.println("switchGearStart: Begin of gear change:"); Serial.println(cSolenoid); }
+   analogWrite(spc,255); // We could change shift pressure here 
+   analogWrite(cSolenoid,255); // Beginning of gear change
+   cSolenoidEnabled = cSolenoid;
+}
+
+void switchGearStop(int cSolenoid) {
+   analogWrite(cSolenoid,0); // End of gear change
+   analogWrite(spc,0); // let go of shift pressure
+   switchBlocker = false;
+   if ( debugEnabled ) { Serial.println("switchGearStop: End of gear change:"); Serial.println(cSolenoid); }
+   prevgear = gear; // Make sure previous gear is known
+}
+
+void gearchange(int newGear) {
  
     if ( switchBlocker == false ) { 
       switch (newGear) {
       case 1: 
-        if ( prevgear == 2 ) { pin = &y3; switchGearStart(); gear = 1; };
+        if ( prevgear == 2 ) { switchGearStart(y3); gear = 1; };
         break;
       case 2:
-        if ( prevgear == 1 ) { pin = &y3; switchGearStart(); gear = 2; };
-        if ( prevgear == 3 ) { pin = &y5; switchGearStart(); gear = 2; };
+        if ( prevgear == 1 ) { switchGearStart(y3); gear = 2; };
+        if ( prevgear == 3 ) { switchGearStart(y5); gear = 2; };
         break;
       case 3:
-        if ( prevgear == 2 ) { pin = &y5; switchGearStart(); gear = 3; };
-        if ( prevgear == 4 ) { pin = &y4; switchGearStart(); gear = 3; };
+        if ( prevgear == 2 ) { switchGearStart(y5); gear = 3; };
+        if ( prevgear == 4 ) { switchGearStart(y4); gear = 3; };
         break;
       case 4:
-        if ( prevgear == 3 ) { pin = &y4; switchGearStart(); gear = 4; };
-        if ( prevgear == 5 ) { pin = &y3; switchGearStart(); gear = 4; };
+        if ( prevgear == 3 ) { switchGearStart(y4); gear = 4; };
+        if ( prevgear == 5 ) { switchGearStart(y3); gear = 4; };
         break;
       case 5:
-        if ( prevgear == 4 ) { pin = &y3; switchGearStart(); gear = 5; };
+        if ( prevgear == 4 ) { switchGearStart(y3); gear = 5; };
         break;
       case 6:
         gear = 6; // mechanical "N"
@@ -299,7 +289,7 @@ void gearchange() {
       break;
     }
     if ( debugEnabled ) { 
-      Serial.println("gearChange: requested change from:"); 
+      Serial.println("gearChange: performing change from:"); 
       Serial.println(prevgear);
       Serial.println("to");
       Serial.println(gear);
@@ -315,7 +305,7 @@ void checkHealth() {
   // Get temperature
   int tempState = digitalRead(tempSwitch);
   int prevtempState = 0;
- // if ( tempState ==  ) { health == true; };
+  if ( tempState == HIGH  ) { health == true; };
 }
 
 void loop() {
