@@ -34,6 +34,9 @@ const int gupSwitch = 24;
 
 // Car sensor input pins
 const int tpspin = A0;
+const int n2pin = 19;
+const int n3pin = 20;
+
 // map & rpm and load input coming here also.
 // END INPUT PINS
 
@@ -44,6 +47,13 @@ int newGear = gear; // Gear that is going to be changed
 int prevgear = 1; // Previously changed gear
 int cSolenoid = 0; // Change solenoid pin to be controlled.
 Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+int n2SpeedPulses = 0;
+int n3SpeedPulses = 0;
+const int n2PulsesPerRev = 60;
+const int n3PulsesPerRev = 60;
+float n2Speed = 0;
+float n3Speed = 0;
+float lastSensorTime = 0;
 // End of internals
 
 // Environment configuration
@@ -59,11 +69,14 @@ boolean incar = false; // no.
 // Do we use stick control?
 boolean stick = true; // yes.
 
-// Manual control?
+// Manual microswitch control?
 boolean manual = false;
 
 // Actual transmission there?
 boolean trans = true;
+
+// Are we using sensors?
+boolean sensors = true;
 
 // Default for blocking gear switches (do not change.)
 boolean switchBlocker = false;
@@ -99,6 +112,11 @@ void setup() {
   pinMode(mpc,OUTPUT); // modulation pressure
   pinMode(tcc,OUTPUT); // lock
 
+  // Sensor input
+  pinMode(tpspin,INPUT); // throttle position sensor 
+  pinMode(n2pin,INPUT); // N2 sensor and interrupt
+  pinMode(n3pin,INPUT); // N3 sensor and interrupt
+  
   //For manual control
   pinMode(gupSwitch,INPUT); // gear up
   pinMode(gdownSwitch,INPUT); // gear down
@@ -116,9 +134,6 @@ void setup() {
   analogWrite(spc,0); // No pressure here by default.
   analogWrite(mpc,255); // We want constant pressure here.
   analogWrite(tcc,0); // No pressure here by default.
-
-  //Internals
-  pinMode(tpspin,INPUT); // throttle position sensor
   
   Serial.println("Started.");
   updateDisplay();
@@ -209,7 +224,42 @@ void polltrans() {
    }
 }
 
+// Interrupt for N2 hallmode sensor
+void N2SpeedInterrupt() {
+ n2SpeedPulses++;
+}
 
+// Interrupt for N3 hallmode sensor
+void N3SpeedInterrupt() {
+  n3SpeedPulses++;
+}
+
+// Polling speed sensors
+void pollsensors() {
+  if ( millis() - lastSensorTime >= 1000 ) {
+    detachInterrupt(2); // Detach interrupts for calculation
+    detachInterrupt(3);
+    
+    if ( n2SpeedPulses >= 60 ) {
+      n2Speed = n2SpeedPulses / 60;
+      n2SpeedPulses = 0;
+    } else {
+      n2Speed = 0;
+    }
+    
+    if ( n3SpeedPulses >= 60 ) {
+      n3Speed = n3SpeedPulses / 60;
+      n3SpeedPulses = 0;
+    } else {
+      n3Speed = 0;
+    }
+ 
+    float lastSensorTime = micros();
+
+    attachInterrupt(2, N2SpeedInterrupt, RISING); // Attach again
+    attachInterrupt(3, N3SpeedInterrupt, RISING);
+  }
+}
 // For manual microswitch control, gear up
 void gearup() {
   if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
@@ -310,10 +360,10 @@ void checkHealth() {
 
 void loop() {
   checkHealth();
-  // If we have a temperature, we can assume P/N switch has moved to R/N. (Lever switch and temp sensor are in series)
   if (( incar && health ) || ( ! incar )) {
     if ( stick ) { pollstick(); } // using stick
     if ( manual ) { pollkeys(); } // using manual control
     if ( trans ) { polltrans(); } // using transmission
+    if ( sensors ) { pollsensors(); } // using sensors
   }
 }
