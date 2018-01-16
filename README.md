@@ -37,4 +37,5 @@ Sensors|Arduino pin (not there yet)
 RPM|n/a
 TPS|n/a
 MAP|n/a
-
+N2|19
+N3|20
