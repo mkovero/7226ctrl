@@ -16,12 +16,12 @@ RES|10
 
 Transmission|Arduino pin (through mosfet shield)
 ------------ | -------------
-y3|2
-y4|3
-y5|4
-mpc|5
-spc|6
-tcc|7
+y3|4
+y4|5
+y5|6
+mpc|2
+spc|7
+tcc|3
 
 Gearstick|Arduino pin (through voltage regulators)
 ------------ | -------------
