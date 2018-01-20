@@ -4,6 +4,8 @@ controller for 722.6 automatic transmission
 - Not yet fully functional
 - Use at your own risk!
 
+work by Markus Kovero (mui@mui.fi) with regards to Tuomas Kantola.
+
 Pinout is for mega2560 with SPI OLED display.
 
 Display | Arduino Pin
