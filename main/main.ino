@@ -33,9 +33,11 @@ const int gdownSwitch = 23;
 const int gupSwitch = 24;
 
 // Car sensor input pins
-const int tpspin = A0;
+const int tpsPin = A0;
+const int boostPin = A1;
 const int n2pin = 19;
 const int n3pin = 20;
+const int speedPin = 21;
 
 // map & rpm and load input coming here also.
 // END INPUT PINS
@@ -48,13 +50,32 @@ int newGear = gear; // Gear that is going to be changed
 int prevgear = 2; // Previously changed gear
 int cSolenoid = 0; // Change solenoid pin to be controlled.
 Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+int vehicleSpeed = 0;
 int n2SpeedPulses = 0;
 int n3SpeedPulses = 0;
+int vehicleSpeedPulses = 0;
 const int n2PulsesPerRev = 60;
 const int n3PulsesPerRev = 60;
+const int vehicleSpeedPulsesPerRev = 60;
+
 float n2Speed = 0;
 float n3Speed = 0;
 float lastSensorTime = 0;
+float boostVoltage = 0;
+float boostPercentValue = 0;
+float tpsPercentValue = 0;
+float tpsVoltage = 0;
+
+//TPS linearisation map
+int tpsLinearisationMap[2][2] {
+{0,   100 },   //sensor value as a result %
+{400, 2830 }}; //corresponding sensor voltage, mV
+
+//Boost linearisation map
+int boostLinearisationMap[2][2] {
+{0,   100 },   //sensor value as a result %
+{1500, 4200 }}; //corresponding sensor voltage, mV
+
 // End of internals
 
 // Environment configuration
@@ -79,6 +100,12 @@ boolean trans = true;
 // Are we using sensors?
 boolean sensors = true;
 
+// Do we have TPS?
+boolean tpsSensor = true;
+
+// Do we have boost sensor?
+boolean boostSensor = false;
+
 // Default for blocking gear switches (do not change.)
 boolean switchBlocker = false;
 
@@ -87,6 +114,7 @@ boolean health = false;
 
 // Output to serial console
 boolean debugEnabled = true;
+
 
 // End of environment conf
 
@@ -114,9 +142,11 @@ void setup() {
   pinMode(tcc,OUTPUT); // lock
 
   // Sensor input
-  pinMode(tpspin,INPUT); // throttle position sensor 
-  pinMode(n2pin,INPUT); // N2 sensor and interrupt
-  pinMode(n3pin,INPUT); // N3 sensor and interrupt
+  pinMode(boostPin,INPUT); // throttle position sensor 
+  pinMode(tpsPin,INPUT); // throttle position sensor 
+  pinMode(n2pin,INPUT); // N2 sensor
+  pinMode(n3pin,INPUT); // N3 sensor 
+  pinMode(speedPin,INPUT); // vehicle speed
   
   //For manual control
   pinMode(gupSwitch,INPUT); // gear up
@@ -138,6 +168,29 @@ void setup() {
   
   Serial.println("Started.");
   updateDisplay();
+}
+
+// Calculation helpers
+float ReadSensorMap(int sensorMap[2][2], double voltage) { 
+  double percentuallyBetweenTwoPointsAtMap = 0;
+  double result = 0;
+  
+  for (int i = 0; i < 2; i++) {
+    if (voltage <= sensorMap[1][i]) {
+      if (voltage <= sensorMap[1][0]) {
+        result = sensorMap[0][0];
+      } else {
+        percentuallyBetweenTwoPointsAtMap = ((sensorMap[1][i] - voltage) / (sensorMap[1][i] - sensorMap[1][i - 1]));
+        result = sensorMap[0][i] - (percentuallyBetweenTwoPointsAtMap * (sensorMap[0][i] - sensorMap[0][i - 1]));
+      }
+        break;
+    }
+
+    if (voltage >= sensorMap[1][1]) {
+      result = sensorMap[0][1];
+    }
+  }
+  return result;
 }
 
 // UI STAGE
@@ -182,19 +235,10 @@ void pollstick() {
   int moreGear = gear+1;
   int lessGear = gear-1;
   if ( ! switchBlocker && wantedGear < 6) {
-    if ( wantedGear >= moreGear ) {
-      newGear = moreGear;
-     gearchange(newGear);
-    }
-    if ( wantedGear <= lessGear ) {
-      newGear = lessGear;
-      gearchange(newGear); 
-    }
-  } else if ( wantedGear > 5 ) {
-    gearchange(wantedGear);
-  } else {
-    Serial.println("pollstick: Blocking stick");
-  }
+    if ( wantedGear >= moreGear ) { newGear = moreGear; gearchange(newGear); }
+    if ( wantedGear <= lessGear ) { newGear = lessGear; gearchange(newGear); }
+  } else if ( wantedGear > 5 ) { gearchange(wantedGear);
+  } else if ( debugEnabled ) { Serial.println("pollstick: Blocking stick"); }
   
   if ( debugEnabled ) {
     Serial.println("pollstick: Stick says: ");
@@ -250,12 +294,17 @@ void N2SpeedInterrupt() {
 void N3SpeedInterrupt() {
   n3SpeedPulses++;
 }
+void vehicleSpeedInterrupt() {
+  vehicleSpeedPulses++;
+}
+  
 
-// Polling speed sensors
+// Polling sensors
 void pollsensors() {
   if ( millis() - lastSensorTime >= 1000 ) {
     detachInterrupt(2); // Detach interrupts for calculation
     detachInterrupt(3);
+    detachInterrupt(4);
     
     if ( n2SpeedPulses >= 60 ) {
       n2Speed = n2SpeedPulses / 60;
@@ -270,13 +319,41 @@ void pollsensors() {
     } else {
       n3Speed = 0;
     }
- 
-    float lastSensorTime = micros();
+    
+    if ( vehicleSpeedPulses >= 60 ) {
+      vehicleSpeed = vehicleSpeedPulses / 60;
+      vehicleSpeedPulses = 0;
+    } else {
+      vehicleSpeed = 0;
+    }
+
+    float lastSensorTime = millis();
 
     attachInterrupt(2, N2SpeedInterrupt, RISING); // Attach again
     attachInterrupt(3, N3SpeedInterrupt, RISING);
+    attachInterrupt(4, vehicleSpeedInterrupt, RISING);
+    
+  }
+
+  if ( tpsSensor ) {
+    //reading TPS
+    tpsVoltage = analogRead(tpsPin) * ( 5000 / 1023.00 );
+    tpsPercentValue = ReadSensorMap (tpsLinearisationMap, tpsVoltage);
+
+    if (tpsPercentValue > 100 ) { tpsPercentValue = 100; } 
+    if (tpsPercentValue < 0 ) { tpsPercentValue = 0; }
+  }
+  
+  if ( boostSensor ) { 
+    //reading MAP/boost
+    boostVoltage = analogRead(boostPin) * ( 5000 / 1023.00 );
+    boostPercentValue = ReadSensorMap (boostLinearisationMap, boostVoltage);
+    
+    if (boostPercentValue > 100 ) { boostPercentValue = 100; } 
+    if (boostPercentValue < 0 ) { boostPercentValue = 0; }
   }
 }
+
 // For manual microswitch control, gear up
 void gearup() {
   if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
