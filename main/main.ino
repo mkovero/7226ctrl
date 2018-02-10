@@ -630,16 +630,16 @@ int ReadGearMap(int theMap[14][12], double tps, double vehicleSpeed) {
     percentuallyBetweenAtLine2 = ((theMap[0][i] - tps) / (theMap[0][i] - theMap[0][i - 1]));
     calculatedFromLine2 = theMap[mapLine + 1][i] - (percentuallyBetweenAtLine2 * (theMap[mapLine + 1][i] - theMap[mapLine + 1][i - 1]));
     percentuallyBetweenTwoPointsAtColumn = ((vehicleSpeed - theMap[j][0]) / (theMap[j - 1][0] - theMap[j][0]));
-    wantedGear = calculatedFromLine2 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine1 - calculatedFromLine2));
+    proposedGear = calculatedFromLine2 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine1 - calculatedFromLine2));
   } else if (vehicleSpeed < theMap[j][0]) {
     percentuallyBetweenAtLine2 = ((theMap[0][i] - tps) / (theMap[0][i] - theMap[0][i - 1]));
     calculatedFromLine2 = theMap[mapLine - 1][i] - (percentuallyBetweenAtLine2 * (theMap[mapLine - 1][i] - theMap[mapLine - 1][i - 1]));
     percentuallyBetweenTwoPointsAtColumn = ((vehicleSpeed - theMap[j][0]) / (theMap[j][0] - theMap[j - 1][0]));
-    wantedGear = calculatedFromLine1 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine2 - calculatedFromLine1));
+    proposedGear = calculatedFromLine1 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine2 - calculatedFromLine1));
   } else {
     calculatedFromLine2 = calculatedFromLine1;
     percentuallyBetweenTwoPointsAtColumn = ((vehicleSpeed - theMap[j][0]) / (theMap[j - 1][0] - theMap[j][0]));
-    wantedGear = calculatedFromLine2 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine1 - calculatedFromLine2));
+    proposedGear = calculatedFromLine2 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine1 - calculatedFromLine2));
   }            
   return proposedGear;
 }
