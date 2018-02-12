@@ -74,7 +74,8 @@ boolean health = false;
 // Output to serial console
 boolean debugEnabled = true;
 
-boolean fullAuto = true;
+// Full automatic mode
+boolean fullAuto = true; 
 
 boolean drive = false;
 
