@@ -72,3 +72,30 @@ void geardown() {
       gearchangeDown(newGear); 
   }
 }
+
+// Polling time for transmission control
+void polltrans() {
+   if ( shiftBlocker ) { 
+    shiftDuration =  millis() - shiftStartTime;
+    if ( shiftDuration > shiftDelay) { switchGearStop(cSolenoidEnabled); };
+   }
+
+   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
+   // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
+   if ( gear > 6 ) {
+     analogWrite(spc, 102); 
+   }
+}
+
+// Interrupt for N2 hallmode sensor
+void N2SpeedInterrupt() {
+ n2SpeedPulses++;
+}
+
+// Interrupt for N3 hallmode sensor
+void N3SpeedInterrupt() {
+  n3SpeedPulses++;
+}
+void vehicleSpeedInterrupt() {
+  vehicleSpeedPulses++;
+}
