@@ -38,6 +38,7 @@ int atfTemp = 0;
 // End of internals
 
 // Environment configuration
+
 // Shift delay
 unsigned long int shiftDelay = 500;
 unsigned long int shiftStartTime = 0;
