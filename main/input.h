@@ -33,6 +33,26 @@ void pollstick() {
   }
 }
 
+// For manual microswitch control, gear up
+void gearup() {
+  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
+    if ( ! shiftBlocker) { newGear++; };
+    if (gear > 4) { newGear = 5; } // Make sure not to switch more than 5.
+    if ( debugEnabled ) { Serial.println("gearup: Gear up requested"); }
+      gearchangeUp(newGear); 
+  }
+}
+
+// For manual microswitch control, gear down
+void geardown() {
+  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
+    if ( ! shiftBlocker) { newGear--; };
+    if (gear < 2) { newGear = 1; } // Make sure not to switch less than 1.
+    if ( debugEnabled ) { Serial.println("gearup: Gear down requested"); }
+      gearchangeDown(newGear); 
+  }
+}
+
 // Polling for manual switch keys
 void pollkeys() {
   int gupState = digitalRead(gupSwitch); // Gear up
@@ -53,25 +73,7 @@ void pollkeys() {
   }
 }
 
-// For manual microswitch control, gear up
-void gearup() {
-  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
-    if ( ! shiftBlocker) { newGear++; };
-    if (gear > 4) { newGear = 5; } // Make sure not to switch more than 5.
-    if ( debugEnabled ) { Serial.println("gearup: Gear up requested"); }
-      gearchangeUp(newGear); 
-  }
-}
 
-// For manual microswitch control, gear down
-void geardown() {
-  if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
-    if ( ! shiftBlocker) { newGear--; };
-    if (gear < 2) { newGear = 1; } // Make sure not to switch less than 1.
-    if ( debugEnabled ) { Serial.println("gearup: Gear down requested"); }
-      gearchangeDown(newGear); 
-  }
-}
 
 // Polling time for transmission control
 void polltrans() {

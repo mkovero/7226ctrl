@@ -1,6 +1,6 @@
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 
-/ Calculation helpers
+// Calculation helpers
 float ReadSensorMap(int sensorMap[2][2], double voltage) { 
   double percentuallyBetweenTwoPointsAtMap = 0;
   double result = 0;

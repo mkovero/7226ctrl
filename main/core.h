@@ -23,18 +23,6 @@ void switchGearStop(int cSolenoid) {
    shiftStartTime = 0;
 }
 
-void decideGear(int wantedGear) {
-  int moreGear = gear++;
-  int lessGear = gear--;
-  // Determine speed related downshift and upshift here.
-  int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed);
-
-  if ( ! shiftBlocker && wantedGear < 6 ) {
-    if ( fullAuto && autoGear > gear && autoGear == moreGear && autoGear >= wantedGear ) { newGear = autoGear; gearchangeUp(newGear); } else if ( wantedGear >= moreGear && wantedGear < 6 ) { newGear = moreGear; gearchangeUp(newGear); }
-    if ( autoGear < gear && autoGear == lessGear && autoGear <= wantedGear ) { newGear = autoGear; gearchangeDown(newGear); } else if ( wantedGear <= moreGear && wantedGear < 6 ) { newGear = lessGear; gearchangeDown(lessGear); }
-  } else if ( wantedGear > 5 ) { prevgear = gear; gear = wantedGear; };
-  if ( debugEnabled) { Serial.println("decideGear: wantedGear/autoGear/newGear: "); Serial.print(wantedGear); Serial.print(autoGear); Serial.print(newGear); }
-}
 
 void gearchangeUp(int newGear) {
   if ( shiftBlocker == false ) { 
@@ -101,5 +89,19 @@ void gearchangeDown(int newGear) {
     Serial.println("gearChangeDown: Blocking change");  
   }
 }
+
+void decideGear(int wantedGear) {
+  int moreGear = gear++;
+  int lessGear = gear--;
+  // Determine speed related downshift and upshift here.
+  int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed);
+
+  if ( ! shiftBlocker && wantedGear < 6 ) {
+    if ( fullAuto && autoGear > gear && autoGear == moreGear && autoGear >= wantedGear ) { newGear = autoGear; gearchangeUp(newGear); } else if ( wantedGear >= moreGear && wantedGear < 6 ) { newGear = moreGear; gearchangeUp(newGear); }
+    if ( autoGear < gear && autoGear == lessGear && autoGear <= wantedGear ) { newGear = autoGear; gearchangeDown(newGear); } else if ( wantedGear <= moreGear && wantedGear < 6 ) { newGear = lessGear; gearchangeDown(lessGear); }
+  } else if ( wantedGear > 5 ) { prevgear = gear; gear = wantedGear; };
+  if ( debugEnabled) { Serial.println("decideGear: wantedGear/autoGear/newGear: "); Serial.print(wantedGear); Serial.print(autoGear); Serial.print(newGear); }
+}
+
 
 // END OF CORE

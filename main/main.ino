@@ -2,86 +2,18 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <calc.h>
-#include <input.h>
-#include <maps.h>
-#include <ui.h>
-#include <core.h>
-#include <config.h>
+#include "config.h"
+#include "maps.h"
+#include "calc.h"
+#include "core.h"
+#include "input.h"
+#include "sensors.h"
+#include "ui.h"
+
 // Work by Markus Kovero <mui@mui.fi>
 // Big thanks to Tuomas Kantola regarding maps and related math
 
-// Internals, states
-int gear = 2; // Start on gear 2
-int wantedGear = gear; // Gear that is requested
-int newGear = gear; // Gear that is going to be changed
-int prevgear = 1; // Previously changed gear
-int cSolenoid = 0; // Change solenoid pin to be controlled.
-int vehicleSpeed = 0;
-int n2SpeedPulses = 0;
-int n3SpeedPulses = 0;
-int vehicleSpeedPulses = 0;
-const int n2PulsesPerRev = 60;
-const int n3PulsesPerRev = 60;
-const int vehicleSpeedPulsesPerRev = 60;
-float n2Speed = 0;
-float n3Speed = 0;
-float lastSensorTime = 0;
-float boostVoltage = 0;
-float boostPercentValue = 0;
-float tpsPercentValue = 0;
-float tpsVoltage = 0;
-int trueLoad = 0;
-int atfTempRaw = 0;
-int atfTempCalculated = 0;
-int atfTemp = 0;
 
-// End of internals
-
-// Environment configuration
-
-// Shift delay
-unsigned long int shiftDelay = 500;
-unsigned long int shiftStartTime = 0;
-unsigned long int shiftDuration = 0;
-int cSolenoidEnabled = 0;
-
-// Are we in a real car?
-boolean incar = false; // no.
-
-// Do we use stick control?
-boolean stick = true; // yes.
-
-// Manual microswitch control?
-boolean manual = false;
-
-// Actual transmission there?
-boolean trans = true;
-
-// Are we using sensors?
-boolean sensors = true;
-
-// Do we have TPS?
-boolean tpsSensor = true;
-
-// Do we have boost sensor?
-boolean boostSensor = false;
-
-// Default for blocking gear switches (do not change.)
-boolean shiftBlocker = false;
-
-// Default for health (do not change.)
-boolean health = false;
-
-// Output to serial console
-boolean debugEnabled = true;
-
-// Full automatic mode
-boolean fullAuto = true; 
-
-boolean drive = false;
-
-// End of environment conf
 
 void setup() {
   
