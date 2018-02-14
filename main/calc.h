@@ -22,44 +22,34 @@ float ReadSensorMap(int sensorMap[2][2], double voltage) {
 }
 
 //function to read automode proposedGear map
-int ReadGearMap(int theMap[14][12], double tps, double vehicleSpeed) {
-  double percentuallyBetweenAtLine1 = 0;
-  double percentuallyBetweenAtLine2 = 0;
-  double percentuallyBetweenTwoPointsAtColumn = 0;
-  double calculatedFromLine1 = 0;
-  double calculatedFromLine2 = 0;
-  double proposedGear = 0;
-  int mapLine = 0;
-  int mapColumn = 0;
+int ReadGearMap(int theMap[14][13], int tps, int vehicleSpeed) {
+  int idx = 0; // by default near first element
 
-  int i;
-  for (i = 1; i < 12; i++) { 
-    if (tps == 0) { i = 1; } 
-      if (tps <= theMap[0][i]) { break; } }
-       
-  mapColumn = i; int j;
-  for (j = 1; j < 14; j++) { 
-    if (vehicleSpeed <= theMap[j][0]) { break; } }
+  int distance = abs(theMap[0][idx] - x); 
+  for (int i = 1; i < 12; i++)
+  {
+    int d = abs(theMap[0][i] - x);
+    if (d < distance)
+    {
+      idx = i;
+      distance = d;
+    }
+  }
+  int tpscolumn = idx;
 
-  mapLine = j;
-  percentuallyBetweenAtLine1 = ((theMap[0][i] - tps) / (theMap[0][i] - theMap[0][i - 1]));
-  calculatedFromLine1 = theMap[mapLine][i] - (percentuallyBetweenAtLine1 * (theMap[mapLine][i] - theMap[mapLine][i - 1]));
+  idx = 0;
+  for (int i = 1; i < 14; i++)
+  {
+    int d = abs(theMap[i][0] - x);
+    if (d < distance)
+    {
+      idx = i;
+      distance = d;
+    }
+  }
+  int speedcolumn = idx;
 
-  if (vehicleSpeed > theMap[j][0]) {
-    percentuallyBetweenAtLine2 = ((theMap[0][i] - tps) / (theMap[0][i] - theMap[0][i - 1]));
-    calculatedFromLine2 = theMap[mapLine + 1][i] - (percentuallyBetweenAtLine2 * (theMap[mapLine + 1][i] - theMap[mapLine + 1][i - 1]));
-    percentuallyBetweenTwoPointsAtColumn = ((vehicleSpeed - theMap[j][0]) / (theMap[j - 1][0] - theMap[j][0]));
-    proposedGear = calculatedFromLine2 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine1 - calculatedFromLine2));
-  } else if (vehicleSpeed < theMap[j][0]) {
-    percentuallyBetweenAtLine2 = ((theMap[0][i] - tps) / (theMap[0][i] - theMap[0][i - 1]));
-    calculatedFromLine2 = theMap[mapLine - 1][i] - (percentuallyBetweenAtLine2 * (theMap[mapLine - 1][i] - theMap[mapLine - 1][i - 1]));
-    percentuallyBetweenTwoPointsAtColumn = ((vehicleSpeed - theMap[j][0]) / (theMap[j][0] - theMap[j - 1][0]));
-    proposedGear = calculatedFromLine1 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine2 - calculatedFromLine1));
-  } else {
-    calculatedFromLine2 = calculatedFromLine1;
-    percentuallyBetweenTwoPointsAtColumn = ((vehicleSpeed - theMap[j][0]) / (theMap[j - 1][0] - theMap[j][0]));
-    proposedGear = calculatedFromLine2 - (percentuallyBetweenTwoPointsAtColumn * (calculatedFromLine1 - calculatedFromLine2));
-  }            
+  proposedGear = theMap[speedcolumn][tpscolumn];
   return proposedGear;
 }
    
