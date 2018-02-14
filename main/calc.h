@@ -38,7 +38,7 @@ int ReadGearMap(int theMap[14][13], int tps, int vehicleSpeed) {
   int tpscolumn = idx;
 
   idx = 0;
-  distance = abs(theMap[0][idx] - vehicleSpeed); 
+  distance = abs(theMap[idx][0] - vehicleSpeed); 
   for (int i = 1; i < 14; i++)
   {
     int d = abs(theMap[i][0] - vehicleSpeed);
