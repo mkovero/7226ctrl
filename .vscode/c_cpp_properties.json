@@ -8,7 +8,9 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": false,
                 "path": [
-                    "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino"
+                    "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino",
+                    "${workspaceRoot}",
+                    "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/"
                 ]
             },
             "intelliSenseMode": "clang-x64",
