@@ -1,4 +1,6 @@
-// Calculation helpers
+#define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
+
+/ Calculation helpers
 float ReadSensorMap(int sensorMap[2][2], double voltage) { 
   double percentuallyBetweenTwoPointsAtMap = 0;
   double result = 0;
@@ -22,8 +24,9 @@ float ReadSensorMap(int sensorMap[2][2], double voltage) {
 }
 
 //function to read automode proposedGear map
-int readMap(int theMap[14][12], int x, int y, int xelements, int yelements) {
+int readMap(int theMap[14][12], int x, int y) {
   int xidx = 0; // by default near first element
+  int xelements = LEN(theMap[0]);
 
   int distance = abs(theMap[0][xidx] - x); 
   for (int i = 1; i < xelements; i++)
@@ -36,7 +39,8 @@ int readMap(int theMap[14][12], int x, int y, int xelements, int yelements) {
     }
   }
   int yidx = 0; // by default near first element
- 
+  int yelements = LEN(*theMap);
+
   distance = abs(theMap[yidx][0] - y); 
   for (int i = 1; i < yelements; i++)
   {

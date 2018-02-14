@@ -27,7 +27,7 @@ void decideGear(int wantedGear) {
   int moreGear = gear++;
   int lessGear = gear--;
   // Determine speed related downshift and upshift here.
-  int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed, 12, 14);
+  int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed);
 
   if ( ! shiftBlocker && wantedGear < 6 ) {
     if ( fullAuto && autoGear > gear && autoGear == moreGear && autoGear >= wantedGear ) { newGear = autoGear; gearchangeUp(newGear); } else if ( wantedGear >= moreGear && wantedGear < 6 ) { newGear = moreGear; gearchangeUp(newGear); }
