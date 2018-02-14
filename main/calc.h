@@ -25,10 +25,10 @@ float ReadSensorMap(int sensorMap[2][2], double voltage) {
 int ReadGearMap(int theMap[14][13], int tps, int vehicleSpeed) {
   int idx = 0; // by default near first element
 
-  int distance = abs(theMap[0][idx] - x); 
+  int distance = abs(theMap[0][idx] - tps); 
   for (int i = 1; i < 12; i++)
   {
-    int d = abs(theMap[0][i] - x);
+    int d = abs(theMap[0][i] - tps);
     if (d < distance)
     {
       idx = i;
@@ -38,9 +38,10 @@ int ReadGearMap(int theMap[14][13], int tps, int vehicleSpeed) {
   int tpscolumn = idx;
 
   idx = 0;
+  distance = abs(theMap[0][idx] - vehicleSpeed); 
   for (int i = 1; i < 14; i++)
   {
-    int d = abs(theMap[i][0] - x);
+    int d = abs(theMap[i][0] - vehicleSpeed);
     if (d < distance)
     {
       idx = i;
