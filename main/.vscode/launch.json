@@ -14,7 +14,7 @@
             "MIMode": "gdb",
             "targetArchitecture": "arm",
             "miDebuggerPath": "",
-            "debugServerPath": "",
+            "debugServerPath": "/usr/local/bin/openocd",
             "debugServerArgs": "",
             "customLaunchSetupCommands": [
                 {
