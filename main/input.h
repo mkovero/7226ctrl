@@ -77,7 +77,8 @@ void pollkeys() {
 
 // Polling time for transmission control
 void polltrans() {
-   if ( shiftBlocker ) { 
+   if ( shiftBlocker ) {
+    shiftDelay = readMap(shiftTimeMap, spcVal, oilTemp);
     shiftDuration =  millis() - shiftStartTime;
     if ( shiftDuration > shiftDelay) { switchGearStop(cSolenoidEnabled); };
    }
@@ -86,7 +87,14 @@ void polltrans() {
    // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
    if ( gear > 6 ) {
      analogWrite(spc, 102); 
+   } else if ( gear < 6 && sensors ) {
+     int mpcVal = readMap(mpcNormalMap, trueLoad, atfTemp);
+     mpcVal = (100 - mpcVal) * 2.55;
+   } else if ( gear > 5 ) {
+     mpcVal = (100 - 70) * 2.55;
    }
+   if ( ! shiftBlocker ) { analogWrite(mpc,mpcVal); };
+
 }
 
 // Interrupt for N2 hallmode sensor

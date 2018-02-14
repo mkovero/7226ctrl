@@ -2,14 +2,19 @@
 // no pressure alteration happening yet
 //  
 // gearSwitch logic
-void switchGearStart(int cSolenoid) {
+void switchGearStart(int cSolenoid, int spcVal, int mpcVal) {
    shiftStartTime = millis(); 
    shiftBlocker = true;
    Serial.println("blocker");
    Serial.print(shiftBlocker);
    if ( debugEnabled ) { Serial.println("switchGearStart: Begin of gear change current/new/solenoid: "); Serial.print(gear); Serial.print(newGear); Serial.print(cSolenoid); }
-   analogWrite(spc,255); // We could change shift pressure here 
+  if ( trans ) { 
+   spcVal = (100 - spcVal) * 2.55;
+   mpcVal = (100 - mpcVal) * 2.55;
+   analogWrite(spc,spcVal); // We could change shift pressure here 
+   analogWrite(mpc,mpcVal);
    analogWrite(cSolenoid,255); // Beginning of gear change
+  }
    cSolenoidEnabled = cSolenoid;
 }
 
@@ -32,16 +37,20 @@ void gearchangeUp(int newGear) {
         gear = 1; 
         break;
       case 2:
-        switchGearStart(y3);
+        if ( ! sensors ) { switchGearStart(y3,100, 100); }
+        if ( sensors ) { switchGearStart(y3,readMap(spcMap12, trueLoad, atfTemp),readMap(mpcMap12, trueLoad, atfTemp)); }
         break;
       case 3:
-        switchGearStart(y5);
+        if ( ! sensors ) { switchGearStart(y4,100, 100); }
+        if ( sensors ) { switchGearStart(y4,readMap(spcMap23, trueLoad, atfTemp),readMap(mpcMap23, trueLoad, atfTemp)); }
         break;
       case 4:
-        switchGearStart(y4);
+        if ( ! sensors ) { switchGearStart(y5,100, 100); }
+        if ( sensors ) { switchGearStart(y5,readMap(spcMap34, trueLoad, atfTemp),readMap(mpcMap34, trueLoad, atfTemp)); }
         break;
       case 5:
-        switchGearStart(y3);
+        if ( ! sensors ) { switchGearStart(y3,100, 100); }
+        if ( sensors ) { switchGearStart(y3,readMap(spcMap45, trueLoad, atfTemp),readMap(mpcMap45, trueLoad, atfTemp)); }
         break;
       default:
       break;
@@ -61,16 +70,20 @@ void gearchangeDown(int newGear) {
   if ( shiftBlocker == false ) { 
       switch (newGear) {
       case 1: 
-        switchGearStart(y3);
+        if ( ! sensors ) { switchGearStart(y3,100, 100); }
+        if ( sensors ) { switchGearStart(y3,readMap(spcMap21, trueLoad, atfTemp),readMap(mpcMap21, trueLoad, atfTemp)); }
         break;
       case 2:
-        switchGearStart(y5);
+        if ( ! sensors ) { switchGearStart(y4,100, 100); }
+        if ( sensors ) { switchGearStart(y4,readMap(spcMap32, trueLoad, atfTemp),readMap(mpcMap32, trueLoad, atfTemp)); }
         break;
       case 3:
-        switchGearStart(y4);
+        if ( ! sensors ) { switchGearStart(y5,100, 100); }
+        if ( sensors ) { switchGearStart(y5,readMap(spcMap43, trueLoad, atfTemp),readMap(mpcMap43, trueLoad, atfTemp)); }
         break;
       case 4:
-        switchGearStart(y3); 
+        if ( ! sensors ) { switchGearStart(y3,100, 100); }
+        if ( sensors ) { switchGearStart(y3,readMap(spcMap54, trueLoad, atfTemp),readMap(mpcMap54,trueLoad, atfTemp)); }
         break;
       case 5:
         prevgear = gear;

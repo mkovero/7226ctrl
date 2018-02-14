@@ -65,7 +65,9 @@ int trueLoad = 0;
 int atfTempRaw = 0;
 int atfTempCalculated = 0;
 int atfTemp = 0;
-
+int oilTemp = 0;
+int spcVal = 0;
+int mpcVal = 0;
 // End of internals
 
 // Environment configuration
