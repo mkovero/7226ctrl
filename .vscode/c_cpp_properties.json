@@ -10,7 +10,8 @@
                 "path": [
                     "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino",
                     "${workspaceRoot}",
-                    "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/"
+                    "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/",
+                    "/Users/markus/7226ctrl/main"
                 ]
             },
             "intelliSenseMode": "clang-x64",
