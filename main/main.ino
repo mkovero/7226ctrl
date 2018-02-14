@@ -61,7 +61,7 @@ void setup() {
   analogWrite(y4,0);
   analogWrite(y5,0);
   analogWrite(spc,0); // No pressure here by default.
-  analogWrite(mpc,255); // We want constant pressure here.
+  // analogWrite(mpc,255); // We want constant pressure here.
   analogWrite(tcc,0); // No pressure here by default.
   
   Serial.println("Started.");
