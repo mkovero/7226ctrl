@@ -48,26 +48,17 @@ int newGear = gear; // Gear that is going to be changed
 int prevgear = 1; // Previously changed gear
 int cSolenoid = 0; // Change solenoid pin to be controlled.
 int vehicleSpeed = 0;
-int n2SpeedPulses = 0;
-int n3SpeedPulses = 0;
-int vehicleSpeedPulses = 0;
-const int n2PulsesPerRev = 60;
-const int n3PulsesPerRev = 60;
-const int vehicleSpeedPulsesPerRev = 60;
 int n2Speed = 0;
 int n3Speed = 0;
-float lastSensorTime = 0;
-float boostVoltage = 0;
+unsigned long lastSensorTime = 0;
 int boostPercentValue = 0;
 int tpsPercentValue = 0;
-float tpsVoltage = 0;
-int trueLoad = 0;
-int atfTempRaw = 0;
-int atfTempCalculated = 0;
-int atfTemp = 0;
 int oilTemp = 0;
 int spcVal = 0;
 int mpcVal = 0;
+int n2SpeedPulses = 0;
+int n3SpeedPulses = 0;
+int vehicleSpeedPulses = 0;
 // End of internals
 
 // Environment configuration

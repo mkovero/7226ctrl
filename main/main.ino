@@ -5,9 +5,9 @@
 #include "config.h"
 #include "maps.h"
 #include "calc.h"
+#include "sensors.h"
 #include "core.h"
 #include "input.h"
-#include "sensors.h"
 #include "ui.h"
 
 // Work by Markus Kovero <mui@mui.fi>
@@ -22,7 +22,7 @@ void setup() {
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
   Serial.begin(9600);
-
+  
   display.begin(SSD1306_SWITCHCAPVCC);
   display.display();
   display.clearDisplay();

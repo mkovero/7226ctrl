@@ -19,9 +19,17 @@ void pollstick() {
 
   decideGear(wantedGear);
   
-  if ( debugEnabled && wantedGear != gear ) {
-    Serial.println("pollstick: Stick says: %d, %d, %d, %d ", whiteState, blueState, greenState, yellowState);
-    Serial.println("pollstick: Requested gear prev=%d, wanted=%d, current=%d, new=%d",prevgear,wantedGear,gear,newGear);
+   if ( debugEnabled && wantedGear != gear ) {
+    Serial.println("pollstick: Stick says: ");
+    Serial.print(whiteState);
+    Serial.print(blueState);
+    Serial.print(greenState);
+    Serial.print(yellowState);
+    Serial.println("pollstick: Requested gear prev/wanted/current/new: ");
+    Serial.print(prevgear);
+    Serial.print(wantedGear);
+    Serial.print(gear);
+    Serial.print(newGear);
   }
 }
 
@@ -69,12 +77,14 @@ void pollkeys() {
 
 // Polling time for transmission control
 void polltrans() {
+  int atfTemp = atfSensors();
+  int trueLoad = loadSensors();
    if ( shiftBlocker ) {
     if ( sensors ) { shiftDelay = readMap(shiftTimeMap, spcVal, oilTemp); }
     shiftDuration =  millis() - shiftStartTime;
     if ( shiftDuration > shiftDelay) { 
       switchGearStop(cSolenoidEnabled); 
-      if ( debugEnabled ) { Serial.println("polltrans: shiftDelay=%d, spcVal=%d, oilTemp=%d", shiftDelay, spcVal, oilTemp); }
+      if ( debugEnabled ) { Serial.println("polltrans: shiftDelay/spcVal/oilTemp="); Serial.print(shiftDelay); Serial.print(spcVal); Serial.print(oilTemp); }
     }
    }
 
@@ -90,20 +100,7 @@ void polltrans() {
    }
    if ( ! shiftBlocker ) { 
      analogWrite(mpc,mpcVal); 
-     if ( debugEnabled ) { Serial.println("polltrans: mpcVal=%d", mpcVal); }
+     if ( debugEnabled ) { Serial.println("polltrans: mpcVal="); Serial.print(mpcVal); }
    };
 
-}
-
-// Interrupt for N2 hallmode sensor
-void N2SpeedInterrupt() {
- n2SpeedPulses++;
-}
-
-// Interrupt for N3 hallmode sensor
-void N3SpeedInterrupt() {
-  n3SpeedPulses++;
-}
-void vehicleSpeedInterrupt() {
-  vehicleSpeedPulses++;
 }

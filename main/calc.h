@@ -2,17 +2,18 @@
 
 // Calculation helpers
 int readTPSVoltage(int voltage) { 
-  result = map(voltage,400,2830,0,100);
+  int result = map(voltage,400,2830,0,100);
   return result;
 }
 
 int readBoostVoltage(int voltage) { 
-  result = map(voltage,1500,4200,0,100);
+  int result = map(voltage,1500,4200,0,100);
   return result;
 }
 
 //function to read 2d maps
 int readMap(int theMap[14][12], int x, int y) {
+  #include "maps.h"
   int xidx = 0; // by default near first element
   int xelements = LEN(theMap[0]);
 
