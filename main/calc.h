@@ -1,29 +1,17 @@
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 
 // Calculation helpers
-float ReadSensorMap(int sensorMap[2][2], double voltage) { 
-  double percentuallyBetweenTwoPointsAtMap = 0;
-  double result = 0;
-  
-  for (int i = 0; i < 2; i++) {
-    if (voltage <= sensorMap[1][i]) {
-      if (voltage <= sensorMap[1][0]) {
-        result = sensorMap[0][0];
-      } else {
-        percentuallyBetweenTwoPointsAtMap = ((sensorMap[1][i] - voltage) / (sensorMap[1][i] - sensorMap[1][i - 1]));
-        result = sensorMap[0][i] - (percentuallyBetweenTwoPointsAtMap * (sensorMap[0][i] - sensorMap[0][i - 1]));
-      }
-        break;
-    }
-
-    if (voltage >= sensorMap[1][1]) {
-      result = sensorMap[0][1];
-    }
-  }
+int readTPSVoltage(int voltage) { 
+  result = map(voltage,400,2830,0,100);
   return result;
 }
 
-//function to read automode proposedGear map
+int readBoostVoltage(int voltage) { 
+  result = map(voltage,1500,4200,0,100);
+  return result;
+}
+
+//function to read 2d maps
 int readMap(int theMap[14][12], int x, int y) {
   int xidx = 0; // by default near first element
   int xelements = LEN(theMap[0]);

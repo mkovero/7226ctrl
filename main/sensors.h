@@ -44,7 +44,7 @@ void pollsensors() {
  if ( tpsSensor ) {
     //reading TPS
     tpsVoltage = analogRead(tpsPin) * ( 5000 / 1023.00 );
-    tpsPercentValue = ReadSensorMap (tpsLinearisationMap, tpsVoltage);
+    tpsPercentValue = readTPSVoltage(tpsVoltage);
 
     if (tpsPercentValue > 100 ) { tpsPercentValue = 100; } 
     if (tpsPercentValue < 0 ) { tpsPercentValue = 0; }
@@ -53,7 +53,7 @@ void pollsensors() {
   if ( boostSensor ) { 
     //reading MAP/boost
     boostVoltage = analogRead(boostPin) * ( 5000 / 1023.00 );
-    boostPercentValue = ReadSensorMap (boostLinearisationMap, boostVoltage);
+    boostPercentValue = readBoostVoltage(boostVoltage);
     
     if (boostPercentValue > 100 ) { boostPercentValue = 100; } 
     if (boostPercentValue < 0 ) { boostPercentValue = 0; }

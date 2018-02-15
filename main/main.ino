@@ -25,7 +25,6 @@ void setup() {
 
   display.begin(SSD1306_SWITCHCAPVCC);
   display.display();
-  delay(1000);
   display.clearDisplay();
   display.setTextSize(5);
   display.setTextColor(WHITE);

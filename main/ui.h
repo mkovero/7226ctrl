@@ -29,10 +29,6 @@ void updateDisplay() {
     if ( gear == 8 ) { display.print("P"); }; 
   }
   display.setTextSize(1);
-  display.println(atfTemp);
-  display.print(", ");
-  display.print(vehicleSpeed);
-  display.print(", ");
-  display.print(tpsPercentValue);
+  display.println("atfTemp: %d, oilTemp: %d, vehicleSpeed: %d, tps: %d", atfTemp, oilTemp, vehicleSpeed, tpsPercentValue);
   display.display();
 }

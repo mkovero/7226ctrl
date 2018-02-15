@@ -20,16 +20,8 @@ void pollstick() {
   decideGear(wantedGear);
   
   if ( debugEnabled && wantedGear != gear ) {
-    Serial.println("pollstick: Stick says: ");
-    Serial.print(whiteState);
-    Serial.print(blueState);
-    Serial.print(greenState);
-    Serial.print(yellowState);
-    Serial.println("pollstick: Requested gear prev/wanted/current/new: ");
-    Serial.print(prevgear);
-    Serial.print(wantedGear);
-    Serial.print(gear);
-    Serial.print(newGear);
+    Serial.println("pollstick: Stick says: %d, %d, %d, %d ", whiteState, blueState, greenState, yellowState);
+    Serial.println("pollstick: Requested gear prev=%d, wanted=%d, current=%d, new=%d",prevgear,wantedGear,gear,newGear);
   }
 }
 
@@ -78,9 +70,12 @@ void pollkeys() {
 // Polling time for transmission control
 void polltrans() {
    if ( shiftBlocker ) {
-    shiftDelay = readMap(shiftTimeMap, spcVal, oilTemp);
+    if ( sensors ) { shiftDelay = readMap(shiftTimeMap, spcVal, oilTemp); }
     shiftDuration =  millis() - shiftStartTime;
-    if ( shiftDuration > shiftDelay) { switchGearStop(cSolenoidEnabled); };
+    if ( shiftDuration > shiftDelay) { 
+      switchGearStop(cSolenoidEnabled); 
+      if ( debugEnabled ) { Serial.println("polltrans: shiftDelay=%d, spcVal=%d, oilTemp=%d", shiftDelay, spcVal, oilTemp); }
+    }
    }
 
    //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
@@ -93,7 +88,10 @@ void polltrans() {
    } else if ( gear > 5 ) {
      mpcVal = (100 - 70) * 2.55;
    }
-   if ( ! shiftBlocker ) { analogWrite(mpc,mpcVal); };
+   if ( ! shiftBlocker ) { 
+     analogWrite(mpc,mpcVal); 
+     if ( debugEnabled ) { Serial.println("polltrans: mpcVal=%d", mpcVal); }
+   };
 
 }
 

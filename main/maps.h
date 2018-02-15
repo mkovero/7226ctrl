@@ -1,13 +1,3 @@
-//TPS linearisation map
-int tpsLinearisationMap[2][2] {
-{0,   100 },   //sensor value as a result %
-{400, 2830 }}; //corresponding sensor voltage, mV
-
-//Boost linearisation map
-int boostLinearisationMap[2][2] {
-{0,   100 },   //sensor value as a result %
-{1500, 4200 }}; //corresponding sensor voltage, mV
-
 //Automatic mode autoGear map
 int gearMap[14][12] {
 {999,        0,   10,   20,   30,   40,   50,   60,   70,   80,   90,   100 },   //throttle position %
