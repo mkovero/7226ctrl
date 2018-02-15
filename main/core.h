@@ -116,8 +116,12 @@ void decideGear(int wantedGear) {
   int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed);
 
   if ( ! shiftBlocker && wantedGear < 6 ) {
-    if ( fullAuto && autoGear > gear && autoGear == moreGear && autoGear >= wantedGear ) { newGear = autoGear; gearchangeUp(newGear); } else if ( wantedGear >= moreGear && wantedGear < 6 ) { newGear = moreGear; gearchangeUp(newGear); }
-    if ( autoGear < gear && autoGear == lessGear && autoGear <= wantedGear ) { newGear = autoGear; gearchangeDown(newGear); } else if ( wantedGear <= moreGear && wantedGear < 6 ) { newGear = lessGear; gearchangeDown(lessGear); }
+    if ( fullAuto && autoGear > gear && autoGear <= wantedGear ) { 
+      newGear = moreGear; gearchangeUp(newGear); 
+    } 
+    if ( autoGear < gear || wantedGear < gear ) { 
+      newGear = lessGear; gearchangeDown(newGear); 
+    } 
   } else if ( wantedGear > 5 ) { prevgear = gear; gear = wantedGear; };
   if ( debugEnabled ) { Serial.println("decideGear: wantedGear=%d, autoGear=%d, newGear=%d",wantedGear,autoGear,newGear); }
 }
