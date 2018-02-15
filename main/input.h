@@ -78,10 +78,12 @@ void pollkeys() {
 // Polling time for transmission control
 void polltrans() {
   #include "transmap.h"
-  int atfTemp = atfSensors();
-  int trueLoad = loadSensors();
+  int atfTemp = atfRead();
+  int trueLoad = loadRead();
+  int oilTemp = oilRead();
+  int shiftDelay = 1000;
    if ( shiftBlocker ) {
-    if ( sensors ) { shiftDelay = readMap(shiftTimeMap, spcVal, oilTemp); }
+    if ( sensors ) { int shiftDelay = readMap(shiftTimeMap, spcVal, oilTemp); }
     shiftDuration =  millis() - shiftStartTime;
     if ( shiftDuration > shiftDelay) { 
       switchGearStop(cSolenoidEnabled); 
@@ -91,10 +93,11 @@ void polltrans() {
 
    //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
    // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
+   int mpcVal = readMap(mpcNormalMap, trueLoad, atfTemp);
+
    if ( gear > 6 ) {
      analogWrite(spc, 102); 
    } else if ( gear < 6 && sensors ) {
-     int mpcVal = readMap(mpcNormalMap, trueLoad, atfTemp);
      mpcVal = (100 - mpcVal) * 2.55;
    } else if ( gear > 5 ) {
      mpcVal = (100 - 70) * 2.55;

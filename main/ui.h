@@ -9,9 +9,9 @@
 
 // Display update
 void updateDisplay() {
-  int atfTemp = atfSensors();
-
-  display.clearDisplay();
+  int atfTemp = atfRead();
+  int tpsPercentValue = tpsRead();
+/*  display.clearDisplay();
   display.setCursor(3,0);
   display.setTextSize(5);
   if ( ! fullAuto ) {
@@ -36,5 +36,5 @@ void updateDisplay() {
   display.print(vehicleSpeed);
   display.print(", ");
   display.print(tpsPercentValue);
-  display.display();
+  display.display();*/
 }

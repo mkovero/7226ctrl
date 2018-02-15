@@ -17,6 +17,8 @@ void pollsensors() {
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
   const int vehicleSpeedPulsesPerRev = 60;
+  int n2Speed = 0;
+  int n3Speed = 0;
   if ( millis() - lastSensorTime >= 1000 ) {
     detachInterrupt(2); // Detach interrupts for calculation
     detachInterrupt(3);
@@ -52,8 +54,8 @@ void pollsensors() {
   }
 }
 
-int loadSensors() { 
- int trueLoad = 0;
+int tpsRead() {
+ int tpsPercentValue = 0;
  if ( tpsSensor ) {
     //reading TPS
     float tpsVoltage = analogRead(tpsPin) * ( 5000 / 1023.00 );
@@ -61,8 +63,14 @@ int loadSensors() {
 
     if (tpsPercentValue > 100 ) { tpsPercentValue = 100; } 
     if (tpsPercentValue < 0 ) { tpsPercentValue = 0; }
+  } else {
+    tpsPercentValue = 0;
   }
-  
+  return tpsPercentValue;
+}
+
+int boostRead() {  
+  int boostPercentValue = 0;
   if ( boostSensor ) { 
     //reading MAP/boost
     float boostVoltage = analogRead(boostPin) * ( 5000 / 1023.00 );
@@ -70,7 +78,17 @@ int loadSensors() {
     
     if (boostPercentValue > 100 ) { boostPercentValue = 100; } 
     if (boostPercentValue < 0 ) { boostPercentValue = 0; }
+  } else {
+    boostPercentValue = 0;
   }
+  return boostPercentValue;
+}
+
+int loadRead() { 
+ int trueLoad = 0;
+ int boostPercentValue = boostRead();
+ int tpsPercentValue = tpsRead();
+
   if ( boostSensor && tpsSensor ) { trueLoad = (tpsPercentValue * 0.60) + (boostPercentValue * 0.40); }
     else if ( tpsSensor && ! boostSensor ) {  trueLoad = (tpsPercentValue * 1); } 
     else if ( ! tpsSensor ) {  trueLoad = 100; }
@@ -78,7 +96,7 @@ int loadSensors() {
   return trueLoad;
 }
   //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
-int atfSensors() {
+int atfRead() {
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   int atfTemp = 0;
@@ -88,4 +106,10 @@ int atfSensors() {
     atfTemp = -0.000033059* atfTempCalculated * atfTempCalculated + 0.2031 * atfTempCalculated - 144.09; //same as above
   }
   return atfTemp;
+}
+
+int oilRead() {
+  // wip
+  int oilTemp = 0;
+  return oilTemp;
 }

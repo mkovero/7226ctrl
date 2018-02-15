@@ -1,7 +1,6 @@
 #include <SPI.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <U8glib.h>
 #include "config.h"
 #include "calc.h"
 #include "sensors.h"
@@ -21,12 +20,6 @@ void setup() {
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
   Serial.begin(9600);
-  
-  display.begin(SSD1306_SWITCHCAPVCC);
-  display.display();
-  display.clearDisplay();
-  display.setTextSize(5);
-  display.setTextColor(WHITE);
  
   // Solenoid outputs
   pinMode(y3, OUTPUT); // 1-2/4-5 solenoid
@@ -59,7 +52,7 @@ void setup() {
   analogWrite(y4,0);
   analogWrite(y5,0);
   analogWrite(spc,0); // No pressure here by default.
-  // analogWrite(mpc,255); // We want constant pressure here.
+  analogWrite(mpc,255); // We want constant pressure here.
   analogWrite(tcc,0); // No pressure here by default.
   
   Serial.println("Started.");

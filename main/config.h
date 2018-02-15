@@ -29,17 +29,19 @@ const int gupSwitch = 24;
 
 // Car sensor input pins
 const int tpsPin = A0;
-const int boostPin = A1;
+const int atfPin = A1;
+const int boostPin = A2;
+const int oilPin = A3;
 const int n2pin = 19;
 const int n3pin = 20;
 const int speedPin = 21;
-const int atfPin = A1;
+
 
 // map & rpm and load input coming here also.
 // END INPUT PINS
 
-// Display config
-Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+// Display configuration
+U8GLIB_SSD1306_128X64 u8g(13, 11, 9, 10);
 
 // Internals, states
 int gear = 2; // Start on gear 2
@@ -48,14 +50,8 @@ int newGear = gear; // Gear that is going to be changed
 int prevgear = 1; // Previously changed gear
 int cSolenoid = 0; // Change solenoid pin to be controlled.
 int vehicleSpeed = 0;
-int n2Speed = 0;
-int n3Speed = 0;
 unsigned long lastSensorTime = 0;
-int boostPercentValue = 0;
-int tpsPercentValue = 0;
-int oilTemp = 0;
 int spcVal = 0;
-int mpcVal = 0;
 int n2SpeedPulses = 0;
 int n3SpeedPulses = 0;
 int vehicleSpeedPulses = 0;
@@ -64,7 +60,6 @@ int vehicleSpeedPulses = 0;
 // Environment configuration
 
 // Shift delay
-unsigned long int shiftDelay = 500;
 unsigned long int shiftStartTime = 0;
 unsigned long int shiftDuration = 0;
 int cSolenoidEnabled = 0;
