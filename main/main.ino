@@ -3,7 +3,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "config.h"
-#include "maps.h"
 #include "calc.h"
 #include "sensors.h"
 #include "core.h"

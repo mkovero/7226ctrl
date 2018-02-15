@@ -13,7 +13,6 @@ int readBoostVoltage(int voltage) {
 
 //function to read 2d maps
 int readMap(int theMap[14][12], int x, int y) {
-  #include "maps.h"
   int xidx = 0; // by default near first element
   int xelements = LEN(theMap[0]);
 

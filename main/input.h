@@ -77,6 +77,7 @@ void pollkeys() {
 
 // Polling time for transmission control
 void polltrans() {
+  #include "transmap.h"
   int atfTemp = atfSensors();
   int trueLoad = loadSensors();
    if ( shiftBlocker ) {
