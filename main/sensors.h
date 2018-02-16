@@ -69,6 +69,11 @@ int tpsRead() {
   return tpsPercentValue;
 }
 
+int rpmRead() {
+ int rpmValue = 0;
+  return rpmValue;
+}
+
 int boostRead() {  
   int boostPercentValue = 0;
   if ( boostSensor ) { 

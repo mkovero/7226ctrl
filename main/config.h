@@ -35,13 +35,13 @@ const int oilPin = A3;
 const int n2pin = 19;
 const int n3pin = 20;
 const int speedPin = 21;
-
+const int rpmPin = 18;
 
 // map & rpm and load input coming here also.
 // END INPUT PINS
 
 // Display configuration
-U8GLIB_SSD1306_128X64 u8g(13, 11, 9, 10);
+U8GLIB_SSD1306_128X64 u8g(13, 11, 10, 9,8);
 
 // Internals, states
 int gear = 2; // Start on gear 2
@@ -49,7 +49,7 @@ int wantedGear = gear; // Gear that is requested
 int newGear = gear; // Gear that is going to be changed
 int prevgear = 1; // Previously changed gear
 int cSolenoid = 0; // Change solenoid pin to be controlled.
-int vehicleSpeed = 0;
+int vehicleSpeed = 200;
 unsigned long lastSensorTime = 0;
 int spcVal = 0;
 int n2SpeedPulses = 0;

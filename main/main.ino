@@ -36,6 +36,7 @@ void setup() {
   pinMode(n2pin,INPUT); // N2 sensor
   pinMode(n3pin,INPUT); // N3 sensor 
   pinMode(speedPin,INPUT); // vehicle speed
+  pinMode(rpmPin,INPUT);
   
   //For manual control
   pinMode(gupSwitch,INPUT); // gear up
