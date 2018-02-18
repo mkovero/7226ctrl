@@ -58,7 +58,7 @@ int tpsRead() {
  int tpsPercentValue = 0;
  if ( tpsSensor ) {
     //reading TPS
-    float tpsVoltage = analogRead(tpsPin) * ( 5000 / 1023.00 );
+    float tpsVoltage = analogRead(tpsPin) * 4.89;
     tpsPercentValue = readTPSVoltage(tpsVoltage);
 
     if (tpsPercentValue > 100 ) { tpsPercentValue = 100; } 
@@ -78,7 +78,7 @@ int boostRead() {
   int boostPercentValue = 0;
   if ( boostSensor ) { 
     //reading MAP/boost
-    float boostVoltage = analogRead(boostPin) * ( 5000 / 1023.00 );
+    float boostVoltage = analogRead(boostPin) * 4.89;
     boostPercentValue = readBoostVoltage(boostVoltage);
     
     if (boostPercentValue > 100 ) { boostPercentValue = 100; } 
