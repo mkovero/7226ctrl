@@ -7,6 +7,7 @@ void draw(void) {
   int oilTemp = oilRead();
   int boostPressure = boostRead();
   int rpmValue = rpmRead();
+  int freeSram = readFreeSram();
   // graphic commands to redraw the complete screen should be placed here  
   u8g.setFont(u8g_font_ncenB18);
   u8g.setPrintPos(50,20);
@@ -37,6 +38,10 @@ void draw(void) {
   u8g.print("RPM:");
   u8g.setPrintPos(100,40);
   u8g.print(rpmValue);
+  u8g.setPrintPos(100,50);
+  u8g.print("SRAM:");
+  u8g.setPrintPos(100,60);
+  u8g.print(freeSram);
 }
 // Display update
 void updateDisplay() {

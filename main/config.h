@@ -55,6 +55,9 @@ int spcVal = 0;
 int n2SpeedPulses = 0;
 int n3SpeedPulses = 0;
 int vehicleSpeedPulses = 0;
+extern unsigned int __bss_end;
+extern unsigned int __heap_start;
+extern void *__brkval;
 // End of internals
 
 // Environment configuration
