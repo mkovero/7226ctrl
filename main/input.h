@@ -6,6 +6,7 @@ void pollstick() {
   int blueState = digitalRead(bluepin);
   int greenState = digitalRead(greenpin);
   int yellowState = digitalRead(yellowpin);
+  int wantedGear;
 
   // Determine position
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW ) { wantedGear = 8; } // P
@@ -29,12 +30,12 @@ void pollstick() {
     Serial.print(prevgear);
     Serial.print(wantedGear);
     Serial.print(gear);
-    Serial.print(newGear);
   }
 }
 
 // For manual microswitch control, gear up
 void gearup() {
+  int newGear;
   if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
     if ( ! shiftBlocker) { newGear++; };
     if (gear > 4) { newGear = 5; } // Make sure not to switch more than 5.
@@ -45,6 +46,7 @@ void gearup() {
 
 // For manual microswitch control, gear down
 void geardown() {
+  int newGear;
   if ( ! gear > 5 ) {  // Do nothing if we're on N/R/P
     if ( ! shiftBlocker) { newGear--; };
     if (gear < 2) { newGear = 1; } // Make sure not to switch less than 1.

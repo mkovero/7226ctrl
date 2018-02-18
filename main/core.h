@@ -7,7 +7,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal) {
    shiftBlocker = true;
    Serial.println("blocker");
    Serial.print(shiftBlocker);
-   if ( debugEnabled ) { Serial.println("switchGearStart: Begin of gear change current/new/solenoid: "); Serial.print(gear); Serial.print(newGear); Serial.print(cSolenoid); }
+   if ( debugEnabled ) { Serial.println("switchGearStart: Begin of gear change current/solenoid: "); Serial.print(gear); Serial.print(cSolenoid); }
   if ( trans ) { 
    spcVal = (100 - spcVal) * 2.55;
    mpcVal = (100 - mpcVal) * 2.55;
@@ -23,7 +23,7 @@ void switchGearStop(int cSolenoid) {
    analogWrite(cSolenoid,0); // End of gear change
    analogWrite(spc,0); // let go of shift pressure
    shiftBlocker = false;
-   if ( debugEnabled ) { Serial.println("switchGearStop: End of gear change current/new/solenoid: "); Serial.print(gear); Serial.print(newGear); Serial.print(cSolenoid); }
+   if ( debugEnabled ) { Serial.println("switchGearStop: End of gear change current/solenoid: "); Serial.print(gear); Serial.print(cSolenoid); }
    prevgear = gear; // Make sure previous gear is known
    gear = newGear;
    shiftStartTime = 0;
@@ -121,6 +121,7 @@ void gearchangeDown(int newGear) {
 
 void decideGear(int wantedGear) {
   #include "gearmap.h"
+  int newGear = 0;
   int moreGear = gear++;
   int lessGear = gear--;
   int tpsPercentValue = tpsRead();
@@ -128,7 +129,7 @@ void decideGear(int wantedGear) {
   int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed);
 
   if ( ! shiftBlocker && wantedGear < 6 ) {
-    if ( fullAuto && autoGear > gear && autoGear <= wantedGear ) { 
+    if ( (fullAuto && autoGear > gear && autoGear <= wantedGear) || (! fullAuto && wantedGear > gear) ) { 
       newGear = moreGear; gearchangeUp(newGear); 
     } 
     if ( autoGear < gear || wantedGear < gear ) { 

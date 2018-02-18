@@ -7,35 +7,35 @@
 #define OLED_RESET 8
 
 // Solenoid output pins
-const int y3 = 47;
-const int y4 = 45;
-const int y5 = 46;
-const int mpc = 44;
-const int spc = 43;
-const int tcc = 42;
+#define y3 47
+#define y4 45
+#define y5 46
+#define mpc 44
+#define spc 43
+#define tcc 42
 // END OUTPUT PINS
 
 // INPUT PINS
 // Stick input 
-const int whitepin = 27;
-const int bluepin = 29;
-const int greenpin = 26;
-const int yellowpin = 28;
+#define whitepin 27
+#define bluepin 29
+#define greenpin 26
+#define yellowpin 28
 
 // Switches
-const int tempSwitch = 22;
-const int gdownSwitch = 23;
-const int gupSwitch = 24;
+#define tempSwitch 22
+#define gdownSwitch 23
+#define gupSwitch 24
 
 // Car sensor input pins
-const int tpsPin = A0;
-const int atfPin = A1;
-const int boostPin = A2;
-const int oilPin = A3;
-const int n2pin = 19;
-const int n3pin = 20;
-const int speedPin = 21;
-const int rpmPin = 18;
+#define tpsPin A0
+#define atfPin A1
+#define boostPin A2
+#define oilPin A3
+#define n2pin 19
+#define n3pin 20
+#define speedPin 21
+#define rpmPin 18
 
 // map & rpm and load input coming here also.
 // END INPUT PINS
