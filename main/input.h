@@ -79,7 +79,6 @@ void pollkeys() {
 
 // Polling time for transmission control
 void polltrans() {
-  #include "transmap.h"
   int atfTemp = atfRead();
   int trueLoad = loadRead();
   int oilTemp = oilRead();

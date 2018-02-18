@@ -31,7 +31,6 @@ void switchGearStop(int cSolenoid) {
 
 
 void gearchangeUp(int newGear) {
-  #include "upshiftmap.h"
   if ( shiftBlocker == false ) { 
     int atfTemp = atfRead();
     int trueLoad = loadRead();
@@ -76,7 +75,6 @@ void gearchangeUp(int newGear) {
 }
 
 void gearchangeDown(int newGear) {
-  #include "downshiftmap.h"
   if ( shiftBlocker == false ) { 
     int atfTemp = atfRead();
     int trueLoad = loadRead();
@@ -120,7 +118,6 @@ void gearchangeDown(int newGear) {
 }
 
 void decideGear(int wantedGear) {
-  #include "gearmap.h"
   int newGear = 0;
   int moreGear = gear++;
   int lessGear = gear--;

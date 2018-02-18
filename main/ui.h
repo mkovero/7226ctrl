@@ -15,7 +15,7 @@ void draw(void) {
   if ( gear = 7 ) { u8g.print("R"); }
   if ( gear = 8 ) { u8g.print("P"); }
   if ( fullAuto && gear == 5) { u8g.print("D"); } else { u8g.print (gear); }
-  if ( fullAuto && gear < 6) { u8g.print("="); u8g.print(gear); }
+  if ( fullAuto && gear < 6) { u8g.print("("); u8g.print(gear); u8g.print(")"); }
   u8g.setFont(u8g_font_fub14);
   u8g.setPrintPos(60,40);
   u8g.print(vehicleSpeed);
