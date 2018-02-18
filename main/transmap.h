@@ -1,5 +1,5 @@
 //MPC map in normal drive (=outside shifts. This is just to make a better mileage, MPC pressure could be 100% outside shifts too.)
-int mpcNormalMap[14][12] PROGMEM {
+static const int mpcNormalMap[14][12] PROGMEM {
 {999,        0,   10,   20,   30,   40,   50,   60,   70,   80,   90,   100 },   //load %
 //-----------------------------------------------------------------------
 { -20,      23,   28,   33,   33,   38,   56,   86,   96,   96,   98,  100 },
@@ -19,7 +19,7 @@ int mpcNormalMap[14][12] PROGMEM {
 
 //Shift solenoid using time map, ms. Time to keep current flowing to shift pressure solenoid (SPC), shift solenoid,
 //and to use shift-depedent maps for modulating pressure control (MPC) solenoid, instead of above map.
-int shiftTimeMap[14][12] PROGMEM {
+static const int shiftTimeMap[14][12] PROGMEM {
 {999,       0,   10,   20,   30,   40,   50,   60,   70,   80,   90,   100 },   //shift pressure %
 //-----------------------------------------------------------------------
 { -20,    1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100,  900,  800,  800 },
