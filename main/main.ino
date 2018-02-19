@@ -65,7 +65,6 @@ void setup() {
 }
 
 void loop() {
-  checkHealth();
     if ( stick ) { pollstick(); } // using stick
     if ( manual ) { pollkeys(); } // using manual control
     if ( trans ) { polltrans(); } // using transmission

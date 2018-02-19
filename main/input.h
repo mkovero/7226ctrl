@@ -22,11 +22,11 @@ void pollstick() {
   decideGear(wantedGear);
   
   if ( autoState == HIGH ) {
-    fullAuto = off;
-  } else {
-    fullAuto = on;
+    fullAuto = false;
+  } else {
+    fullAuto = false;
   }
-  
+
    if ( debugEnabled && wantedGear != gear ) {
     Serial.println("pollstick: Stick says: ");
     Serial.print(whiteState);

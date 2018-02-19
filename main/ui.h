@@ -49,7 +49,7 @@ void draw(void) {
 void rpmMeterUpdate() {
   int rpmValue = rpmRead();
   int rpmPWM = map(rpmValue,0,6500,0,255);
-  analogWrite(rpmMeter, rpmPWM)
+  analogWrite(rpmMeter, rpmPWM);
 }
 
 // Display update
