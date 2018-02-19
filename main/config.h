@@ -2,21 +2,18 @@
 // SPI display setup
 #define OLED_MOSI  11   //D1
 #define OLED_CLK   13   //D0
-#define OLED_DC    9
-#define OLED_CS    10
+#define OLED_DC    6
+#define OLED_CS    7
 #define OLED_RESET 8
 
 // Solenoid output pins
-// #define y3 47
-#define y3 2
-// #define y4 45
-#define y4 3
-// #define y5 46
-#define y5 5
+#define y3 47
+#define y4 45
+#define y5 46
 // #define mpc 44
-#define mpc 6
+#define mpc 9
 // #define spc 43
-#define spc 7
+#define spc 10
 #define tcc 42
 #define rpmMeter 12
 // END OUTPUT PINS
@@ -47,7 +44,8 @@
 // END INPUT PINS
 
 // Display configuration
-U8GLIB_SSD1306_128X64 u8g(13, 11, 10, 9,8);
+// U8GLIB_SSD1306_128X64 u8g(13, 11, 10, 9,8);
+U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6,8);
 
 // Internals, states
 int gear = 2; // Start on gear 2

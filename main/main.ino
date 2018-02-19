@@ -16,8 +16,7 @@
 
 void setup() {
   
-  TCCR3B = TCCR3B & 0b11111000 | 0x03; // 980hz on pins 5,3,2
-  TCCR4B = TCCR4B & 0b11111000 | 0x03; // 980hz on pins 8,7,6
+  TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
