@@ -45,6 +45,13 @@ void draw(void) {
   u8g.setPrintPos(100,60);
   u8g.print(freeSram);
 }
+
+void rpmMeterUpdate() {
+  int rpmValue = rpmRead();
+  int rpmPWM = map(rpmValue,0,6500,0,255);
+  analogWrite(rpmMeter, rpmPWM)
+}
+
 // Display update
 void updateDisplay() {
 /*  display.clearDisplay();
@@ -77,4 +84,5 @@ void updateDisplay() {
   do {
     draw();
   } while( u8g.nextPage() );
+  rpmMeterUpdate();
 }

@@ -7,12 +7,18 @@
 #define OLED_RESET 8
 
 // Solenoid output pins
-#define y3 47
-#define y4 45
-#define y5 46
-#define mpc 44
-#define spc 43
+// #define y3 47
+#define y3 2
+// #define y4 45
+#define y4 3
+// #define y5 46
+#define y5 5
+// #define mpc 44
+#define mpc 6
+// #define spc 43
+#define spc 7
 #define tcc 42
+#define rpmMeter 12
 // END OUTPUT PINS
 
 // INPUT PINS
@@ -23,7 +29,7 @@
 #define yellowpin 28
 
 // Switches
-#define tempSwitch 22
+#define autoSwitch 22
 #define gdownSwitch 23
 #define gupSwitch 24
 

@@ -16,7 +16,8 @@
 
 void setup() {
   
-   // TCCR2B = TCCR2B & 0b11111000 | 0x07;
+  TCCR3B = TCCR3B & 0b11111000 | 0x03; // 980hz on pins 5,3,2
+  TCCR4B = TCCR4B & 0b11111000 | 0x03; // 980hz on pins 8,7,6
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
@@ -29,6 +30,7 @@ void setup() {
   pinMode(spc,OUTPUT); // shift pressure
   pinMode(mpc,OUTPUT); // modulation pressure
   pinMode(tcc,OUTPUT); // lock
+  pinMode(rpmMeter,OUTPUT);
 
   // Sensor input
   pinMode(boostPin,INPUT); // boost sensor 
@@ -40,6 +42,7 @@ void setup() {
   pinMode(rpmPin,INPUT);
   
   //For manual control
+  pinMode(autoSwitch,INPUT);
   pinMode(gupSwitch,INPUT); // gear up
   pinMode(gdownSwitch,INPUT); // gear down
   
@@ -61,23 +64,13 @@ void setup() {
   updateDisplay();
 }
 
-void checkHealth() {
-  // Get temperature
-  int tempState = digitalRead(tempSwitch);
-  int prevtempState = 0;
-  if ( tempState == HIGH  ) { health == true; };
-}
-
 void loop() {
   checkHealth();
-  if (( incar && health ) || ( ! incar )) {
     if ( stick ) { pollstick(); } // using stick
     if ( manual ) { pollkeys(); } // using manual control
     if ( trans ) { polltrans(); } // using transmission
     if ( sensors ) { pollsensors(); } // using sensors
     updateDisplay();
-
-  }
 }
 
 

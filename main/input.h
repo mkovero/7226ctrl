@@ -6,6 +6,7 @@ void pollstick() {
   int blueState = digitalRead(bluepin);
   int greenState = digitalRead(greenpin);
   int yellowState = digitalRead(yellowpin);
+  int autoState = digitalRead(autoSwitch);
   int wantedGear;
 
   // Determine position
@@ -19,6 +20,12 @@ void pollstick() {
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { wantedGear = 1; }
 
   decideGear(wantedGear);
+  
+  if ( autoState == HIGH ) {
+    fullAuto = off;
+  } else {
+    fullAuto = on;
+  }
   
    if ( debugEnabled && wantedGear != gear ) {
     Serial.println("pollstick: Stick says: ");
