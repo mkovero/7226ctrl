@@ -40,7 +40,6 @@
 #define speedPin 21
 #define rpmPin 18
 
-// map & rpm and load input coming here also.
 // END INPUT PINS
 
 // Display configuration

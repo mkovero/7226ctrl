@@ -136,5 +136,36 @@ void decideGear(int wantedGear) {
   if ( debugEnabled) { Serial.println("decideGear: wantedGear/autoGear/newGear: "); Serial.print(wantedGear); Serial.print(autoGear); Serial.print(newGear); }
 }
 
+int evaluateGear(float ratio) {
+  int evaluatedGear = 0;
+  int n3n2 = n3Speed / n2Speed;
+  int incomingShaftSpeed = 0;
+  if (n3Speed == 0) { 
+    incomingShaftSpeed = n2Speed * 1.64;
+  } else {
+    incomingShaftSpeed = n2Speed; 
+    //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
+  }
 
+  if ( 3.4 < ratio && n3n2 < 0.50) {
+  measuredGear = 1;
+  }
+  else if ( 2.05 < ratio && ratio < 2.20 && n3n2 >= 0.50) {
+  measuredGear = 2;
+  }
+  else if ( 1.38 < ratio && ratio < 1.45 && n3n2 >= 0.50 ) {
+  measuredGear = 3;
+  }
+  else if ( 0.97 < ratio && ratio < 1.05 && n3n2 >= 0.50) {
+  measuredGear = 4;
+  }
+  else if ( ratio < 0.90 && n3n2 < 0.50) {
+  measuredGear = 5;
+  }
+ 
+  if (measuredGear != 0)
+  {
+  return measuredGear;
+  }
+}
 // END OF CORE
