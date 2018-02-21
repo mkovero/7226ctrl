@@ -11,11 +11,11 @@ void draw(void) {
   // graphic commands to redraw the complete screen should be placed here  
   u8g.setFont(u8g_font_ncenB18);
   u8g.setPrintPos(50,20);
-  if ( gear = 6 ) { u8g.print("N"); }
-  if ( gear = 7 ) { u8g.print("R"); }
-  if ( gear = 8 ) { u8g.print("P"); }
-  if ( fullAuto && gear == 5) { u8g.print("D"); } else { u8g.print (gear); }
-  if ( fullAuto && gear < 6) { u8g.print("("); u8g.print(gear); u8g.print(")"); }
+  if ( wantedGear == 6 ) { u8g.print("N"); }
+  if ( wantedGear == 7 ) { u8g.print("R"); }
+  if ( wantedGear == 8 ) { u8g.print("P"); }
+  if ( fullAuto && wantedGear == 5) { u8g.print("D"); } else { u8g.print (gear); }
+  if ( fullAuto && wantedGear < 6) { u8g.print("("); u8g.print(gear); u8g.print(")"); }
   u8g.setFont(u8g_font_fub14);
   u8g.setPrintPos(60,40);
   u8g.print(vehicleSpeed);

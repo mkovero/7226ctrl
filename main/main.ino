@@ -1,6 +1,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <U8glib.h>
+#include <Arduino.h>
 #include "config.h"
 #include "maps.h"
 #include "calc.h"

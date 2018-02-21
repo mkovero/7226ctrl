@@ -7,7 +7,7 @@ void pollstick() {
   int greenState = digitalRead(greenpin);
   int yellowState = digitalRead(yellowpin);
   int autoState = digitalRead(autoSwitch);
-  int wantedGear;
+ 
 
   // Determine position
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW ) { wantedGear = 8; } // P
@@ -18,25 +18,25 @@ void pollstick() {
   if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW ) { wantedGear = 3; }
   if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW ) { wantedGear = 2; }
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { wantedGear = 1; }
-
-  decideGear(wantedGear);
   
-  if ( autoState == HIGH ) {
+  if ( wantedGear < 6 ) { decideGear(wantedGear); }
+
+  /*if ( autoState == HIGH ) {
     fullAuto = false;
   } else {
-    fullAuto = false;
-  }
+    fullAuto = true;
+  }*/
 
    if ( debugEnabled && wantedGear != gear ) {
-    Serial.println("pollstick: Stick says: ");
+    Serial.print("pollstick: Stick says: ");
     Serial.print(whiteState);
     Serial.print(blueState);
     Serial.print(greenState);
-    Serial.print(yellowState);
-    Serial.println("pollstick: Requested gear prev/wanted/current/new: ");
+    Serial.println(yellowState);
+    Serial.print("pollstick: Requested gear prev/wanted/current/new: ");
     Serial.print(prevgear);
     Serial.print(wantedGear);
-    Serial.print(gear);
+    Serial.println(gear);
   }
 }
 
@@ -95,7 +95,7 @@ void polltrans() {
     shiftDuration =  millis() - shiftStartTime;
     if ( shiftDuration > shiftDelay) { 
       switchGearStop(cSolenoidEnabled); 
-      if ( debugEnabled ) { Serial.println("polltrans: shiftDelay/spcVal/oilTemp="); Serial.print(shiftDelay); Serial.print(spcVal); Serial.print(oilTemp); }
+      if ( debugEnabled ) { Serial.print("polltrans: shiftDelay/spcVal/oilTemp="); Serial.print(shiftDelay); Serial.print(spcVal); Serial.println(oilTemp); }
     }
    }
 
@@ -103,16 +103,16 @@ void polltrans() {
    // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
    int mpcVal = readMap(mpcNormalMap, trueLoad, atfTemp);
 
-   if ( gear > 6 ) {
+   if ( wantedGear > 6 ) {
      analogWrite(spc, 102); 
    } else if ( gear < 6 && sensors ) {
      mpcVal = (100 - mpcVal) * 2.55;
-   } else if ( gear > 5 ) {
+   } else if ( wantedGear > 5 ) {
      mpcVal = (100 - 70) * 2.55;
    }
    if ( ! shiftBlocker ) { 
      analogWrite(mpc,mpcVal); 
-     if ( debugEnabled ) { Serial.println("polltrans: mpcVal="); Serial.print(mpcVal); }
+     if ( debugEnabled ) { Serial.print("polltrans: mpcVal="); Serial.println(mpcVal); }
    };
 
 }

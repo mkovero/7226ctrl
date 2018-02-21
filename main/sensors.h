@@ -17,8 +17,7 @@ void pollsensors() {
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
   const int vehicleSpeedPulsesPerRev = 60;
-  int n2Speed = 0;
-  int n3Speed = 0;
+
   if ( millis() - lastSensorTime >= 1000 ) {
     detachInterrupt(2); // Detach interrupts for calculation
     detachInterrupt(3);
@@ -42,7 +41,7 @@ void pollsensors() {
       vehicleSpeed = vehicleSpeedPulses / 60;
       vehicleSpeedPulses = 0;
     } else {
-      vehicleSpeed = 0;
+      vehicleSpeed = 100;
     }
 
     lastSensorTime = millis();
@@ -115,6 +114,6 @@ int atfRead() {
 
 int oilRead() {
   // wip
-  int oilTemp = 0;
+  int oilTemp = 80;
   return oilTemp;
 }

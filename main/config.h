@@ -49,15 +49,17 @@ U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6,8);
 // Internals, states
 int gear = 2; // Start on gear 2
 int wantedGear = gear; // Gear that is requested
-int newGear = gear; // Gear that is going to be changed
+int newGear = 2; // Gear that is going to be changed
 int prevgear = 1; // Previously changed gear
 int cSolenoid = 0; // Change solenoid pin to be controlled.
-int vehicleSpeed = 200;
+int vehicleSpeed = 100;
 unsigned long lastSensorTime = 0;
 int spcVal = 0;
 int n2SpeedPulses = 0;
 int n3SpeedPulses = 0;
 int vehicleSpeedPulses = 0;
+int n2Speed = 0;
+int n3Speed = 0;
 extern unsigned int __bss_end;
 extern unsigned int __heap_start;
 extern void *__brkval;
