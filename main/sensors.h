@@ -41,7 +41,7 @@ void pollsensors() {
       vehicleSpeed = vehicleSpeedPulses / 60;
       vehicleSpeedPulses = 0;
     } else {
-      vehicleSpeed = 100;
+      vehicleSpeed = 40;
     }
 
     lastSensorTime = millis();
@@ -109,6 +109,7 @@ int atfRead() {
     atfTempCalculated = (0.0309*atfTempRaw * atfTempRaw) - 44.544*atfTempRaw + 16629; 
     atfTemp = -0.000033059* atfTempCalculated * atfTempCalculated + 0.2031 * atfTempCalculated - 144.09; //same as above
   }
+  if ( atfTemp < 0 ) { atfTemp = 20; }
   return atfTemp;
 }
 

@@ -5,16 +5,14 @@
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal) {
    shiftStartTime = millis(); 
    shiftBlocker = true;
-   Serial.println("blocker");
-   Serial.print(shiftBlocker);
-   if ( debugEnabled ) { Serial.print("switchGearStart: Begin of gear change current/solenoid: "); Serial.print(gear); Serial.println(cSolenoid); }
+   if ( debugEnabled ) { Serial.println(""); Serial.print("switchGearStart: Begin of gear change current/new/solenoid: "); Serial.print(gear); Serial.print("->"); Serial.print(newGear); Serial.print("-"); Serial.println(cSolenoid); }
   if ( trans ) { 
-   spcVal = (100 - spcVal) * 2.55;
-   mpcVal = (100 - mpcVal) * 2.55;
-   analogWrite(spc,spcVal); // We could change shift pressure here 
+   spcSetVal = spcVal * 2.55;
+   mpcVal = mpcVal * 2.55;
+   analogWrite(spc,spcSetVal); // We could change shift pressure here 
    analogWrite(mpc,mpcVal);
    analogWrite(cSolenoid,255); // Beginning of gear change
-   if ( debugEnabled ) { Serial.print("switchGearStart: spcPressure/mpcPressure: "); Serial.print(spcVal); Serial.println(mpcVal); }
+   if ( debugEnabled ) { Serial.print("switchGearStart: spcPressure/mpcPressure: "); Serial.print(spcSetVal); Serial.print("-"); Serial.println(mpcVal); }
   }
    cSolenoidEnabled = cSolenoid;
 }
@@ -23,9 +21,9 @@ void switchGearStop(int cSolenoid) {
    analogWrite(cSolenoid,0); // End of gear change
    analogWrite(spc,0); // let go of shift pressure
    shiftBlocker = false;
-   if ( debugEnabled ) { Serial.print("switchGearStop: End of gear change current/solenoid: "); Serial.print(gear); Serial.println(cSolenoid); }
    prevgear = gear; // Make sure previous gear is known
-   if ( newGear < 6 ) { gear = newGear; }
+   gear = newGear;
+   if ( debugEnabled ) { Serial.print("switchGearStop: End of gear change current/new/solenoid: "); Serial.print(gear); Serial.print("->"); Serial.print(newGear); Serial.print("-"); Serial.println(cSolenoid); }
    shiftStartTime = 0;
 }
 
@@ -43,29 +41,29 @@ void gearchangeUp(int newGear) {
       case 2:
         if ( ! sensors ) { switchGearStart(y3,100, 100); }
         if ( sensors ) { switchGearStart(y3,readMap(spcMap12, trueLoad, atfTemp),readMap(mpcMap12, trueLoad, atfTemp)); }
-        if ( debugEnabled ) { Serial.print("Solenoid y3 requested with spcMap12/mpcMap12, load/atfTemp "); Serial.print(trueLoad); Serial.println(atfTemp); }
+        if ( debugEnabled ) { Serial.print("Solenoid y3 requested with spcMap12/mpcMap12, load/atfTemp "); Serial.print(trueLoad); Serial.print("-"); Serial.println(atfTemp); }
         break;
       case 3:
         if ( ! sensors ) { switchGearStart(y4,100, 100); }
         if ( sensors ) { switchGearStart(y4,readMap(spcMap23, trueLoad, atfTemp),readMap(mpcMap23, trueLoad, atfTemp)); }
-        if ( debugEnabled ) { Serial.print("Solenoid y4 requested with spcMap23/mpcMap23, load/atfTemp "); Serial.print(trueLoad); Serial.println(atfTemp); }
+        if ( debugEnabled ) { Serial.print("Solenoid y4 requested with spcMap23/mpcMap23, load/atfTemp "); Serial.print(trueLoad); Serial.print("-"); Serial.println(atfTemp); }
         break;
       case 4:
         if ( ! sensors ) { switchGearStart(y5,100, 100); }
         if ( sensors ) { switchGearStart(y5,readMap(spcMap34, trueLoad, atfTemp),readMap(mpcMap34, trueLoad, atfTemp)); }
-        if ( debugEnabled ) { Serial.print("Solenoid y5 requested with spcMap34/mpcMap34, load/atfTemp "); Serial.print(trueLoad); Serial.println(atfTemp); }
+        if ( debugEnabled ) { Serial.print("Solenoid y5 requested with spcMap34/mpcMap34, load/atfTemp "); Serial.print(trueLoad); Serial.print("-"); Serial.println(atfTemp); }
         break;
       case 5:
         if ( ! sensors ) { switchGearStart(y3,100, 100); }
         if ( sensors ) { switchGearStart(y3,readMap(spcMap45, trueLoad, atfTemp),readMap(mpcMap45, trueLoad, atfTemp)); }
-        if ( debugEnabled ) { Serial.print("Solenoid y3 requested with spcMap45/mpcMap45, load/atfTemp "); Serial.print(trueLoad); Serial.println(atfTemp); }
+        if ( debugEnabled ) { Serial.print("Solenoid y3 requested with spcMap45/mpcMap45, load/atfTemp "); Serial.print(trueLoad); Serial.print("-"); Serial.println(atfTemp); }
         break;
       default:
       break;
     }
     if ( debugEnabled ) { 
       Serial.print("gearChangeUp: performing change from prev->new: "); 
-      Serial.print(prevgear);
+      Serial.print(gear);
       Serial.print("->");
       Serial.println(newGear);
     }
@@ -82,22 +80,22 @@ void gearchangeDown(int newGear) {
       case 1: 
         if ( ! sensors ) { switchGearStart(y3,100, 100); }
         if ( sensors ) { switchGearStart(y3,readMap(spcMap21, trueLoad, atfTemp),readMap(mpcMap21, trueLoad, atfTemp)); }
-        if ( debugEnabled ) { Serial.print("Solenoid y3 requested with spcMap21/mpcMap21, load/atfTemp "); Serial.print(trueLoad); Serial.println(atfTemp); }
+        if ( debugEnabled ) { Serial.print("Solenoid y3 requested with spcMap21/mpcMap21, load/atfTemp "); Serial.print(trueLoad); Serial.print("-"); Serial.println(atfTemp); }
         break;
       case 2:
         if ( ! sensors ) { switchGearStart(y4,100, 100); }
         if ( sensors ) { switchGearStart(y4,readMap(spcMap32, trueLoad, atfTemp),readMap(mpcMap32, trueLoad, atfTemp)); }
-        if ( debugEnabled ) { Serial.print("Solenoid y4 requested with spcMap32/mpcMap32, load/atfTemp "); Serial.print(trueLoad); Serial.println(atfTemp); }
+        if ( debugEnabled ) { Serial.print("Solenoid y4 requested with spcMap32/mpcMap32, load/atfTemp "); Serial.print(trueLoad); Serial.print("-"); Serial.println(atfTemp); }
         break;
       case 3:
         if ( ! sensors ) { switchGearStart(y5,100, 100); }
         if ( sensors ) { switchGearStart(y5,readMap(spcMap43, trueLoad, atfTemp),readMap(mpcMap43, trueLoad, atfTemp)); }
-        if ( debugEnabled ) { Serial.print("Solenoid y5 requested with spcMap43/mpcMap43, load/atfTemp "); Serial.print(trueLoad); Serial.println(atfTemp); }
+        if ( debugEnabled ) { Serial.print("Solenoid y5 requested with spcMap43/mpcMap43, load/atfTemp "); Serial.print(trueLoad); Serial.print("-"); Serial.println(atfTemp); }
         break;
       case 4:
         if ( ! sensors ) { switchGearStart(y3,100, 100); }
         if ( sensors ) { switchGearStart(y3,readMap(spcMap54, trueLoad, atfTemp),readMap(mpcMap54,trueLoad, atfTemp)); }
-        if ( debugEnabled ) { Serial.print("Solenoid y3 requested with spcMap54/mpcMap54, load/atfTemp "); Serial.print(trueLoad); Serial.println(atfTemp); }
+        if ( debugEnabled ) { Serial.print("Solenoid y3 requested with spcMap54/mpcMap54, load/atfTemp "); Serial.print(trueLoad); Serial.print("-"); Serial.println(atfTemp); }
         break;
       case 5:
         prevgear = gear;
@@ -108,7 +106,7 @@ void gearchangeDown(int newGear) {
     }
    if ( debugEnabled ) { 
       Serial.print("gearChangeDown: performing change from prev->new: "); 
-      Serial.print(prevgear);
+      Serial.print(gear);
       Serial.print("->");
       Serial.println(newGear);
     }
@@ -121,19 +119,22 @@ void decideGear(int wantedGear) {
   
   int moreGear = gear+1;
   int lessGear = gear-1;
+  int atfTemp = atfRead();
   int tpsPercentValue = tpsRead();
   // Determine speed related downshift and upshift here.
   int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed);
 
   if ( ! shiftBlocker && wantedGear < 6 ) {
-    if ( (fullAuto && autoGear > gear) || (! fullAuto && wantedGear > gear) ) { 
+    if ( (fullAuto && autoGear > gear && wantedGear > gear) || (! fullAuto && wantedGear > gear && autoGear > gear) ) { 
       newGear = moreGear; gearchangeUp(newGear); 
     } 
     if ( autoGear < gear || wantedGear < gear ) { 
       newGear = lessGear; gearchangeDown(newGear); 
     } 
-    if ( debugEnabled) { Serial.print("decideGear: tpsPercent/vehicleSpeed: "); Serial.print(tpsPercentValue); Serial.print("-"); Serial.println(vehicleSpeed); }
-    if ( debugEnabled) { Serial.print("decideGear: wantedGear/autoGear/newGear/gear: "); Serial.print(wantedGear); Serial.print("-"); Serial.print(autoGear); Serial.print("-"); Serial.print(newGear); Serial.print("-"); Serial.println(gear); }
+    if ( newGear != gear ) {
+      if ( debugEnabled) { Serial.print("decideGear: tpsPercent/vehicleSpeed/atfTemp: "); Serial.print(tpsPercentValue); Serial.print("-"); Serial.print(vehicleSpeed); Serial.print("-"); Serial.println(atfTemp); }
+      if ( debugEnabled) { Serial.print("decideGear: wantedGear/autoGear/newGear/gear: "); Serial.print(wantedGear); Serial.print("-"); Serial.print(autoGear); Serial.print("-"); Serial.print(newGear); Serial.print("-"); Serial.println(gear); }
+    }
   }
 }
 

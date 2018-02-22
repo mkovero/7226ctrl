@@ -18,16 +18,25 @@ void pollstick() {
   if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW ) { wantedGear = 3; }
   if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW ) { wantedGear = 2; }
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH ) { wantedGear = 1; }
+  if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == LOW ) { wantedGear = 100; }
+
   
-  if ( wantedGear < 6 ) { decideGear(wantedGear); }
 
-  /*if ( autoState == HIGH ) {
-    fullAuto = false;
+
+  if ( autoState == HIGH ) {
+    if ( ! fullAuto ) {
+          Serial.println("pollstick: Automode on ");
+          fullAuto = true; 
+    }
   } else {
-    fullAuto = true;
-  }*/
-
-   if ( debugEnabled && wantedGear != gear ) {
+    if ( fullAuto ) {
+          Serial.println("pollstick: Automode off ");
+          fullAuto = false;
+    }
+  }
+ if ( wantedGear < 6 ) { 
+   decideGear(wantedGear);
+   /*if ( debugEnabled && wantedGear != gear ) {
     Serial.print("pollstick: Stick says: ");
     Serial.print(whiteState);
     Serial.print(blueState);
@@ -37,7 +46,8 @@ void pollstick() {
     Serial.print(prevgear);
     Serial.print(wantedGear);
     Serial.println(gear);
-  }
+  }*/
+ }
 }
 
 // For manual microswitch control, gear up
@@ -90,12 +100,13 @@ void polltrans() {
   int trueLoad = loadRead();
   int oilTemp = oilRead();
   int shiftDelay = 1000;
+  int spcPercentage = 100;
    if ( shiftBlocker ) {
-    if ( sensors ) { int shiftDelay = readMap(shiftTimeMap, spcVal, oilTemp); }
+    if ( sensors ) { spcPercentage = spcSetVal*100/255; shiftDelay = readMap(shiftTimeMap, spcPercentage, atfTemp); }
     shiftDuration =  millis() - shiftStartTime;
     if ( shiftDuration > shiftDelay) { 
       switchGearStop(cSolenoidEnabled); 
-      if ( debugEnabled ) { Serial.print("polltrans: shiftDelay/spcVal/oilTemp="); Serial.print(shiftDelay); Serial.print(spcVal); Serial.println(oilTemp); }
+      if ( debugEnabled ) { Serial.print("polltrans: shiftDelay/spcVal/atfTemp="); Serial.print(shiftDelay); Serial.print("-"); Serial.print(spcPercentage); Serial.print("-"); Serial.println(atfTemp); }
     }
    }
 
@@ -105,14 +116,14 @@ void polltrans() {
 
    if ( wantedGear > 6 ) {
      analogWrite(spc, 102); 
-   } else if ( gear < 6 && sensors ) {
+   } else if ( wantedGear < 6 && sensors ) {
      mpcVal = (100 - mpcVal) * 2.55;
-   } else if ( wantedGear > 5 ) {
+   } else if ( wantedGear = 6 ) {
      mpcVal = (100 - 70) * 2.55;
    }
    if ( ! shiftBlocker ) { 
      analogWrite(mpc,mpcVal); 
-     if ( debugEnabled ) { Serial.print("polltrans: mpcVal="); Serial.println(mpcVal); }
+    // if ( debugEnabled ) { Serial.print("polltrans: mpcVal="); Serial.println(mpcVal); }
    };
 
 }
