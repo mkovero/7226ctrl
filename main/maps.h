@@ -38,7 +38,7 @@ static const int mpcNormalMap[14][12] PROGMEM {
 
 //Shift solenoid using time map, ms. Time to keep current flowing to shift pressure solenoid (SPC), shift solenoid,
 //and to use shift-depedent maps for modulating pressure control (MPC) solenoid, instead of above map.
-static const int shiftTimeMap[14][12] PROGMEM {
+static const int shiftTimeMap[14][12] {
 {999,       0,   10,   20,   30,   40,   50,   60,   70,   80,   90,   100 },   //shift pressure %
 //-----------------------------------------------------------------------
 { -20,    1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100,  900,  800,  800 },

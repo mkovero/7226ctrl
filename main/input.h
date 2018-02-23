@@ -99,14 +99,14 @@ void polltrans() {
   int atfTemp = atfRead();
   int trueLoad = loadRead();
   int oilTemp = oilRead();
-  int shiftDelay = 1000;
-  int spcPercentage = 100;
+  // int shiftDelay = 1000;
+  int shiftDelay = readMapMem(shiftTimeMap, spcPercentVal, atfTemp);
    if ( shiftBlocker ) {
-    if ( sensors ) { spcPercentage = spcSetVal*100/255; shiftDelay = readMap(shiftTimeMap, spcPercentage, atfTemp); }
+   // if ( sensors ) { shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp); }
     shiftDuration =  millis() - shiftStartTime;
     if ( shiftDuration > shiftDelay) { 
+      if ( debugEnabled ) { Serial.print("polltrans->switchGearStop: shiftDelay/spcPercentVal/atfTemp="); Serial.print(shiftDelay); Serial.print("-"); Serial.print(spcPercentVal); Serial.print("-"); Serial.println(atfTemp); }
       switchGearStop(cSolenoidEnabled); 
-      if ( debugEnabled ) { Serial.print("polltrans: shiftDelay/spcVal/atfTemp="); Serial.print(shiftDelay); Serial.print("-"); Serial.print(spcPercentage); Serial.print("-"); Serial.println(atfTemp); }
     }
    }
 
