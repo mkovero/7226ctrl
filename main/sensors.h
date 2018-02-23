@@ -1,4 +1,5 @@
 
+
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt() {
  n2SpeedPulses++;

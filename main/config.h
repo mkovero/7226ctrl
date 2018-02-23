@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 // OUTPUT PINS
 // SPI display setup
 #define OLED_MOSI  11   //D1
@@ -41,10 +43,6 @@
 #define rpmPin 18
 
 // END INPUT PINS
-
-// Display configuration
-// U8GLIB_SSD1306_128X64 u8g(13, 11, 10, 9,8);
-U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6,8);
 
 // Internals, states
 int gear = 2; // Start on gear 2

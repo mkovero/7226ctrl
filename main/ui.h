@@ -1,3 +1,4 @@
+U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6,8);
 // UI STAGE
 // Control for what user sees and how gearbox is used with
 // 

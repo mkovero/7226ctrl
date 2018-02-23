@@ -1,3 +1,4 @@
+
 // INPUT
 // Polling for stick control
 void pollstick() {
@@ -100,7 +101,7 @@ void polltrans() {
   int trueLoad = loadRead();
   int oilTemp = oilRead();
   // int shiftDelay = 1000;
-  int shiftDelay = readMapMem(shiftTimeMap, spcPercentVal, atfTemp);
+  int shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp);
    if ( shiftBlocker ) {
    // if ( sensors ) { shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp); }
     shiftDuration =  millis() - shiftStartTime;
