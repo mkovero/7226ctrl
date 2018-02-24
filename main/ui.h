@@ -20,6 +20,8 @@ void draw(void) {
   u8g.setFont(u8g_font_fub14);
   u8g.setPrintPos(60,40);
   u8g.print(vehicleSpeed);
+  u8g.setPrintPos(45,60);
+  u8g.print("km/h");  
   u8g.setFont(u8g_font_fixed_v0);
   u8g.setPrintPos(0,10);
   u8g.print("atfTemp:");

@@ -62,6 +62,9 @@ int n3Speed = 0;
 extern unsigned int __bss_end;
 extern unsigned int __heap_start;
 extern void *__brkval;
+const int atfReadNum = 10;
+int atfReadVal[atfReadNum];
+
 // End of internals
 
 // Environment configuration

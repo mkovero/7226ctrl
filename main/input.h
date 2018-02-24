@@ -23,7 +23,7 @@ void pollstick() {
 
   
 
-
+/*
   if ( autoState == HIGH ) {
     if ( ! fullAuto ) {
           Serial.println("pollstick: Automode on ");
@@ -34,7 +34,7 @@ void pollstick() {
           Serial.println("pollstick: Automode off ");
           fullAuto = false;
     }
-  }
+  }*/
  if ( wantedGear < 6 ) { 
    decideGear(wantedGear);
    /*if ( debugEnabled && wantedGear != gear ) {
@@ -101,7 +101,7 @@ void polltrans() {
   int trueLoad = loadRead();
   int oilTemp = oilRead();
   // int shiftDelay = 1000;
-  int shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp);
+  int shiftDelay = readMapMem(shiftTimeMap, spcPercentVal, atfTemp);
    if ( shiftBlocker ) {
    // if ( sensors ) { shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp); }
     shiftDuration =  millis() - shiftStartTime;
@@ -124,7 +124,7 @@ void polltrans() {
    }
    if ( ! shiftBlocker ) { 
      analogWrite(mpc,mpcVal); 
-    // if ( debugEnabled ) { Serial.print("polltrans: mpcVal="); Serial.println(mpcVal); }
+    if ( debugEnabled ) { Serial.print("polltrans: mpcVal/atfTemp"); Serial.print(mpcVal); Serial.print("-"); Serial.println(atfTemp); }
    };
 
 }

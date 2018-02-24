@@ -1,5 +1,18 @@
 
+int tpsRead() {
+ int tpsPercentValue = 0;
+ if ( tpsSensor ) {
+    //reading TPS
+    float tpsVoltage = analogRead(tpsPin) * 4.89;
+    tpsPercentValue = readTPSVoltage(tpsVoltage);
 
+    if (tpsPercentValue > 100 ) { tpsPercentValue = 100; } 
+    if (tpsPercentValue < 0 ) { tpsPercentValue = 0; }
+  } else {
+    tpsPercentValue = 0;
+  }
+  return tpsPercentValue;
+}
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt() {
  n2SpeedPulses++;
@@ -42,7 +55,7 @@ void pollsensors() {
       vehicleSpeed = vehicleSpeedPulses / 60;
       vehicleSpeedPulses = 0;
     } else {
-      vehicleSpeed = 40;
+      vehicleSpeed = tpsRead();
     }
 
     lastSensorTime = millis();
@@ -54,20 +67,7 @@ void pollsensors() {
   }
 }
 
-int tpsRead() {
- int tpsPercentValue = 0;
- if ( tpsSensor ) {
-    //reading TPS
-    float tpsVoltage = analogRead(tpsPin) * 4.89;
-    tpsPercentValue = readTPSVoltage(tpsVoltage);
 
-    if (tpsPercentValue > 100 ) { tpsPercentValue = 100; } 
-    if (tpsPercentValue < 0 ) { tpsPercentValue = 0; }
-  } else {
-    tpsPercentValue = 0;
-  }
-  return tpsPercentValue;
-}
 
 int rpmRead() {
  int rpmValue = 0;
@@ -102,16 +102,25 @@ int loadRead() {
 }
   //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 int atfRead() {
+  int readIndex = 0;
+  int total = 0;
+  int average = 0;
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   int atfTemp = 0;
+
   if (atfTempRaw > 1015 ) { drive = false; atfTempCalculated = 9999; atfTemp = 0; }
     else { drive = true; 
+    total = total - atfReadVal[readIndex];
     atfTempCalculated = (0.0309*atfTempRaw * atfTempRaw) - 44.544*atfTempRaw + 16629; 
     atfTemp = -0.000033059* atfTempCalculated * atfTempCalculated + 0.2031 * atfTempCalculated - 144.09; //same as above
+    atfReadVal[readIndex] = atfTemp;
+    total = total + atfReadVal[readIndex];
+    readIndex = readIndex + 1;
+    if (readIndex >= atfReadNum) { readIndex = 0; }
+    average = total / atfReadNum;
   }
-  if ( atfTemp < 0 ) { atfTemp = 20; }
-  return atfTemp;
+  return average;
 }
 
 int oilRead() {

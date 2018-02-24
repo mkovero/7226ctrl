@@ -124,7 +124,7 @@ void decideGear(int wantedGear) {
   int atfTemp = atfRead();
   int tpsPercentValue = tpsRead();
   // Determine speed related downshift and upshift here.
-  int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed);
+  int autoGear = ReadMap(gearMap,tpsPercentValue, vehicleSpeed);
   
   if ( ! shiftBlocker && wantedGear < 6 ) {
     if ( (fullAuto && autoGear > gear && wantedGear > gear) || (! fullAuto && wantedGear > gear && autoGear > gear) ) { 
@@ -139,7 +139,8 @@ void decideGear(int wantedGear) {
       if ( debugEnabled) { Serial.print("decideGear->gearchangeDown: wantedGear/autoGear/newGear/gear: "); Serial.print(wantedGear); Serial.print("-"); Serial.print(autoGear); Serial.print("-"); Serial.print(newGear); Serial.print("-"); Serial.println(gear); }
       gearchangeDown(newGear); 
     } 
-  }
+  } else {
+  Serial.println("Blocking"); Serial.println(wantedGear); }
 }
 
 int evaluateGear(float ratio) {
