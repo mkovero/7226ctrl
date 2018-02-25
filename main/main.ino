@@ -59,7 +59,6 @@ void setup() {
   analogWrite(spc,0); // No pressure here by default.
   analogWrite(mpc,255); // We want constant pressure here.
   analogWrite(tcc,0); // No pressure here by default.
-  for (int atfNum = 0; atfNum < atfReadNum; atfNum++) { atfReadVal[atfNum]; }
   Serial.println("Started.");
   updateDisplay();
 }

@@ -62,8 +62,9 @@ int n3Speed = 0;
 extern unsigned int __bss_end;
 extern unsigned int __heap_start;
 extern void *__brkval;
-const int atfReadNum = 10;
-int atfReadVal[atfReadNum];
+const int atfSensorFilterWeight = 16;  // higher numbers = heavier filtering
+const int atfSensorNumReadings = 10;   // number of readings
+int atfSensorAverage = 0;             // the  running average
 
 // End of internals
 

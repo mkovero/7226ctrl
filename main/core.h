@@ -124,7 +124,7 @@ void decideGear(int wantedGear) {
   int atfTemp = atfRead();
   int tpsPercentValue = tpsRead();
   // Determine speed related downshift and upshift here.
-  int autoGear = ReadMap(gearMap,tpsPercentValue, vehicleSpeed);
+  int autoGear = readMap(gearMap,tpsPercentValue, vehicleSpeed);
   
   if ( ! shiftBlocker && wantedGear < 6 ) {
     if ( (fullAuto && autoGear > gear && wantedGear > gear) || (! fullAuto && wantedGear > gear && autoGear > gear) ) { 

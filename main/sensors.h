@@ -1,4 +1,5 @@
 
+
 int tpsRead() {
  int tpsPercentValue = 0;
  if ( tpsSensor ) {
@@ -102,25 +103,23 @@ int loadRead() {
 }
   //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 int atfRead() {
-  int readIndex = 0;
-  int total = 0;
-  int average = 0;
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   int atfTemp = 0;
+  int sensorReading = 0;  
+  int i = 0;
 
   if (atfTempRaw > 1015 ) { drive = false; atfTempCalculated = 9999; atfTemp = 0; }
     else { drive = true; 
-    total = total - atfReadVal[readIndex];
     atfTempCalculated = (0.0309*atfTempRaw * atfTempRaw) - 44.544*atfTempRaw + 16629; 
     atfTemp = -0.000033059* atfTempCalculated * atfTempCalculated + 0.2031 * atfTempCalculated - 144.09; //same as above
-    atfReadVal[readIndex] = atfTemp;
-    total = total + atfReadVal[readIndex];
-    readIndex = readIndex + 1;
-    if (readIndex >= atfReadNum) { readIndex = 0; }
-    average = total / atfReadNum;
+    if ( i < atfSensorNumReadings ) {
+    sensorReading = atfTemp;
+    atfSensorAverage = atfSensorAverage + (sensorReading - atfSensorAverage) / atfSensorFilterWeight;
+    i++;
+    }
   }
-  return average;
+  return atfSensorAverage;
 }
 
 int oilRead() {
