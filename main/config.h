@@ -2,26 +2,24 @@
 
 // OUTPUT PINS
 // SPI display setup
-#define OLED_MOSI  11   //D1
-#define OLED_CLK   13   //D0
-#define OLED_DC    6
-#define OLED_CS    7
+#define OLED_MOSI 11 //D1
+#define OLED_CLK 13  //D0
+#define OLED_DC 6
+#define OLED_CS 7
 #define OLED_RESET 8
 
 // Solenoid output pins
 #define y3 47
 #define y4 45
 #define y5 46
-// #define mpc 44
 #define mpc 9
-// #define spc 43
 #define spc 10
 #define tcc 42
 #define rpmMeter 12
 // END OUTPUT PINS
 
 // INPUT PINS
-// Stick input 
+// Stick input
 #define whitepin 27
 #define bluepin 29
 #define greenpin 26
@@ -45,11 +43,11 @@
 // END INPUT PINS
 
 // Internals, states
-int gear = 2; // Start on gear 2
+int gear = 2;          // Start on gear 2
 int wantedGear = gear; // Gear that is requested
-int newGear = 2; // Gear that is going to be changed
-int prevgear = 1; // Previously changed gear
-int cSolenoid = 0; // Change solenoid pin to be controlled.
+int newGear = 2;       // Gear that is going to be changed
+int prevgear = 1;      // Previously changed gear
+int cSolenoid = 0;     // Change solenoid pin to be controlled.
 int vehicleSpeed = 100;
 unsigned long lastSensorTime = 0;
 int spcSetVal = 255;
@@ -62,8 +60,8 @@ int n3Speed = 0;
 extern unsigned int __bss_end;
 extern unsigned int __heap_start;
 extern void *__brkval;
-const int atfSensorFilterWeight = 16;  // higher numbers = heavier filtering
-const int atfSensorNumReadings = 10;   // number of readings
+const int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
+const int atfSensorNumReadings = 10;  // number of readings
 int atfSensorAverage = 0;             // the  running average
 
 // End of internals
@@ -106,9 +104,8 @@ boolean health = false;
 boolean debugEnabled = true;
 
 // Full automatic mode
-boolean fullAuto = true; 
+boolean fullAuto = true;
 
 boolean drive = false;
-
 
 // End of environment conf
