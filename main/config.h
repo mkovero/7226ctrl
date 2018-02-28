@@ -44,9 +44,6 @@
 
 // Internals, states
 int gear = 2;          // Start on gear 2
-int wantedGear = gear; // Gear that is requested
-int newGear = 2;       // Gear that is going to be changed
-int prevgear = 1;      // Previously changed gear
 int cSolenoid = 0;     // Change solenoid pin to be controlled.
 int vehicleSpeed = 100;
 unsigned long lastSensorTime = 0;

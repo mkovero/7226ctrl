@@ -1,7 +1,7 @@
 
 // INPUT
 // Polling for stick control
-void pollstick()
+int pollstick()
 {
   // Read the stick.
   int whiteState = digitalRead(whitepin);
@@ -9,11 +9,12 @@ void pollstick()
   int greenState = digitalRead(greenpin);
   int yellowState = digitalRead(yellowpin);
   int autoState = digitalRead(autoSwitch);
-
+  int wantedGear = 100;
+  
   // Determine position
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
   {
-    wantedGear = 8;
+     wantedGear = 8;
   } // P
   if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
   {
@@ -60,9 +61,7 @@ void pollstick()
           fullAuto = false;
     }
   }*/
-  if (wantedGear < 6)
-  {
-    decideGear(wantedGear);
+  return wantedGear;
     /*if ( debugEnabled && wantedGear != gear ) {
     Serial.print("pollstick: Stick says: ");
     Serial.print(whiteState);
@@ -74,7 +73,6 @@ void pollstick()
     Serial.print(wantedGear);
     Serial.println(gear);
   }*/
-  }
 }
 
 // For manual microswitch control, gear up
@@ -153,7 +151,7 @@ void pollkeys()
 }
 
 // Polling time for transmission control
-void polltrans()
+void polltrans(int newGear, int wantedGear)
 {
   int atfTemp = atfRead();
   int trueLoad = loadRead();
@@ -175,10 +173,11 @@ void polltrans()
         Serial.print("-");
         Serial.println(atfTemp);
       }
-      switchGearStop(cSolenoidEnabled);
+      switchGearStop(cSolenoidEnabled, newGear);
     }
   }
-
+  
+  
   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
   // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
   int mpcVal = readMap(mpcNormalMap, trueLoad, atfTemp);
@@ -198,13 +197,13 @@ void polltrans()
   if (!shiftBlocker)
   {
     analogWrite(mpc, mpcVal);
-    if (debugEnabled)
+   /* if (debugEnabled)
     {
       Serial.print("polltrans: mpcVal/atfTemp");
       Serial.print(mpcVal);
       Serial.print("-");
       Serial.println(atfTemp);
-    }
+    }*/
   };
 }
 

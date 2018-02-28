@@ -2,7 +2,7 @@ U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
 // UI STAGE
 // Control for what user sees and how gearbox is used with
 //
-void draw(void)
+void draw(int wantedGear)
 {
   int atfTemp = atfRead();
   int tpsPercentValue = tpsRead();
@@ -79,7 +79,7 @@ void rpmMeterUpdate()
 }
 
 // Display update
-void updateDisplay()
+void updateDisplay(int wantedGear)
 {
   /*  display.clearDisplay();
   display.setCursor(3,0);
@@ -110,7 +110,7 @@ void updateDisplay()
   u8g.firstPage();
   do
   {
-    draw();
+    draw(wantedGear);
   } while (u8g.nextPage());
   rpmMeterUpdate();
 }

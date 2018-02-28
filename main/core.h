@@ -9,10 +9,8 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   shiftBlocker = true;
   if (debugEnabled)
   {
-    Serial.print("switchGearStart: Begin of gear change current/new/solenoid: ");
+    Serial.print("switchGearStart: Begin of gear change current/solenoid: ");
     Serial.print(gear);
-    Serial.print("->");
-    Serial.print(newGear);
     Serial.print("-");
     Serial.println(cSolenoid);
   }
@@ -35,19 +33,16 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   cSolenoidEnabled = cSolenoid;
 }
 
-void switchGearStop(int cSolenoid)
+void switchGearStop(int cSolenoid, int newGear)
 {
   analogWrite(cSolenoid, 0); // End of gear change
   analogWrite(spc, 0);       // let go of shift pressure
   shiftBlocker = false;
-  prevgear = gear; // Make sure previous gear is known
   gear = newGear;
   if (debugEnabled)
   {
-    Serial.print("switchGearStop: End of gear change current/new/solenoid: ");
+    Serial.print("switchGearStop: End of gear change current/solenoid: ");
     Serial.print(gear);
-    Serial.print("->");
-    Serial.print(newGear);
     Serial.print("-");
     Serial.println(cSolenoid);
   }
@@ -76,7 +71,6 @@ void gearchangeUp(int newGear)
   switch (newGear)
   {
   case 1:
-    prevgear = gear;
     gear = 1;
     break;
   case 2:
@@ -241,7 +235,6 @@ void gearchangeDown(int newGear)
     }
     break;
   case 5:
-    prevgear = gear;
     gear = 5;
     break;
   default:
@@ -249,7 +242,7 @@ void gearchangeDown(int newGear)
   }
 }
 
-void decideGear(int wantedGear)
+int decideGear(int wantedGear)
 {
 
   int moreGear = gear + 1;
@@ -263,7 +256,7 @@ void decideGear(int wantedGear)
   {
     if ((fullAuto && autoGear > gear && wantedGear > gear) || (!fullAuto && wantedGear > gear && autoGear > gear))
     {
-      newGear = moreGear;
+      int newGear = moreGear;
       if (debugEnabled)
       {
         Serial.println("");
@@ -286,10 +279,11 @@ void decideGear(int wantedGear)
         Serial.println(gear);
       }
       gearchangeUp(newGear);
+      return newGear;
     }
     if (autoGear < gear || wantedGear < gear)
     {
-      newGear = lessGear;
+      int newGear = lessGear;
       if (debugEnabled)
       {
         Serial.println("");
@@ -312,12 +306,8 @@ void decideGear(int wantedGear)
         Serial.println(gear);
       }
       gearchangeDown(newGear);
+      return newGear;
     }
-  }
-  else
-  {
-    Serial.println("Blocking");
-    Serial.println(wantedGear);
   }
 }
 

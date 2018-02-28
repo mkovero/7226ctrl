@@ -80,7 +80,7 @@ void pollsensors()
     }
     else
     {
-      vehicleSpeed = tpsRead();
+      vehicleSpeed = 100;
     }
 
     lastSensorTime = millis();

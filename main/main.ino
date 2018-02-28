@@ -59,26 +59,16 @@ void setup()
   analogWrite(mpc, 255); // We want constant pressure here.
   analogWrite(tcc, 0);   // No pressure here by default.
   Serial.println("Started.");
-  updateDisplay();
 }
 
 void loop()
 {
-  if (stick)
-  {
-    pollstick();
-  } // using stick
-  if (manual)
-  {
-    pollkeys();
-  } // using manual control
-  if (trans)
-  {
-    polltrans();
-  } // using transmission
-  if (sensors)
-  {
+ 
+    int wantedGear = pollstick();
+    int newGear = decideGear(wantedGear);
+    polltrans(newGear,wantedGear);
+ 
     pollsensors();
-  } // using sensors
-  updateDisplay();
+ 
+  updateDisplay(wantedGear);
 }
