@@ -16,6 +16,7 @@
 #define spc 10
 #define tcc 42
 #define rpmMeter 12
+#define boostCtrl 41 // validate out pwm frequency
 // END OUTPUT PINS
 
 // INPUT PINS
@@ -60,6 +61,7 @@ extern void *__brkval;
 const int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
 const int atfSensorNumReadings = 10;  // number of readings
 int atfSensorAverage = 0;             // the  running average
+int maxBoostPressure = 3500;
 
 // End of internals
 

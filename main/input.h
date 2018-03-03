@@ -158,6 +158,7 @@ void polltrans(int newGear, int wantedGear)
   int oilTemp = oilRead();
   // int shiftDelay = 1000;
   int shiftDelay = readMapMem(shiftTimeMap, spcPercentVal, atfTemp);
+  
   if (shiftBlocker)
   {
     // if ( sensors ) { shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp); }
@@ -206,7 +207,13 @@ void polltrans(int newGear, int wantedGear)
     }*/
   };
 }
-
+void boostControl() {
+  int allowedBoostPressure = boostControlRead();
+  int allowedBoostPressureVal = allowedBoostPressure / maxBoostPressure * 255;
+  if ( ! shiftBlocker ) { 
+    analogWrite(boostCtrl, allowedBoostPressureVal);
+  }
+}
 uint16_t readFreeSram()
 {
   uint8_t newVariable;

@@ -16,18 +16,23 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   }
   if (trans)
   {
-    spcSetVal = spcVal * 2.55;
+    int allowedBoostPressure = boostControlRead();
+    int allowedBoostPressureVal = (allowedBoostPressure - switchDropPressure) / maxBoostPressure * 255;
+    spcSetVal = (100 - spcVal) * 2.55;
     spcPercentVal = spcVal;
-    mpcVal = mpcVal * 2.55;
+    mpcVal = (100 - mpcVal) * 2.55;
+    analogWrite(boostCtrl, allowedBoostPressureVal);
     analogWrite(spc, spcSetVal); // We could change shift pressure here
     analogWrite(mpc, mpcVal);
     analogWrite(cSolenoid, 255); // Beginning of gear change
     if (debugEnabled)
     {
-      Serial.print("switchGearStart: spcPressure/mpcPressure: ");
+      Serial.print("switchGearStart: spcPressure/mpcPressure/allowedBoostPressure: ");
       Serial.print(spcSetVal);
       Serial.print("-");
       Serial.println(mpcVal);
+      Serial.print("-");
+      Serial.print(allowedBoostPressure);
     }
   }
   cSolenoidEnabled = cSolenoid;
