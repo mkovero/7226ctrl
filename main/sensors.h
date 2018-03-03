@@ -181,3 +181,12 @@ int oilRead()
   int oilTemp = 80;
   return oilTemp;
 }
+
+int boostControlRead()
+{
+  int oilTemp = oilRead();
+  int tps = tpsRead();
+  int allowedBoostPressure = readMap(boostControlPressureMap, tps, oilTemp);
+  
+  return allowedBoostPressure;
+}

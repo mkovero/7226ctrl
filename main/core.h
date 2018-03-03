@@ -18,6 +18,10 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   {
     int allowedBoostPressure = boostControlRead();
     int allowedBoostPressureVal = (allowedBoostPressure - switchDropPressure) / maxBoostPressure * 255;
+    if (allowedBoostPressureVal < 1)
+    {
+      allowedBoostPressureVal = 0;
+    }
     spcSetVal = (100 - spcVal) * 2.55;
     spcPercentVal = spcVal;
     mpcVal = (100 - mpcVal) * 2.55;

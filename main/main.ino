@@ -30,6 +30,7 @@ void setup()
   pinMode(mpc, OUTPUT); // modulation pressure
   pinMode(tcc, OUTPUT); // lock
   pinMode(rpmMeter, OUTPUT);
+  pinMode(boostCtrl, OUTPUT);
 
   // Sensor input
   pinMode(boostPin, INPUT); // boost sensor

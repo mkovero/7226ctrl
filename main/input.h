@@ -208,8 +208,12 @@ void polltrans(int newGear, int wantedGear)
   };
 }
 void boostControl() {
+  int boostSensor = boostRead();
   int allowedBoostPressure = boostControlRead();
   int allowedBoostPressureVal = allowedBoostPressure / maxBoostPressure * 255;
+  if ( boostSensor > allowedBoostPressure ) {
+    allowedBoostPressureVal = 0;
+  }
   if ( ! shiftBlocker ) { 
     analogWrite(boostCtrl, allowedBoostPressureVal);
   }

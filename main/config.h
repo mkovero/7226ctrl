@@ -62,7 +62,7 @@ const int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
 const int atfSensorNumReadings = 10;  // number of readings
 int atfSensorAverage = 0;             // the  running average
 int maxBoostPressure = 3500;
-
+int switchDropPressure = 500;
 // End of internals
 
 // Environment configuration

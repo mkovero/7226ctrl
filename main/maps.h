@@ -56,7 +56,7 @@ static const int shiftTimeMap[14][12] {
 { 100,    1000,  900,  800,  800,  800,  700,  600,  500,  320,  300,  300 }};
 //oil temp
 
-static const int boostBackPressureMap[14][12] {
+static const int boostControlPressureMap[14][12] {
 {999,       0,   10,   20,   30,   40,   50,   60,   70,   80,   90,   100 },   //throttle position %
 //-----------------------------------------------------------------------
 { -20,       0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
