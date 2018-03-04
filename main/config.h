@@ -105,6 +105,9 @@ boolean debugEnabled = true;
 // Full automatic mode
 boolean fullAuto = true;
 
+// Boost control
+boolean boostControl = true;
+
 boolean drive = false;
 
 // End of environment conf

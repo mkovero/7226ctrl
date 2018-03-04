@@ -1,11 +1,15 @@
 
 // CORE
-// no pressure alteration happening yet
-//
-// gearSwitch logic
+// input:pollstick -> core:decideGear -> core:gearChange[Up|Down] -> core:switchGearStart
+// input:trans -> core:switchGearStop
+// poll -> evaluateGear
+
+// Gear shift logic
+// Beginning of gear change phase
+// Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
-  shiftStartTime = millis();
+  shiftStartTime = millis(); // Beginning to count shiftStartTime
   shiftBlocker = true;
   if (debugEnabled)
   {
@@ -22,11 +26,12 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     {
       allowedBoostPressureVal = 0;
     }
+    // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
     spcSetVal = (100 - spcVal) * 2.55;
     spcPercentVal = spcVal;
     mpcVal = (100 - mpcVal) * 2.55;
     analogWrite(boostCtrl, allowedBoostPressureVal);
-    analogWrite(spc, spcSetVal); // We could change shift pressure here
+    analogWrite(spc, spcSetVal); 
     analogWrite(mpc, mpcVal);
     analogWrite(cSolenoid, 255); // Beginning of gear change
     if (debugEnabled)
@@ -42,12 +47,13 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   cSolenoidEnabled = cSolenoid;
 }
 
+// End of gear change phase
 void switchGearStop(int cSolenoid, int newGear)
 {
-  analogWrite(cSolenoid, 0); // End of gear change
-  analogWrite(spc, 0);       // let go of shift pressure
-  shiftBlocker = false;
-  gear = newGear;
+  analogWrite(cSolenoid, 0); // turn shift solenoid off
+  analogWrite(spc, 0);       // let go of SPC-pressure
+  shiftBlocker = false;     
+  gear = newGear;           // we can happily say we're on new gear
   if (debugEnabled)
   {
     Serial.print("switchGearStop: End of gear change current/solenoid: ");
@@ -58,6 +64,7 @@ void switchGearStop(int cSolenoid, int newGear)
   shiftStartTime = 0;
 }
 
+// upshift parameter logic gathering
 void gearchangeUp(int newGear)
 {
   if (shiftBlocker == false)
@@ -155,6 +162,7 @@ void gearchangeUp(int newGear)
   }
 }
 
+// downshift parameter logic gathering
 void gearchangeDown(int newGear)
 {
   if (shiftBlocker == false)
@@ -251,6 +259,7 @@ void gearchangeDown(int newGear)
   }
 }
 
+// Logic for automatic new gear, this makes possible auto up/downshifts.
 int decideGear(int wantedGear)
 {
 
@@ -320,46 +329,18 @@ int decideGear(int wantedGear)
   }
 }
 
-int evaluateGear(float ratio)
+void boostControl()
 {
-  int evaluatedGear = 0;
-  int n3n2 = n3Speed / n2Speed;
-  int incomingShaftSpeed = 0;
-  int measuredGear = 0;
-  if (n3Speed == 0)
+  if (!shiftBlocker)
   {
-    incomingShaftSpeed = n2Speed * 1.64;
-  }
-  else
-  {
-    incomingShaftSpeed = n2Speed;
-    //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
-  }
-
-  if (3.4 < ratio && n3n2 < 0.50)
-  {
-    measuredGear = 1;
-  }
-  else if (2.05 < ratio && ratio < 2.20 && n3n2 >= 0.50)
-  {
-    measuredGear = 2;
-  }
-  else if (1.38 < ratio && ratio < 1.45 && n3n2 >= 0.50)
-  {
-    measuredGear = 3;
-  }
-  else if (0.97 < ratio && ratio < 1.05 && n3n2 >= 0.50)
-  {
-    measuredGear = 4;
-  }
-  else if (ratio < 0.90 && n3n2 < 0.50)
-  {
-    measuredGear = 5;
-  }
-
-  if (measuredGear != 0)
-  {
-    return measuredGear;
+    int boostSensor = boostRead();
+    int allowedBoostPressure = boostControlRead();
+    int allowedBoostPressureVal = allowedBoostPressure / maxBoostPressure * 255;
+    if (boostSensor > allowedBoostPressure)
+    {
+      allowedBoostPressureVal = 0;
+    }
+    analogWrite(boostCtrl, allowedBoostPressureVal);
   }
 }
 // END OF CORE

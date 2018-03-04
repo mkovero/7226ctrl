@@ -1,20 +1,26 @@
 
+// Macro for sizeof for better support with 2d arrays.
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))
 
 // Calculation helpers
+
+// Mapping throttle position sensor voltage to percentage
 int readTPSVoltage(int voltage)
 {
   int result = map(voltage, 1760, 2830, 0, 100);
   return result;
 }
 
+// Mapping boost sensor voltage to percentage
 int readBoostVoltage(int voltage)
 {
   int result = map(voltage, 1500, 4000, 0, 100);
   return result;
 }
 
-//function to read 2d maps
+// Function to read 2d maps from flash (maps declared with PROGMEM)
+// I'm hitting some silly limit here, pgm_read_byte_near does not seem to be 
+// able to read four digit values in full. Probably some little thing I'm missing.
 int readMap(const int theMap[14][12], int x, int y)
 {
   int xidx = 0; // by default near first element
@@ -48,7 +54,7 @@ int readMap(const int theMap[14][12], int x, int y)
   return mapValue;
 }
 
-//function to read 2d maps
+// Function to read 2d maps from SRAM
 int readMapMem(const int theMap[14][12], int x, int y)
 {
   int xidx = 0; // by default near first element

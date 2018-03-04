@@ -10,11 +10,11 @@ int pollstick()
   int yellowState = digitalRead(yellowpin);
   int autoState = digitalRead(autoSwitch);
   int wantedGear = 100;
-  
+
   // Determine position
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
   {
-     wantedGear = 8;
+    wantedGear = 8;
   } // P
   if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
   {
@@ -62,7 +62,7 @@ int pollstick()
     }
   }*/
   return wantedGear;
-    /*if ( debugEnabled && wantedGear != gear ) {
+  /*if ( debugEnabled && wantedGear != gear ) {
     Serial.print("pollstick: Stick says: ");
     Serial.print(whiteState);
     Serial.print(blueState);
@@ -158,7 +158,7 @@ void polltrans(int newGear, int wantedGear)
   int oilTemp = oilRead();
   // int shiftDelay = 1000;
   int shiftDelay = readMapMem(shiftTimeMap, spcPercentVal, atfTemp);
-  
+
   if (shiftBlocker)
   {
     // if ( sensors ) { shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp); }
@@ -177,8 +177,12 @@ void polltrans(int newGear, int wantedGear)
       switchGearStop(cSolenoidEnabled, newGear);
     }
   }
-  
-  
+
+  if (boostControl)
+  {
+    boostControl();
+  }
+
   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
   // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
   int mpcVal = readMap(mpcNormalMap, trueLoad, atfTemp);
@@ -198,7 +202,7 @@ void polltrans(int newGear, int wantedGear)
   if (!shiftBlocker)
   {
     analogWrite(mpc, mpcVal);
-   /* if (debugEnabled)
+    /* if (debugEnabled)
     {
       Serial.print("polltrans: mpcVal/atfTemp");
       Serial.print(mpcVal);
@@ -207,17 +211,50 @@ void polltrans(int newGear, int wantedGear)
     }*/
   };
 }
-void boostControl() {
-  int boostSensor = boostRead();
-  int allowedBoostPressure = boostControlRead();
-  int allowedBoostPressureVal = allowedBoostPressure / maxBoostPressure * 255;
-  if ( boostSensor > allowedBoostPressure ) {
-    allowedBoostPressureVal = 0;
+
+int evaluateGear(float ratio)
+{
+  int evaluatedGear = 0;
+  int n3n2 = n3Speed / n2Speed;
+  int incomingShaftSpeed = 0;
+  int measuredGear = 0;
+  if (n3Speed == 0)
+  {
+    incomingShaftSpeed = n2Speed * 1.64;
   }
-  if ( ! shiftBlocker ) { 
-    analogWrite(boostCtrl, allowedBoostPressureVal);
+  else
+  {
+    incomingShaftSpeed = n2Speed;
+    //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
+  }
+
+  if (3.4 < ratio && n3n2 < 0.50)
+  {
+    measuredGear = 1;
+  }
+  else if (2.05 < ratio && ratio < 2.20 && n3n2 >= 0.50)
+  {
+    measuredGear = 2;
+  }
+  else if (1.38 < ratio && ratio < 1.45 && n3n2 >= 0.50)
+  {
+    measuredGear = 3;
+  }
+  else if (0.97 < ratio && ratio < 1.05 && n3n2 >= 0.50)
+  {
+    measuredGear = 4;
+  }
+  else if (ratio < 0.90 && n3n2 < 0.50)
+  {
+    measuredGear = 5;
+  }
+
+  if (measuredGear != 0)
+  {
+    return measuredGear;
   }
 }
+
 uint16_t readFreeSram()
 {
   uint8_t newVariable;
