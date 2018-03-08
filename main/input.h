@@ -1,6 +1,7 @@
 
 // INPUT
 // Polling for stick control
+// This is W202 electronic gear stick, should work on any pre-canbus sticks.
 int pollstick()
 {
   // Read the stick.
@@ -61,18 +62,17 @@ int pollstick()
           fullAuto = false;
     }
   }*/
-  return wantedGear;
-  /*if ( debugEnabled && wantedGear != gear ) {
+ if ( debugEnabled) {
     Serial.print("pollstick: Stick says: ");
     Serial.print(whiteState);
     Serial.print(blueState);
     Serial.print(greenState);
     Serial.println(yellowState);
     Serial.print("pollstick: Requested gear prev/wanted/current/new: ");
-    Serial.print(prevgear);
     Serial.print(wantedGear);
     Serial.println(gear);
-  }*/
+  }
+  return wantedGear;
 }
 
 // For manual microswitch control, gear up
@@ -151,6 +151,9 @@ void pollkeys()
 }
 
 // Polling time for transmission control
+// R/N/P modulation pressure regulation
+// idle SPC regulation
+// Boost control
 void polltrans(int newGear, int wantedGear)
 {
   int atfTemp = atfRead();
@@ -178,7 +181,7 @@ void polltrans(int newGear, int wantedGear)
     }
   }
 
-  if (boostControl)
+  if (bControl)
   {
     boostControl();
   }

@@ -106,7 +106,7 @@ boolean debugEnabled = true;
 boolean fullAuto = true;
 
 // Boost control
-boolean boostControl = true;
+boolean bControl = true;
 
 boolean drive = false;
 

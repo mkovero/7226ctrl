@@ -29,6 +29,10 @@ void draw(int wantedGear)
   {
     u8g.print("D");
   }
+  if (wantedGear == 100) 
+  {
+    u8g.print("-");
+  }
   else
   {
     u8g.print(gear);

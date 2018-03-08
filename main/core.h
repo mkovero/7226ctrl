@@ -1,8 +1,9 @@
 
 // CORE
-// input:pollstick -> core:decideGear -> core:gearChange[Up|Down] -> core:switchGearStart
-// input:trans -> core:switchGearStop
+// input:pollstick -> core:decideGear -> core:gearChange[Up|Down] -> core:switchGearStart -> core:boostControl
+// input:polltrans -> core:switchGearStop
 // poll -> evaluateGear
+
 
 // Gear shift logic
 // Beginning of gear change phase
