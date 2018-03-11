@@ -25,6 +25,10 @@ Not started/pending:
 - PID controlled PWM for temperature stability
 - percentual map reads preferably without floats (eg. value between point x and y).
 
+Considered:
+- Fuel pump control on idle
+- Electric steering sheel support
+
 work by Markus Kovero (mui@mui.fi) with regards to Tuomas Kantola.
 
 Pinout is for mega2560 with SPI OLED display and is subject to change.
