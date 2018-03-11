@@ -24,6 +24,7 @@ Not started/pending:
 - oil temperature (pending sensor installation)
 - PID controlled PWM for temperature stability
 - percentual map reads preferably without floats (eg. value between point x and y).
+- External datalogging (format, method)
 
 Considered:
 - Fuel pump control on idle
