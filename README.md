@@ -27,7 +27,7 @@ Not started/pending:
 
 Considered:
 - Fuel pump control on idle
-- Electric steering sheel support
+- Electric steering wheel support
 
 work by Markus Kovero (mui@mui.fi) with regards to Tuomas Kantola.
 
