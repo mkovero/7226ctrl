@@ -5,8 +5,9 @@ controller for 722.6 automatic transmission
 - Use at your own risk!
 
 Currently should work:
-- Automatic downshift / upshift based on vehicle speed
+- Automatic downshift / upshift based on vehicle speed and throttle position
 - Manual shifting
+- Throttle position sensor
 - Pressure maps for shifts and modulation pressure based on oil temperature and load, even when P/N/R
 - W202 gearstick can be read
 - SPI OLED for data output
