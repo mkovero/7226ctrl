@@ -31,7 +31,7 @@ void draw(int wantedGear)
   }
   if (wantedGear == 100) 
   {
-    u8g.print("-");
+    u8g.print("");
   }
   else
   {

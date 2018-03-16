@@ -14,9 +14,9 @@
 #define y5 46
 #define mpc 9
 #define spc 10
-#define tcc 42
+#define tcc 41
 #define rpmMeter 12
-#define boostCtrl 41 // validate out pwm frequency
+#define boostCtrl 44 // validate out pwm frequency
 // END OUTPUT PINS
 
 // INPUT PINS
@@ -62,7 +62,7 @@ const int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
 const int atfSensorNumReadings = 10;  // number of readings
 int atfSensorAverage = 0;             // the  running average
 int maxBoostPressure = 3500;
-int switchDropPressure = 500;
+int shiftDropPressure = 500;
 // End of internals
 
 // Environment configuration
@@ -91,7 +91,7 @@ boolean sensors = true;
 boolean tpsSensor = true;
 
 // Do we have boost sensor?
-boolean boostSensor = false;
+boolean boostSensor = true;
 
 // Default for blocking gear switches (do not change.)
 boolean shiftBlocker = false;
@@ -106,7 +106,7 @@ boolean debugEnabled = true;
 boolean fullAuto = true;
 
 // Boost control
-boolean bControl = true;
+boolean boostLimit = true;
 
 boolean drive = false;
 

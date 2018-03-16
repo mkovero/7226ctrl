@@ -181,7 +181,7 @@ void polltrans(int newGear, int wantedGear)
     }
   }
 
-  if (bControl)
+  if (boostLimit)
   {
     boostControl();
   }

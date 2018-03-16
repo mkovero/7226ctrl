@@ -182,7 +182,7 @@ int oilRead()
   return oilTemp;
 }
 
-int boostControlRead()
+int boostLimitRead()
 {
   int oilTemp = oilRead();
   int tps = tpsRead();

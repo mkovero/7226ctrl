@@ -17,6 +17,7 @@ void setup()
 {
 
   TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
+  TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
@@ -52,13 +53,13 @@ void setup()
   pinMode(greenpin, INPUT);
   pinMode(yellowpin, INPUT);
 
-  // Drive solenoids are all off.
+  // Make sure solenoids are all off.
   analogWrite(y3, 0);
   analogWrite(y4, 0);
   analogWrite(y5, 0);
-  analogWrite(spc, 0);   // No pressure here by default.
-  analogWrite(mpc, 255); // We want constant pressure here.
-  analogWrite(tcc, 0);   // No pressure here by default.
+  analogWrite(spc, 0);   
+  analogWrite(mpc, 0); 
+  analogWrite(tcc, 0);
   Serial.println("Started.");
 }
 
