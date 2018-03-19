@@ -186,7 +186,7 @@ int boostLimitRead()
 {
   int oilTemp = oilRead();
   int tps = tpsRead();
-  int allowedBoostPressure = readMap(boostControlPressureMap, tps, oilTemp);
+  int allowedBoostPressure = readMapMem(boostControlPressureMap, tps, oilTemp);
   
   return allowedBoostPressure;
 }

@@ -62,7 +62,7 @@ int pollstick()
           fullAuto = false;
     }
   }*/
- if ( debugEnabled) {
+/* if ( debugEnabled) {
     Serial.print("pollstick: Stick says: ");
     Serial.print(whiteState);
     Serial.print(blueState);
@@ -71,7 +71,7 @@ int pollstick()
     Serial.print("pollstick: Requested gear prev/wanted/current/new: ");
     Serial.print(wantedGear);
     Serial.println(gear);
-  }
+  }*/
   return wantedGear;
 }
 
@@ -205,13 +205,13 @@ void polltrans(int newGear, int wantedGear)
   if (!shiftBlocker)
   {
     analogWrite(mpc, mpcVal);
-    /* if (debugEnabled)
+     if (debugEnabled)
     {
       Serial.print("polltrans: mpcVal/atfTemp");
       Serial.print(mpcVal);
       Serial.print("-");
       Serial.println(atfTemp);
-    }*/
+    }
   };
 }
 

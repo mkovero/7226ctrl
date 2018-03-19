@@ -61,8 +61,8 @@ extern void *__brkval;
 const int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
 const int atfSensorNumReadings = 10;  // number of readings
 int atfSensorAverage = 0;             // the  running average
-int maxBoostPressure = 3500;
-int shiftDropPressure = 500;
+int shiftDropPressure = 50;
+int boostcount = 0;
 // End of internals
 
 // Environment configuration

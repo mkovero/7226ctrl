@@ -21,28 +21,28 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   }
   if (trans)
   {
-    int allowedBoostPressure = boostLimitRead();
-    int allowedBoostPressureVal = (allowedBoostPressure - shiftDropPressure) / maxBoostPressure * 255;
-    if (allowedBoostPressureVal < 1)
+    float allowedBoostPressure = boostLimitRead();
+    int boostControlVal = (1-(boostSensor+shiftDropPressure)/allowedBoostPressure)*255;  
+    if (boostControlVal < 1)
     {
-      allowedBoostPressureVal = 0;
+      boostControlVal = 0;
     }
     // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
     spcSetVal = (100 - spcVal) * 2.55;
     spcPercentVal = spcVal;
     mpcVal = (100 - mpcVal) * 2.55;
-    analogWrite(boostCtrl, allowedBoostPressureVal);
+    analogWrite(boostCtrl, boostControlVal);
     analogWrite(spc, spcSetVal); 
     analogWrite(mpc, mpcVal);
     analogWrite(cSolenoid, 255); // Beginning of gear change
     if (debugEnabled)
     {
-      Serial.print("switchGearStart: spcPressure/mpcPressure/allowedBoostPressureVal: ");
+      Serial.print("switchGearStart: spcPressure/mpcPressure/boostControlVal: ");
       Serial.print(spcSetVal);
       Serial.print("-");
       Serial.println(mpcVal);
       Serial.print("-");
-      Serial.print(allowedBoostPressureVal);
+      Serial.print(boostControlVal);
     }
   }
   cSolenoidEnabled = cSolenoid;
@@ -335,13 +335,14 @@ void boostControl()
   if (!shiftBlocker)
   {
     int boostSensor = boostRead();
-    int allowedBoostPressure = boostLimitRead();
-    int allowedBoostPressureVal = allowedBoostPressure / maxBoostPressure * 255;
-    if (boostSensor > allowedBoostPressure)
+    float allowedBoostPressure = boostLimitRead();
+    int controlVal = (1-boostSensor/allowedBoostPressure)*255;  
+    if (controlVal < 1)
     {
-      allowedBoostPressureVal = 0;
+      controlVal = 0;
     }
-    analogWrite(boostCtrl, allowedBoostPressureVal);
+    analogWrite(boostCtrl, controlVal);
+    if (debugEnabled) { Serial.print("boostControl (allowedBoostPressure/bootSensor/controlVal):"); Serial.print(allowedBoostPressure); Serial.print("-");  Serial.print(boostSensor); Serial.print("-"); Serial.print(controlVal); }
   }
 }
 // END OF CORE
