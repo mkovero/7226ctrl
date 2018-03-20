@@ -157,6 +157,30 @@ void pollkeys()
   }
 }
 
+void pollBoostControl()
+{
+  if (!shiftBlocker && boostLimit)
+  {
+    int boostSensor = boostRead();
+    float allowedBoostPressure = boostLimitRead();
+    int controlVal = (1 - boostSensor / allowedBoostPressure) * 255;
+    if (controlVal < 1)
+    {
+      controlVal = 0;
+    }
+    analogWrite(boostCtrl, controlVal);
+    if (debugEnabled)
+    {
+      Serial.print("boostControl (allowedBoostPressure/bootSensor/controlVal):");
+      Serial.print(allowedBoostPressure);
+      Serial.print("-");
+      Serial.print(boostSensor);
+      Serial.print("-");
+      Serial.print(controlVal);
+    }
+  }
+}
+
 // Polling time for transmission control
 // R/N/P modulation pressure regulation
 // idle SPC regulation
@@ -190,7 +214,7 @@ void polltrans(int newGear, int wantedGear)
 
   if (boostLimit)
   {
-    boostControl();
+    pollBoostControl();
   }
 
   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf

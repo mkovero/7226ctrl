@@ -11,7 +11,7 @@
 // poll -> evaluateGear
 
 // Obvious internals
-int gear = 2;          // Start on gear 2
+int gear = 2; // Start on gear 2
 int vehicleSpeed = 100;
 
 // Shift pressure defaults
@@ -25,13 +25,14 @@ unsigned long int shiftDuration = 0;
 
 // Solenoid used
 int cSolenoidEnabled = 0;
-int cSolenoid = 0;     // Change solenoid pin to be controlled.
+int cSolenoid = 0; // Change solenoid pin to be controlled.
 
 // Gear shift logic
 // Beginning of gear change phase
 // Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
+  int boostControlVal; 
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   shiftBlocker = true;
   if (debugEnabled)
@@ -43,18 +44,21 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   }
   if (trans)
   {
-    float allowedBoostPressure = boostLimitRead();
-    int boostControlVal = (1-(boostSensor+shiftDropPressure)/allowedBoostPressure)*255;  
-    if (boostControlVal < 1)
+    if (boostLimit)
     {
-      boostControlVal = 0;
+      float allowedBoostPressure = boostLimitRead();
+      boostControlVal = (1 - (boostSensor + shiftDropPressure) / allowedBoostPressure) * 255;
+      if (boostControlVal < 1)
+      {
+        boostControlVal = 0;
+      }
+      analogWrite(boostCtrl, boostControlVal);
     }
     // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
     spcSetVal = (100 - spcVal) * 2.55;
     spcPercentVal = spcVal;
     mpcVal = (100 - mpcVal) * 2.55;
-    analogWrite(boostCtrl, boostControlVal);
-    analogWrite(spc, spcSetVal); 
+    analogWrite(spc, spcSetVal);
     analogWrite(mpc, mpcVal);
     analogWrite(cSolenoid, 255); // Beginning of gear change
     if (debugEnabled)
@@ -63,8 +67,11 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
       Serial.print(spcSetVal);
       Serial.print("-");
       Serial.println(mpcVal);
-      Serial.print("-");
-      Serial.print(boostControlVal);
+      if (boostLimit)
+      {
+        Serial.print("-");
+        Serial.print(boostControlVal);
+      }
     }
   }
   cSolenoidEnabled = cSolenoid;
@@ -75,8 +82,8 @@ void switchGearStop(int cSolenoid, int newGear)
 {
   analogWrite(cSolenoid, 0); // turn shift solenoid off
   analogWrite(spc, 0);       // let go of SPC-pressure
-  shiftBlocker = false;     
-  gear = newGear;           // we can happily say we're on new gear
+  shiftBlocker = false;
+  gear = newGear; // we can happily say we're on new gear
   if (debugEnabled)
   {
     Serial.print("switchGearStop: End of gear change current/solenoid: ");
@@ -349,22 +356,6 @@ int decideGear(int wantedGear)
       gearchangeDown(newGear);
       return newGear;
     }
-  }
-}
-
-void boostControl()
-{
-  if (!shiftBlocker)
-  {
-    int boostSensor = boostRead();
-    float allowedBoostPressure = boostLimitRead();
-    int controlVal = (1-boostSensor/allowedBoostPressure)*255;  
-    if (controlVal < 1)
-    {
-      controlVal = 0;
-    }
-    analogWrite(boostCtrl, controlVal);
-    if (debugEnabled) { Serial.print("boostControl (allowedBoostPressure/bootSensor/controlVal):"); Serial.print(allowedBoostPressure); Serial.print("-");  Serial.print(boostSensor); Serial.print("-"); Serial.print(controlVal); }
   }
 }
 // END OF CORE
