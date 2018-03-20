@@ -1,23 +1,23 @@
-#include <SPI.h>
-#include <Wire.h>
-#include <U8glib.h>
 #include <Arduino.h>
-#include "config.h"
-#include "maps.h"
-#include "calc.h"
+#include "pins.h"
 #include "sensors.h"
 #include "core.h"
 #include "input.h"
 #include "ui.h"
+
+#define MEGA // we're running this on arduino mega
+unsigned long int startTime = 0;
+unsigned long int endTime = 0;
 
 // Work by Markus Kovero <mui@mui.fi>
 // Big thanks to Tuomas Kantola regarding maps and related math
 
 void setup()
 {
-
-  TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
-  TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46
+  #ifdef MEGA
+    TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
+    TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46
+  #endif
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
@@ -57,20 +57,20 @@ void setup()
   analogWrite(y3, 0);
   analogWrite(y4, 0);
   analogWrite(y5, 0);
-  analogWrite(spc, 0);   
-  analogWrite(mpc, 0); 
+  analogWrite(spc, 0);
+  analogWrite(mpc, 0);
   analogWrite(tcc, 0);
   Serial.println("Started.");
 }
 
 void loop()
 {
- 
-    int wantedGear = pollstick();
-    int newGear = decideGear(wantedGear);
-    polltrans(newGear,wantedGear);
- 
-    pollsensors();
- 
-  updateDisplay(wantedGear);
+  startTime = millis();
+  int wantedGear = pollstick();
+  int newGear = decideGear(wantedGear);
+  polltrans(newGear, wantedGear);
+  pollsensors();
+  endTime = millis();
+  int loopTime = endTime - startTime;
+  updateDisplay(wantedGear, loopTime);
 }

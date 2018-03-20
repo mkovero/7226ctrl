@@ -12,9 +12,9 @@ Currently should work:
 - W202 gearstick can be read
 - SPI OLED for data output
 - Boost limit maps
+- Boost limiting (eg. drop boost on shifts)
 
 Work in progress:
-- Boost limiting (eg. drop boost on shifts)
 - evaluateGear, make sure which gear is in (pending hallsensor testing)
 
 Not started/pending:
