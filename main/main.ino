@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include "pins.h"
-#include "sensors.h"
-#include "core.h"
-#include "input.h"
-#include "ui.h"
+#include "include/pins.h"
+#include "include/sensors.h"
+#include "include/core.h"
+#include "include/input.h"
+#include "include/ui.h"
 
 #define MEGA // we're running this on arduino mega
 unsigned long int startTime = 0;

@@ -1,8 +1,8 @@
 #include <Arduino.h>
-#include "config.h"
-#include "pins.h"
-#include "calc.h"
-#include "maps.h"
+#include "include/config.h"
+#include "include/pins.h"
+#include "include/calc.h"
+#include "include/maps.h"
 
 int tpsRead()
 {

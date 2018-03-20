@@ -2,9 +2,9 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <U8glib.h>
-#include "config.h"
-#include "pins.h"
-#include "sensors.h"
+#include "include/config.h"
+#include "include/pins.h"
+#include "include/sensors.h"
 
 U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
 // UI STAGE

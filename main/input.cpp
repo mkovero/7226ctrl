@@ -1,10 +1,10 @@
 #include <Arduino.h>
-#include "config.h"
-#include "pins.h"
-#include "calc.h"
-#include "core.h"
-#include "sensors.h"
-#include "maps.h"
+#include "include/config.h"
+#include "include/pins.h"
+#include "include/calc.h"
+#include "include/core.h"
+#include "include/sensors.h"
+#include "include/maps.h"
 
 // INPUT
 // Polling for stick control
