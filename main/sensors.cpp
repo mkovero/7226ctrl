@@ -4,6 +4,20 @@
 #include "include/calc.h"
 #include "include/maps.h"
 
+// Internals
+int n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, n2Speed, n3Speed;
+unsigned long lastSensorTime = 0;
+
+// atf temperature sensor lowpass filtering
+int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
+int atfSensorNumReadings = 10;  // number of readings
+int atfSensorAverage = 0;             // the  running average
+
+// Memory management
+extern unsigned int __bss_end;
+unsigned int __heap_start;
+void *__brkval;
+
 int tpsRead()
 {
   int tpsPercentValue = 0;

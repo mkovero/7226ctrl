@@ -10,6 +10,22 @@
 // input:polltrans -> core:switchGearStop
 // poll -> evaluateGear
 
+// Obvious internals
+int gear = 2;          // Start on gear 2
+int vehicleSpeed = 100;
+
+// Shift pressure defaults
+int spcSetVal = 255;
+int spcPercentVal = 100;
+int shiftDropPressure = 50;
+
+// for timers
+unsigned long int shiftStartTime = 0;
+unsigned long int shiftDuration = 0;
+
+// Solenoid used
+int cSolenoidEnabled = 0;
+int cSolenoid = 0;     // Change solenoid pin to be controlled.
 
 // Gear shift logic
 // Beginning of gear change phase
