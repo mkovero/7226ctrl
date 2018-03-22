@@ -15,6 +15,7 @@ Currently should work:
 - Boost limiting (eg. drop boost on shifts)
 
 Work in progress:
+- adaptative shift pressure
 - evaluateGear, make sure which gear is in (pending hallsensor testing)
 
 Not started/pending:
