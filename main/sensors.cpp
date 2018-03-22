@@ -42,12 +42,12 @@ int tpsRead()
   }
   return tpsPercentValue;
 }
+
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
 {
   n2SpeedPulses++;
 }
-
 // Interrupt for N3 hallmode sensor
 void N3SpeedInterrupt()
 {
@@ -190,13 +190,16 @@ int atfRead()
       // http://home.earthlink.net/~david.schultz/rnd/2002/KalmanApogee.pdf
     }
   }
+  if ( atfSensorAverage < -40 ) { atfSensorAverage = -40; }
+  if ( atfSensorAverage > 120 ) { atfSensorAverage = 120; }
+  
   return atfSensorAverage;
 }
 
 int oilRead()
 {
   // wip
-  int oilTemp = 80;
+  int oilTemp = 100;
   return oilTemp;
 }
 

@@ -2,6 +2,7 @@
 
 // Macro for sizeof for better support with 2d arrays.
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))
+int lastXval, lastYval;
 
 // Calculation helpers
 
@@ -50,7 +51,8 @@ int readMap(const int theMap[14][12], int x, int y)
       distance = d;
     }
   }
-
+  lastXval = xidx;
+  lastYval = yidx;
   int mapValue = pgm_read_byte_near(&theMap[yidx][xidx]);
   return mapValue;
 }

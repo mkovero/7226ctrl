@@ -21,6 +21,7 @@ extern int boostcount;
 extern unsigned long int shiftStartTime;
 extern unsigned long int shiftDuration;
 extern int cSolenoidEnabled;
+extern int lastMapVal,lastXval,lastYval;
 extern boolean incar;
 extern boolean stick;
 extern boolean manual;

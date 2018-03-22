@@ -169,7 +169,7 @@ void pollBoostControl()
       controlVal = 0;
     }
     analogWrite(boostCtrl, controlVal);
-    if (debugEnabled)
+    /*if (debugEnabled)
     {
       Serial.print("boostControl (allowedBoostPressure/bootSensor/controlVal):");
       Serial.print(allowedBoostPressure);
@@ -177,7 +177,7 @@ void pollBoostControl()
       Serial.print(boostSensor);
       Serial.print("-");
       Serial.print(controlVal);
-    }
+    }*/
   }
 }
 
@@ -236,13 +236,13 @@ void polltrans(int newGear, int wantedGear)
   if (!shiftBlocker)
   {
     analogWrite(mpc, mpcVal);
-     if (debugEnabled)
+   /*  if (debugEnabled)
     {
       Serial.print("polltrans: mpcVal/atfTemp");
       Serial.print(mpcVal);
       Serial.print("-");
       Serial.println(atfTemp);
-    }
+    }*/
   };
 }
 

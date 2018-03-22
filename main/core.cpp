@@ -26,6 +26,7 @@ unsigned long int shiftDuration = 0;
 // Solenoid used
 int cSolenoidEnabled = 0;
 int cSolenoid = 0; // Change solenoid pin to be controlled.
+int lastMapVal;
 
 // Gear shift logic
 // Beginning of gear change phase
@@ -41,6 +42,15 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.print(gear);
     Serial.print("-");
     Serial.println(cSolenoid);
+    Serial.println("switchGearStop: lastMapXY");
+    Serial.print("spcMap");
+    Serial.print(lastMapVal);
+    Serial.print("[");
+    Serial.print(lastXval);
+    Serial.print("]");
+    Serial.print("[");
+    Serial.print(lastYval);
+    Serial.print("]");
   }
   if (trans)
   {
@@ -133,6 +143,7 @@ void gearchangeUp(int newGear)
     }
     if (sensors)
     {
+      lastMapVal = 12;
       switchGearStart(y3, readMap(spcMap12, trueLoad, atfTemp), readMap(mpcMap12, trueLoad, atfTemp));
     }
     break;
@@ -150,6 +161,7 @@ void gearchangeUp(int newGear)
     }
     if (sensors)
     {
+      lastMapVal = 23;
       switchGearStart(y4, readMap(spcMap23, trueLoad, atfTemp), readMap(mpcMap23, trueLoad, atfTemp));
     }
     break;
@@ -167,6 +179,7 @@ void gearchangeUp(int newGear)
     }
     if (sensors)
     {
+      lastMapVal = 34;
       switchGearStart(y5, readMap(spcMap34, trueLoad, atfTemp), readMap(mpcMap34, trueLoad, atfTemp));
     }
     break;
@@ -184,6 +197,7 @@ void gearchangeUp(int newGear)
     }
     if (sensors)
     {
+      lastMapVal = 45;
       switchGearStart(y3, readMap(spcMap45, trueLoad, atfTemp), readMap(mpcMap45, trueLoad, atfTemp));
     }
     break;
@@ -227,6 +241,7 @@ void gearchangeDown(int newGear)
     }
     if (sensors)
     {
+      lastMapVal = 21;
       switchGearStart(y3, readMap(spcMap21, trueLoad, atfTemp), readMap(mpcMap21, trueLoad, atfTemp));
     }
     break;
@@ -244,6 +259,7 @@ void gearchangeDown(int newGear)
     }
     if (sensors)
     {
+      lastMapVal = 32;
       switchGearStart(y4, readMap(spcMap32, trueLoad, atfTemp), readMap(mpcMap32, trueLoad, atfTemp));
     }
     break;
@@ -261,6 +277,7 @@ void gearchangeDown(int newGear)
     }
     if (sensors)
     {
+      lastMapVal = 43;
       switchGearStart(y5, readMap(spcMap43, trueLoad, atfTemp), readMap(mpcMap43, trueLoad, atfTemp));
     }
     break;
@@ -278,6 +295,7 @@ void gearchangeDown(int newGear)
     }
     if (sensors)
     {
+      lastMapVal = 54;
       switchGearStart(y3, readMap(spcMap54, trueLoad, atfTemp), readMap(mpcMap54, trueLoad, atfTemp));
     }
     break;
@@ -302,7 +320,7 @@ int decideGear(int wantedGear)
 
   if (!shiftBlocker && wantedGear < 6)
   {
-    if ((fullAuto && autoGear > gear && wantedGear > gear) || (!fullAuto && wantedGear > gear && autoGear > gear))
+    if (autoGear > gear && wantedGear > gear)
     {
       int newGear = moreGear;
       if (debugEnabled)
