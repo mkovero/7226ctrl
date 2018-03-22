@@ -28,7 +28,8 @@
 #define autoSwitch 22
 #define gdownSwitch 23
 #define gupSwitch 24
-
+#define aSpcUpSwitch 30
+#define aSpcDownSwitch 31
 // Car sensor input pins
 #define tpsPin A0
 #define atfPin A1

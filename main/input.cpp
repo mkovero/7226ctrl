@@ -5,6 +5,7 @@
 #include "include/core.h"
 #include "include/sensors.h"
 #include "include/maps.h"
+#include "include/eeprom.h"
 
 // INPUT
 // Polling for stick control
@@ -69,7 +70,7 @@ int pollstick()
           fullAuto = false;
     }
   }*/
-/* if ( debugEnabled) {
+  /* if ( debugEnabled) {
     Serial.print("pollstick: Stick says: ");
     Serial.print(whiteState);
     Serial.print(blueState);
@@ -236,7 +237,7 @@ void polltrans(int newGear, int wantedGear)
   if (!shiftBlocker)
   {
     analogWrite(mpc, mpcVal);
-   /*  if (debugEnabled)
+    /*  if (debugEnabled)
     {
       Serial.print("polltrans: mpcVal/atfTemp");
       Serial.print(mpcVal);
@@ -286,5 +287,63 @@ int evaluateGear(float ratio)
   if (measuredGear != 0)
   {
     return measuredGear;
+  }
+}
+
+void adaptSPC(int mapId, int xVal, int yVal)
+{
+  int modVal = 5;
+  int aSpcUpState = digitalRead(aSpcUpSwitch);     // Adapt pressure up
+  int aSpcDownState = digitalRead(aSpcDownSwitch); // Adapt pressure down
+  int prevaSpcUpState = 0;
+  int prevaSpcDownState = 0;
+
+  if (aSpcDownState != prevaSpcDownState || aSpcUpState != prevaSpcUpState)
+  {
+    if (aSpcDownState == LOW && aSpcUpState == HIGH)
+    {
+      int prevaSpcUpState = aSpcUpState;
+      if (debugEnabled)
+      {
+        Serial.println("adaptSPC: More pressure button");
+      }
+      Serial.print("adaptSPC: request values: ");
+      Serial.print(mapId);
+      Serial.print("-");
+      Serial.print(xVal);
+      Serial.print("-");
+      Serial.println(yVal);
+
+      int current = readEEPROM(mapId, xVal, yVal);
+      Serial.print("adaptSPC: old adapt pressure is: ");
+      Serial.println(current);
+
+      current = current + modVal;
+      writeEEPROM(mapId, xVal, yVal, current);
+      if (debugEnabled)
+      {
+        Serial.print("adaptSPC: New adapt pressure is: ");
+        Serial.println(current);
+      }
+    }
+    else if (aSpcUpState == LOW && aSpcDownState == HIGH)
+    {
+      int prevaSpcDownState = aSpcDownState;
+      if (debugEnabled)
+      {
+        Serial.println("adaptSPC: Less pressure button");
+      }
+      int current = readEEPROM(mapId, xVal, yVal);
+      Serial.print("adaptSPC: old adapt pressure is: ");
+      Serial.println(current);
+      current = current - modVal;
+      
+      writeEEPROM(mapId, xVal, yVal, current);
+      if (debugEnabled)
+      {
+        Serial.print("adaptSPC: New adapt pressure is: ");
+        Serial.println(current);
+      }
+    }
   }
 }

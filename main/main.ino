@@ -4,7 +4,7 @@
 #include "include/core.h"
 #include "include/input.h"
 #include "include/ui.h"
-
+#include <EEPROM.h>
 #define MEGA // we're running this on arduino mega
 unsigned long int startTime = 0;
 unsigned long int endTime = 0;
@@ -60,6 +60,9 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
+  for (int i = 0 ; i < EEPROM.length() ; i++) {
+    EEPROM.write(i, 0);
+  }
   Serial.println("Started.");
 }
 

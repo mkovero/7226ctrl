@@ -4,6 +4,7 @@
 #include "include/calc.h"
 #include "include/maps.h"
 #include "include/sensors.h"
+#include "include/input.h"
 
 // CORE
 // input:pollstick -> core:decideGear -> core:gearChange[Up|Down] -> core:switchGearStart -> core:boostControl
@@ -52,6 +53,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.print(lastYval);
     Serial.print("]");
   }
+  adaptSPC(lastMapVal,lastXval,lastYval);
   if (trans)
   {
     if (boostLimit)
@@ -143,7 +145,7 @@ void gearchangeUp(int newGear)
     }
     if (sensors)
     {
-      lastMapVal = 12;
+      lastMapVal = 100;
       switchGearStart(y3, readMap(spcMap12, trueLoad, atfTemp), readMap(mpcMap12, trueLoad, atfTemp));
     }
     break;
@@ -161,7 +163,7 @@ void gearchangeUp(int newGear)
     }
     if (sensors)
     {
-      lastMapVal = 23;
+      lastMapVal = 130;
       switchGearStart(y4, readMap(spcMap23, trueLoad, atfTemp), readMap(mpcMap23, trueLoad, atfTemp));
     }
     break;
@@ -179,7 +181,7 @@ void gearchangeUp(int newGear)
     }
     if (sensors)
     {
-      lastMapVal = 34;
+      lastMapVal = 160;
       switchGearStart(y5, readMap(spcMap34, trueLoad, atfTemp), readMap(mpcMap34, trueLoad, atfTemp));
     }
     break;
@@ -197,7 +199,7 @@ void gearchangeUp(int newGear)
     }
     if (sensors)
     {
-      lastMapVal = 45;
+      lastMapVal = 190;
       switchGearStart(y3, readMap(spcMap45, trueLoad, atfTemp), readMap(mpcMap45, trueLoad, atfTemp));
     }
     break;
@@ -241,7 +243,7 @@ void gearchangeDown(int newGear)
     }
     if (sensors)
     {
-      lastMapVal = 21;
+      lastMapVal = 210;
       switchGearStart(y3, readMap(spcMap21, trueLoad, atfTemp), readMap(mpcMap21, trueLoad, atfTemp));
     }
     break;
@@ -259,7 +261,7 @@ void gearchangeDown(int newGear)
     }
     if (sensors)
     {
-      lastMapVal = 32;
+      lastMapVal = 240;
       switchGearStart(y4, readMap(spcMap32, trueLoad, atfTemp), readMap(mpcMap32, trueLoad, atfTemp));
     }
     break;
@@ -277,7 +279,7 @@ void gearchangeDown(int newGear)
     }
     if (sensors)
     {
-      lastMapVal = 43;
+      lastMapVal = 270;
       switchGearStart(y5, readMap(spcMap43, trueLoad, atfTemp), readMap(mpcMap43, trueLoad, atfTemp));
     }
     break;
@@ -295,7 +297,7 @@ void gearchangeDown(int newGear)
     }
     if (sensors)
     {
-      lastMapVal = 54;
+      lastMapVal = 300;
       switchGearStart(y3, readMap(spcMap54, trueLoad, atfTemp), readMap(mpcMap54, trueLoad, atfTemp));
     }
     break;
