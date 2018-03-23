@@ -60,9 +60,7 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  for (int i = 0 ; i < EEPROM.length() ; i++) {
-    EEPROM.write(i, 0);
-  }
+  
   Serial.println("Started.");
 }
 
@@ -77,3 +75,4 @@ void loop()
   int loopTime = endTime - startTime;
   updateDisplay(wantedGear, loopTime);
 }
+

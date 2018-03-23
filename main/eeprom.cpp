@@ -56,3 +56,4 @@ int writeEEPROM(int mapId, int xVal, int yVal, int modVal)
     ++address &= EEPROM.length() - 1;
   ***/
 }
+

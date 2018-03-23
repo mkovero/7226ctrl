@@ -126,3 +126,4 @@ void updateDisplay(int wantedGear, int loopTime)
   } while (u8g.nextPage());
   rpmMeterUpdate();
 }
+

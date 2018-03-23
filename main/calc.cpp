@@ -90,3 +90,4 @@ int readMapMem(const int theMap[14][12], int x, int y)
   int mapValue = theMap[yidx][xidx];
   return mapValue;
 }
+
