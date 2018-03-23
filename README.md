@@ -17,6 +17,8 @@ Currently should work:
 Work in progress:
 - adaptative shift pressure
 - evaluateGear, make sure which gear is in (pending hallsensor testing)
+- External datalogging (format, method)
+
 
 Not started/pending:
 - vehicle speed reading (pending powertrain to be installed, going to read abs hallsensor from diff)
@@ -25,7 +27,6 @@ Not started/pending:
 - oil temperature (pending sensor installation)
 - PID controlled PWM for temperature stability
 - percentual map reads preferably without floats (eg. value between point x and y).
-- External datalogging (format, method)
 
 Considered:
 - Fuel pump control on idle
