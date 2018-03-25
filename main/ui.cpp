@@ -37,7 +37,7 @@ void draw(int wantedGear, int loopTime)
   {
     u8g.print("D");
   }
-  if (wantedGear == 100) 
+  if (wantedGear == 100)
   {
     u8g.print("");
   }
@@ -93,37 +93,49 @@ void rpmMeterUpdate()
 // Display update
 void updateDisplay(int wantedGear, int loopTime)
 {
-  /*  display.clearDisplay();
-  display.setCursor(3,0);
-  display.setTextSize(5);
-  if ( ! fullAuto ) {
-    if ( prevgear <= 5 ) { display.print(prevgear); };
-    if ( prevgear == 6 ) { display.print("N"); };
-    if ( prevgear == 7 ) { display.print("R"); };
-    if ( prevgear == 8 ) { display.print("P"); };
-    display.print("->");
-    if ( gear <= 5 ) { display.print(gear); };
-    if ( gear == 6 ) { display.print("N"); };
-    if ( gear == 7 ) { display.print("R"); };
-    if ( gear == 8 ) { display.print("P"); }; 
-  } else {
-    if ( gear == 5 ) { display.print("D"); };
-    if ( gear == 6 ) { display.print("N"); };
-    if ( gear == 7 ) { display.print("R"); };
-    if ( gear == 8 ) { display.print("P"); }; 
-  }
-  display.setTextSize(1);
-  display.println(atfTemp);
-  display.print(", ");
-  display.print(vehicleSpeed);
-  display.print(", ");
-  display.print(tpsPercentValue);
-  display.display();*/
   u8g.firstPage();
   do
   {
-    draw(wantedGear,loopTime);
+    draw(wantedGear, loopTime);
   } while (u8g.nextPage());
   rpmMeterUpdate();
 }
 
+void datalog(int loopTime)
+{
+  int atfTemp = atfRead();
+  int tpsPercentValue = tpsRead();
+  int oilTemp = oilRead();
+  int boostPressure = boostRead();
+  int rpmValue = rpmRead();
+  int boostPressureLimit = boostLimitRead();
+  int load = loadRead();
+  if (datalogger)
+  {
+    if (debugEnabled)
+    {
+      debugEnabled = false;
+    }
+    Serial.print(vehicleSpeed);
+    Serial.print(";");
+    Serial.print(rpmValue);
+    Serial.print(";");
+    Serial.print(tpsPercentValue);
+    Serial.print(";");
+    Serial.print(gear);
+    Serial.print(";");
+    Serial.print(oilTemp);
+    Serial.print(";");
+    Serial.print(atfTemp);
+    Serial.print(";");
+    Serial.print(load);
+    Serial.print(";");
+    Serial.print(boostPressure);
+    Serial.print(";");
+    Serial.print(boostPressureLimit);
+    Serial.print(";");
+    Serial.print(lastMapVal);
+    Serial.print(";");
+    Serial.print(loopTime);
+  }
+}

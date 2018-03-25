@@ -35,3 +35,4 @@ extern boolean debugEnabled;
 extern boolean fullAuto;
 extern boolean boostLimit;
 extern boolean drive;
+extern boolean datalogger;

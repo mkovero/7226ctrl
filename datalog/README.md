@@ -45,10 +45,10 @@ cons:
 
 ## Message format
 
-`vehicleSpeed(kmh);rpmSensor(rpm);tpsSensor(%);gear(1-5);oilTemp(celcius);atfTemp(celcius);load(%);boostSensor(kPa);boostLimit(kPa);lastSPC(int);modVal(int)`
+`vehicleSpeed(kmh);rpmSensor(rpm);tpsSensor(%);gear(1-5);oilTemp(celcius);atfTemp(celcius);load(%);boostSensor(kPa);boostLimit(kPa);lastSPC(int);modVal(int);looptime(ms)`
 
 For example:
 
-`120;4300;30;4;80;90;50;200;250;110;5`
+`120;4300;30;4;80;90;50;200;250;110;5;2`
 
 

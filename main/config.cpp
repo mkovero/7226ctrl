@@ -34,5 +34,8 @@ boolean boostLimit = true;
 
 boolean drive = false;
 
+// Datalogging (enabling this disables debug)
+boolean datalogger = false;
+
 // End of environment conf
 
