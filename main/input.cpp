@@ -162,14 +162,17 @@ void pollBoostControl()
 {
   if (!shiftBlocker && boostLimit)
   {
-    int boostSensor = boostRead() * 2.55;
+    int boostSensorVal = boostRead() / maxBoostPressure * 255;
     float allowedBoostPressure = boostLimitRead();
-    int controlVal = (1 - boostSensor / allowedBoostPressure) * 255;
+    int controlVal = (1 - boostSensorVal / allowedBoostPressure) * 255;
     if (controlVal < 1)
     {
       controlVal = 0;
     }
-    analogWrite(boostCtrl, controlVal);
+    if (boostSensorVal > (allowedBoostPressure - allowedBoostPressure / 5))
+    {
+      analogWrite(boostCtrl, controlVal);
+    }
     if (debugEnabled)
     {
       Serial.print("boostControl (allowedBoostPressure/bootSensor/controlVal):");
@@ -337,7 +340,7 @@ void adaptSPC(int mapId, int xVal, int yVal)
       Serial.print("adaptSPC: old adapt pressure is: ");
       Serial.println(current);
       current = current - modVal;
-      
+
       writeEEPROM(mapId, xVal, yVal, current);
       if (debugEnabled)
       {
@@ -347,4 +350,3 @@ void adaptSPC(int mapId, int xVal, int yVal)
     }
   }
 }
-

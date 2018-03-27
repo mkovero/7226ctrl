@@ -3,6 +3,8 @@
 // Macro for sizeof for better support with 2d arrays.
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))
 int lastXval, lastYval;
+int maxBoostPressure = 700; // Max pressure on boost sensor
+
 
 // Calculation helpers
 
@@ -16,7 +18,7 @@ int readTPSVoltage(int voltage)
 // Mapping boost sensor voltage to percentage
 int readBoostVoltage(int voltage)
 {
-  int result = map(voltage, 820, 4587, 0, 700); // NXP MPX5700AP (range 0-700kPa)
+  int result = map(voltage, 820, 4587, 0, maxBoostPressure); // NXP MPX5700AP (range 0-700kPa)
   return result;
 }
 

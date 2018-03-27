@@ -37,5 +37,8 @@ boolean drive = false;
 // Datalogging (enabling this disables debug)
 boolean datalogger = false;
 
+// Old style w124 speed meter controlling
+boolean wirespeedo = true;
+
 // End of environment conf
 

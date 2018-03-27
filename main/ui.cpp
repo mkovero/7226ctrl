@@ -101,6 +101,23 @@ void updateDisplay(int wantedGear, int loopTime)
   rpmMeterUpdate();
 }
 
+void updateSpeedo()
+{
+  digitalWrite(speedoDir, LOW); // can change direction, on w124 direction should be opposite as to clock
+  int speedMillis = 300 - vehicleSpeed;
+  long unsigned lastSpeedoMillis;
+
+  if (speedMillis > millis() - lastSpeedoMillis)
+  {
+    digitalWrite(speedoCtrl, HIGH);
+    lastSpeedoMillis = millis();
+  }
+  else
+  {
+    digitalWrite(speedoCtrl, LOW);
+  }
+}
+
 void datalog(int loopTime)
 {
   int atfTemp = atfRead();
@@ -110,32 +127,30 @@ void datalog(int loopTime)
   int rpmValue = rpmRead();
   int boostPressureLimit = boostLimitRead();
   int load = loadRead();
-  if (datalogger)
+
+  if (debugEnabled)
   {
-    if (debugEnabled)
-    {
-      debugEnabled = false;
-    }
-    Serial.print(vehicleSpeed);
-    Serial.print(";");
-    Serial.print(rpmValue);
-    Serial.print(";");
-    Serial.print(tpsPercentValue);
-    Serial.print(";");
-    Serial.print(gear);
-    Serial.print(";");
-    Serial.print(oilTemp);
-    Serial.print(";");
-    Serial.print(atfTemp);
-    Serial.print(";");
-    Serial.print(load);
-    Serial.print(";");
-    Serial.print(boostPressure);
-    Serial.print(";");
-    Serial.print(boostPressureLimit);
-    Serial.print(";");
-    Serial.print(lastMapVal);
-    Serial.print(";");
-    Serial.print(loopTime);
+    debugEnabled = false;
   }
+  Serial.print(vehicleSpeed);
+  Serial.print(";");
+  Serial.print(rpmValue);
+  Serial.print(";");
+  Serial.print(tpsPercentValue);
+  Serial.print(";");
+  Serial.print(gear);
+  Serial.print(";");
+  Serial.print(oilTemp);
+  Serial.print(";");
+  Serial.print(atfTemp);
+  Serial.print(";");
+  Serial.print(load);
+  Serial.print(";");
+  Serial.print(boostPressure);
+  Serial.print(";");
+  Serial.print(boostPressureLimit);
+  Serial.print(";");
+  Serial.print(lastMapVal);
+  Serial.print(";");
+  Serial.println(loopTime);
 }

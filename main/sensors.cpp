@@ -117,27 +117,14 @@ int rpmRead()
 
 int boostRead()
 {
-  int boostPercentValue = 0;
+  int boostValue = 0;
   if (boostSensor)
   {
     //reading MAP/boost
     float boostVoltage = analogRead(boostPin) * 4.89;
-    boostPercentValue = readBoostVoltage(boostVoltage);
-
-    if (boostPercentValue > 100)
-    {
-      boostPercentValue = 100;
-    }
-    if (boostPercentValue < 0)
-    {
-      boostPercentValue = 0;
-    }
+    boostValue = readBoostVoltage(boostVoltage);
   }
-  else
-  {
-    boostPercentValue = 0;
-  }
-  return boostPercentValue;
+  return boostValue;
 }
 
 int loadRead()

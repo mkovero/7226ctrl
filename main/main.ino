@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "include/pins.h"
+#include "include/config.h"
 #include "include/sensors.h"
 #include "include/core.h"
 #include "include/input.h"
@@ -32,6 +33,8 @@ void setup()
   pinMode(tcc, OUTPUT); // lock
   pinMode(rpmMeter, OUTPUT);
   pinMode(boostCtrl, OUTPUT);
+  pinMode(speedoCtrl, OUTPUT);
+  pinMode(speedoDir, OUTPUT);
 
   // Sensor input
   pinMode(boostPin, INPUT); // boost sensor
@@ -74,5 +77,6 @@ void loop()
   endTime = millis();
   int loopTime = endTime - startTime;
   updateDisplay(wantedGear, loopTime);
+  if ( datalogger ) { datalog(loopTime); }
 }
 

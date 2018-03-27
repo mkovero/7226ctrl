@@ -14,7 +14,9 @@
 #define spc 10
 #define tcc 41
 #define rpmMeter 12
-#define boostCtrl 44 // validate out pwm frequency
+#define boostCtrl 44
+#define speedoCtrl 43
+#define speedoDir 42
 // END OUTPUT PINS
 
 // INPUT PINS

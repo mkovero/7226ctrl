@@ -35,6 +35,7 @@ int lastMapVal;
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
   int boostControlVal; 
+  int boostSensorVal = boostRead() / maxBoostPressure * 255;
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   shiftBlocker = true;
   if (debugEnabled)
@@ -43,15 +44,6 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.print(gear);
     Serial.print("-");
     Serial.println(cSolenoid);
-    Serial.println("switchGearStop: lastMapXY");
-    Serial.print("spcMap");
-    Serial.print(lastMapVal);
-    Serial.print("[");
-    Serial.print(lastXval);
-    Serial.print("]");
-    Serial.print("[");
-    Serial.print(lastYval);
-    Serial.print("]");
   }
   adaptSPC(lastMapVal,lastXval,lastYval);
   if (trans)
