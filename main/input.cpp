@@ -162,17 +162,20 @@ void pollBoostControl()
 {
   if (!shiftBlocker && boostLimit)
   {
-    int boostSensorVal = boostRead() / maxBoostPressure * 255;
-    float allowedBoostPressure = boostLimitRead();
+    int maxBoostPressure = 700;
+    float boostSensor = boostRead();
+    float boostSensorVal = boostSensor/maxBoostPressure * 255;
+    
+    int allowedBoostPressure = boostLimitRead();
     int controlVal = (1 - boostSensorVal / allowedBoostPressure) * 255;
-    if (controlVal < 1)
+   /* if (controlVal < 1)
     {
       controlVal = 0;
-    }
-    if (boostSensorVal > (allowedBoostPressure - allowedBoostPressure / 5))
+    }*/
+   if (boostSensorVal > (allowedBoostPressure - allowedBoostPressure / 5))
     {
       analogWrite(boostCtrl, controlVal);
-    }
+   }
     if (debugEnabled)
     {
       Serial.print("boostControl (allowedBoostPressure/bootSensor/controlVal):");
@@ -180,6 +183,7 @@ void pollBoostControl()
       Serial.print("-");
       Serial.print(boostSensor);
       Serial.print("-");
+      Serial.print(boostSensorVal);
       Serial.println(controlVal);
     }
   }

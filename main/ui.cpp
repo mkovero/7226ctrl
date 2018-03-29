@@ -17,7 +17,7 @@ void draw(int wantedGear, int loopTime)
   int oilTemp = oilRead();
   int boostPressure = boostRead();
   int rpmValue = rpmRead();
-  int freeSram = readFreeSram();
+//  int freeSram = readFreeSram();
   // graphic commands to redraw the complete screen should be placed here
   u8g.setFont(u8g_font_ncenB18);
   u8g.setPrintPos(50, 20);

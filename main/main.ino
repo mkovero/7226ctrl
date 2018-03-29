@@ -6,7 +6,7 @@
 #include "include/input.h"
 #include "include/ui.h"
 #include <EEPROM.h>
-#define MEGA // we're running this on arduino mega
+#define MEGA // we're running this on arduino mega other option is TEENSY
 unsigned long int startTime = 0;
 unsigned long int endTime = 0;
 
@@ -15,14 +15,21 @@ unsigned long int endTime = 0;
 
 void setup()
 {
-  #ifdef MEGA
-    TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
-    TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46
-  #endif
+#ifdef MEGA
+  TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
+  TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46
+#endif
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
-  Serial.begin(9600);
+  if (debugEnabled)
+  {
+    Serial.begin(9600);
+  }
+  else
+  {
+    Serial.begin(115200);
+  }
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -35,7 +42,12 @@ void setup()
   pinMode(boostCtrl, OUTPUT);
   pinMode(speedoCtrl, OUTPUT);
   pinMode(speedoDir, OUTPUT);
-
+#ifdef TEENSY
+  analogWriteFrequency(spc, 1000); // 1khz for spc
+  analogWriteFrequency(mpc, 1000); // and mpc
+  analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
+  analogWriteFrequency(rpmMeter, 50); // 50hz for w124 rpm meter
+#endif
   // Sensor input
   pinMode(boostPin, INPUT); // boost sensor
   pinMode(tpsPin, INPUT);   // throttle position sensor
@@ -63,20 +75,25 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  
-  Serial.println("Started.");
+
+  if (debugEnabled)
+  {
+    Serial.println("Started.");
+  }
 }
 
 void loop()
 {
-  startTime = millis();
+  startTime = micros();
   int wantedGear = pollstick();
   int newGear = decideGear(wantedGear);
   polltrans(newGear, wantedGear);
   pollsensors();
-  endTime = millis();
+  endTime = micros();
   int loopTime = endTime - startTime;
   updateDisplay(wantedGear, loopTime);
-  if ( datalogger ) { datalog(loopTime); }
+  if (datalogger)
+  {
+    datalog(loopTime);
+  }
 }
-

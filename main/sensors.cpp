@@ -5,18 +5,13 @@
 #include "include/maps.h"
 
 // Internals
-int n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, n2Speed, n3Speed;
-unsigned long lastSensorTime = 0;
+unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, vehicleSpeedRevs, lastSensorTime;
+int n2Speed, n3Speed;
 
 // atf temperature sensor lowpass filtering
 int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
 int atfSensorNumReadings = 10;  // number of readings
 int atfSensorAverage = 0;             // the  running average
-
-// Memory management
-extern unsigned int __bss_end;
-unsigned int __heap_start;
-void *__brkval;
 
 int tpsRead()
 {
@@ -63,7 +58,9 @@ void pollsensors()
 {
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
-  const int vehicleSpeedPulsesPerRev = 60;
+  const int vehicleSpeedPulsesPerRev = 29; // number of teeths in w124 rear diff
+  float diffRatio = 3.27; // rear diff ratio
+  int vehicleSpeedRevs;
 
   if (millis() - lastSensorTime >= 1000)
   {
@@ -91,9 +88,11 @@ void pollsensors()
       n3Speed = 0;
     }
 
-    if (vehicleSpeedPulses >= 60)
+    if (vehicleSpeedPulses >= vehicleSpeedPulsesPerRev)
     {
-      vehicleSpeed = vehicleSpeedPulses / 60;
+      vehicleSpeedRevs = vehicleSpeedPulses / vehicleSpeedPulsesPerRev;
+      int driveShaftSpeed = vehicleSpeedRevs / diffRatio;
+      
       vehicleSpeedPulses = 0;
     }
     else
@@ -198,16 +197,3 @@ int boostLimitRead()
   
   return allowedBoostPressure;
 }
-
-uint16_t readFreeSram()
-{
-  uint8_t newVariable;
-  // heap is empty, use bss as start memory address
-  if ((uint16_t)__brkval == 0)
-    return (((uint16_t)&newVariable) - ((uint16_t)&__bss_end));
-  // use heap end as the start of the memory address
-  else
-    return (((uint16_t)&newVariable) - ((uint16_t)__brkval));
-};
-
-

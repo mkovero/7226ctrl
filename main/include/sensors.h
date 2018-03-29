@@ -9,4 +9,3 @@ int boostLimitRead();
 int loadRead();
 int atfRead();
 int oilRead();
-uint16_t readFreeSram();

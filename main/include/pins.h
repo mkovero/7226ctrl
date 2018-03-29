@@ -1,12 +1,6 @@
 // OUTPUT PINS
-// SPI display setup
-#define OLED_MOSI 11 //D1
-#define OLED_CLK 13  //D0
-#define OLED_DC 6
-#define OLED_CS 7
-#define OLED_RESET 8
-
 // Solenoid output pins
+#ifdef MEGA
 #define y3 47
 #define y4 45
 #define y5 46
@@ -17,6 +11,19 @@
 #define boostCtrl 44
 #define speedoCtrl 43
 #define speedoDir 42
+#endif
+#ifdef TEENSY
+#define y3 36 // FMT3
+#define y4 35
+#define y5 14
+#define mpc 38
+#define spc 37
+#define tcc 8
+#define speedoCtrl 7
+#define speedoDir 2 // END OF FMT3
+#define rpmMeter 30 // FMT2
+#define boostCtrl 4 // FMT1
+#endif
 // END OUTPUT PINS
 
 // INPUT PINS
@@ -30,8 +37,8 @@
 #define autoSwitch 22
 #define gdownSwitch 23
 #define gupSwitch 24
-#define aSpcUpSwitch 30
-#define aSpcDownSwitch 31
+#define aSpcUpSwitch 18
+#define aSpcDownSwitch 17
 // Car sensor input pins
 #define tpsPin A0
 #define atfPin A1
