@@ -44,6 +44,7 @@ cons:
 
 
 ## Message format
+datalog-testing has currently working code outputting this at 115200 baud on usb serial.
 
 `vehicleSpeed(kmh);rpmSensor(rpm);tpsSensor(%);gear(1-5);oilTemp(celcius);atfTemp(celcius);load(%);boostSensor(kPa);boostLimit(kPa);lastSPC(int);modVal(int);looptime(ms)`
 
