@@ -6,7 +6,6 @@
 #include "include/input.h"
 #include "include/ui.h"
 #include <EEPROM.h>
-#define MEGA // we're running this on arduino mega other option is TEENSY
 unsigned long int startTime = 0;
 unsigned long int endTime = 0;
 

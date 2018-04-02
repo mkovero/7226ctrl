@@ -35,7 +35,7 @@ boolean boostLimit = true;
 boolean drive = false;
 
 // Datalogging (enabling this disables debug)
-boolean datalogger = true;
+boolean datalogger = false;
 
 // Old style w124 speed meter controlling
 boolean wirespeedo = true;

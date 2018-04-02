@@ -1,5 +1,7 @@
 // OUTPUT PINS
 // Solenoid output pins
+#define MEGA // we're running this on arduino mega other option is TEENSY
+
 #ifdef MEGA
 #define y3 47
 #define y4 45
@@ -12,6 +14,7 @@
 #define speedoCtrl 43
 #define speedoDir 42
 #endif
+
 #ifdef TEENSY
 #define y3 36 // FMT3
 #define y4 35
@@ -37,10 +40,12 @@
 #define autoSwitch 5 // ex. 22
 #define gdownSwitch 25 // ex. 23
 #define gupSwitch 24
+
 #ifdef MEGA
 #define aSpcUpSwitch 39 // ex 18
 #define aSpcDownSwitch 40 // ex 17
 #endif
+
 #ifdef TEENSY
 #define aSpcUpSwitch 32 // ex 18
 #define aSpcDownSwitch 31 // ex 17

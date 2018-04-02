@@ -160,22 +160,24 @@ void pollkeys()
 
 void pollBoostControl()
 {
-  if (!shiftBlocker && boostLimit)
+ if (!shiftBlocker && boostLimit)
   {
     int maxBoostPressure = 700;
     float boostSensor = boostRead();
     float boostSensorVal = boostSensor/maxBoostPressure * 255;
     
     int allowedBoostPressure = boostLimitRead();
-    int controlVal = (1 - boostSensorVal / allowedBoostPressure) * 255;
+    int controlVal = (1 - boostSensor / allowedBoostPressure) * 255;
    /* if (controlVal < 1)
     {
       controlVal = 0;
-    }*/
-   if (boostSensorVal > (allowedBoostPressure - allowedBoostPressure / 5))
+    */
+  if (boostSensor > allowedBoostPressure )
     {
-      analogWrite(boostCtrl, controlVal);
-   }
+      analogWrite(boostCtrl, 245);
+  } else {
+    analogWrite(boostCtrl,255);
+  }
     if (debugEnabled)
     {
       Serial.print("boostControl (allowedBoostPressure/bootSensor/controlVal):");
