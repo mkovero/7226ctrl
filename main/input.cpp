@@ -6,6 +6,7 @@
 #include "include/sensors.h"
 #include "include/maps.h"
 #include "include/eeprom.h"
+boolean firstround = true;
 
 // INPUT
 // Polling for stick control
@@ -18,68 +19,27 @@ int pollstick()
   int greenState = digitalRead(greenpin);
   int yellowState = digitalRead(yellowpin);
   int autoState = digitalRead(autoSwitch);
-  int wantedGear = 100;
-
-  // Determine position
-  if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
+  int static wantedGear = 1;
+  
+  // Datalog testing
+  if (firstround == true)
   {
-    wantedGear = 8;
-  } // P
-  if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
-  {
-    wantedGear = 7;
-  } // R
-  if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
-  {
-    wantedGear = 6;
-  } // N
-  if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW)
-  {
-    wantedGear = 5;
+    wantedGear = gear + 1;
   }
-  if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH)
+  else
   {
-    wantedGear = 4;
-  }
-  if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW)
-  {
-    wantedGear = 3;
-  }
-  if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW)
-  {
-    wantedGear = 2;
-  }
-  if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH)
-  {
-    wantedGear = 1;
-  }
-  if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == LOW)
-  {
-    wantedGear = 100;
+    wantedGear = gear - 1;
   }
 
-  /*
-  if ( autoState == HIGH ) {
-    if ( ! fullAuto ) {
-          Serial.println("pollstick: Automode on ");
-          fullAuto = true; 
-    }
-  } else {
-    if ( fullAuto ) {
-          Serial.println("pollstick: Automode off ");
-          fullAuto = false;
-    }
-  }*/
-  /* if ( debugEnabled) {
-    Serial.print("pollstick: Stick says: ");
-    Serial.print(whiteState);
-    Serial.print(blueState);
-    Serial.print(greenState);
-    Serial.println(yellowState);
-    Serial.print("pollstick: Requested gear prev/wanted/current/new: ");
-    Serial.print(wantedGear);
-    Serial.println(gear);
-  }*/
+  if (gear >= 5)
+  {
+    firstround = false;
+  }
+  else if (gear == 1)
+  {
+    firstround = true;
+  }
+
   return wantedGear;
 }
 
@@ -160,24 +120,26 @@ void pollkeys()
 
 void pollBoostControl()
 {
- if (!shiftBlocker && boostLimit)
+  if (!shiftBlocker && boostLimit)
   {
     int maxBoostPressure = 700;
     float boostSensor = boostRead();
-    float boostSensorVal = boostSensor/maxBoostPressure * 255;
-    
+    float boostSensorVal = boostSensor / maxBoostPressure * 255;
+
     int allowedBoostPressure = boostLimitRead();
     int controlVal = (1 - boostSensor / allowedBoostPressure) * 255;
-   /* if (controlVal < 1)
+    /* if (controlVal < 1)
     {
       controlVal = 0;
     */
-  if (boostSensor > allowedBoostPressure )
+    if (boostSensor > allowedBoostPressure)
     {
       analogWrite(boostCtrl, 245);
-  } else {
-    analogWrite(boostCtrl,255);
-  }
+    }
+    else
+    {
+      analogWrite(boostCtrl, 255);
+    }
     if (debugEnabled)
     {
       Serial.print("boostControl (allowedBoostPressure/bootSensor/controlVal):");

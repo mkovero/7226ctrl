@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <EEPROM.h>
+#include "include/config.h"
 
 // start reading from the first byte (address 0) of the EEPROM
-
 
 int readEEPROM(int mapId, int xVal, int yVal)
 {
@@ -13,8 +13,11 @@ int readEEPROM(int mapId, int xVal, int yVal)
     // [mapId][xVal][yVal][modVal] = 4bytes
     // mapId is always greater than 100.
     int address = mapId + xVal + yVal;
-    Serial.print("EEPROM: reading from address:");
-    Serial.println(address);
+    if (debugEnabled)
+    {
+        Serial.print("EEPROM: reading from address:");
+        Serial.println(address);
+    }
     modVal = EEPROM.read(address);
 
     return modVal;
@@ -40,8 +43,11 @@ int writeEEPROM(int mapId, int xVal, int yVal, int modVal)
     // [mapId][xVal][yVal][modVal] = 4bytes
     // mapId is greater than 10000.
     int address = mapId + xVal + yVal;
-    Serial.print("EEPROM: writing to address:");
-    Serial.println(address);
+    if (debugEnabled)
+    {
+        Serial.print("EEPROM: writing to address:");
+        Serial.println(address);
+    }
     EEPROM.write(address, modVal);
 
     if (address == EEPROM.length())
@@ -56,4 +62,3 @@ int writeEEPROM(int mapId, int xVal, int yVal, int modVal)
     ++address &= EEPROM.length() - 1;
   ***/
 }
-
