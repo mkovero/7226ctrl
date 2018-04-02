@@ -5,6 +5,7 @@
 #include "include/config.h"
 #include "include/pins.h"
 #include "include/sensors.h"
+#include "include/eeprom.h"
 
 #ifdef MEGA
 U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
@@ -132,7 +133,8 @@ void datalog(int loopTime)
   int rpmValue = rpmRead();
   int boostPressureLimit = boostLimitRead();
   int load = loadRead();
-
+  int lastModVal = readEEPROM(lastMapVal,lastXval,lastYval);
+  
   if (debugEnabled)
   {
     debugEnabled = false;
@@ -156,6 +158,8 @@ void datalog(int loopTime)
   Serial.print(boostPressureLimit);
   Serial.print(";");
   Serial.print(lastMapVal);
+  Serial.print(";");
+  Serial.print(lastModVal);
   Serial.print(";");
   Serial.println(loopTime);
 }

@@ -24,7 +24,7 @@ boolean boostSensor = true;
 boolean shiftBlocker = false;
 
 // Output to serial console
-boolean debugEnabled = true;
+boolean debugEnabled = false;
 
 // Full automatic mode
 boolean fullAuto = true;
@@ -35,7 +35,7 @@ boolean boostLimit = true;
 boolean drive = false;
 
 // Datalogging (enabling this disables debug)
-boolean datalogger = false;
+boolean datalogger = true;
 
 // Old style w124 speed meter controlling
 boolean wirespeedo = true;
