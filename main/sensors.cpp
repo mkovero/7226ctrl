@@ -126,6 +126,16 @@ int boostRead()
   return boostValue;
 }
 
+
+int boostLimitRead()
+{
+  int oilTemp = oilRead();
+  int tps = tpsRead();
+  int allowedBoostPressure = readMap(boostControlPressureMap, tps, oilTemp);
+  
+  return allowedBoostPressure;
+}
+
 int loadRead()
 {
   int trueLoad = 0;
@@ -190,13 +200,4 @@ int oilRead()
   // wip
   int oilTemp = 100;
   return oilTemp;
-}
-
-int boostLimitRead()
-{
-  int oilTemp = oilRead();
-  int tps = tpsRead();
-  int allowedBoostPressure = readMap(boostControlPressureMap, tps, oilTemp);
-  
-  return allowedBoostPressure;
 }
