@@ -1,5 +1,14 @@
 // OUTPUT PINS
 // Solenoid output pins
+
+// Color placeholder
+// Orange / Orange-White = 12V key on (fused)
+// Brown / Brown-White = 5V key on
+// Blue = Speedo control voltage
+// Blue-White = NA
+// Green = Fuel pump control ground
+// Green-White = TPS signal
+
 #define MEGA // we're running this on arduino mega other option is TEENSY
 
 #ifdef MEGA

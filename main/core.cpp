@@ -18,7 +18,6 @@ int vehicleSpeed = 100;
 // Shift pressure defaults
 int spcSetVal = 255;
 int spcPercentVal = 100;
-int shiftDropPressure = 50;
 
 // for timers
 unsigned long int shiftStartTime = 0;
@@ -37,7 +36,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   int boostControlVal; 
   int boostSensorVal = boostRead() / maxBoostPressure * 255;
   shiftStartTime = millis(); // Beginning to count shiftStartTime
-  shiftBlocker = true;
+  shiftBlocker = true; // Blocking any other shift operations during the shift
   if (debugEnabled)
   {
     Serial.print("switchGearStart: Begin of gear change current/solenoid: ");
@@ -45,21 +44,17 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.print("-");
     Serial.println(cSolenoid);
   }
-  adaptSPC(lastMapVal,lastXval,lastYval);
+  
+  int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
+
   if (trans)
   {
     if (boostLimit)
     {
-      float allowedBoostPressure = boostLimitRead();
-      boostControlVal = (1 - (boostSensor + shiftDropPressure) / allowedBoostPressure) * 255;
-      if (boostControlVal < 1)
-      {
-        boostControlVal = 0;
-      }
-      analogWrite(boostCtrl, boostControlVal);
+     pollBoostControl();
     }
     // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
-    spcSetVal = (100 - spcVal) * 2.55;
+    spcSetVal = (100 - (spcVal+spcModVal)) * 2.55;
     spcPercentVal = spcVal;
     mpcVal = (100 - mpcVal) * 2.55;
     analogWrite(spc, spcSetVal);
@@ -71,11 +66,6 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
       Serial.print(spcSetVal);
       Serial.print("-");
       Serial.println(mpcVal);
-      if (boostLimit)
-      {
-        Serial.print("-");
-        Serial.print(boostControlVal);
-      }
     }
   }
   cSolenoidEnabled = cSolenoid;

@@ -97,7 +97,7 @@ void pollsensors()
     }
     else
     {
-      vehicleSpeed = 100;
+      vehicleSpeed = tpsRead();
     }
 
     lastSensorTime = millis();
@@ -129,7 +129,9 @@ int boostRead()
 int loadRead()
 {
   int trueLoad = 0;
-  int boostPercentValue = boostRead();
+  float boostSensor = boostRead();
+  int allowedBoostPressure = boostLimitRead();
+  int boostPercentValue = 100 * boostSensor / allowedBoostPressure;
   int tpsPercentValue = tpsRead();
 
   if (boostSensor && tpsSensor)
@@ -138,7 +140,7 @@ int loadRead()
   }
   else if (tpsSensor && !boostSensor)
   {
-    trueLoad = (tpsPercentValue * 1);
+    trueLoad = tpsPercentValue;
   }
   else if (!tpsSensor)
   {
@@ -147,6 +149,7 @@ int loadRead()
 
   return trueLoad;
 }
+
 //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 int atfRead()
 {
@@ -193,7 +196,7 @@ int boostLimitRead()
 {
   int oilTemp = oilRead();
   int tps = tpsRead();
-  int allowedBoostPressure = readMapMem(boostControlPressureMap, tps, oilTemp);
+  int allowedBoostPressure = readMap(boostControlPressureMap, tps, oilTemp);
   
   return allowedBoostPressure;
 }
