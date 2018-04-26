@@ -5,7 +5,7 @@
 #include "include/maps.h"
 
 // Internals
-unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, vehicleSpeedRevs, lastSensorTime;
+unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, vehicleSpeedRevs, lastSensorTime, rpmPulse;
 int n2Speed, n3Speed;
 
 // atf temperature sensor lowpass filtering
@@ -51,6 +51,11 @@ void N3SpeedInterrupt()
 void vehicleSpeedInterrupt()
 {
   vehicleSpeedPulses++;
+}
+// RPM Interrupt
+void rpmInterrupt()
+{
+  rpmPulse++;
 }
 
 // Polling sensors
@@ -100,18 +105,27 @@ void pollsensors()
       vehicleSpeed = tpsRead();
     }
 
+    
     lastSensorTime = millis();
 
     attachInterrupt(2, N2SpeedInterrupt, RISING); // Attach again
     attachInterrupt(3, N3SpeedInterrupt, RISING);
     attachInterrupt(4, vehicleSpeedInterrupt, RISING);
+    attachInterrupt(5, rpmInterrupt, RISING);
   }
 }
 
 int rpmRead()
 {
-  int rpmValue = 0;
+  int rpmValue = rpmPulse * 60;
   return rpmValue;
+}
+
+int oilRead()
+{
+  // wip
+  int oilTemp = 100;
+  return oilTemp;
 }
 
 int boostRead()
@@ -125,7 +139,6 @@ int boostRead()
   }
   return boostValue;
 }
-
 
 int boostLimitRead()
 {
@@ -193,11 +206,4 @@ int atfRead()
   if ( atfSensorAverage > 120 ) { atfSensorAverage = 120; }
   
   return atfSensorAverage;
-}
-
-int oilRead()
-{
-  // wip
-  int oilTemp = 100;
-  return oilTemp;
 }

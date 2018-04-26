@@ -108,19 +108,8 @@ void updateDisplay(int wantedGear, int loopTime)
 
 void updateSpeedo()
 {
-  digitalWrite(speedoDir, LOW); // can change direction, on w124 direction should be opposite as to clock
-  int speedMillis = 300 - vehicleSpeed;
-  long unsigned lastSpeedoMillis;
-
-  if (speedMillis > millis() - lastSpeedoMillis)
-  {
-    digitalWrite(speedoCtrl, HIGH);
-    lastSpeedoMillis = millis();
-  }
-  else
-  {
-    digitalWrite(speedoCtrl, LOW);
-  }
+  int speedPWM = map(vehicleSpeed, 0, 190, 0, 255);
+  analogWrite(speedoCtrl, speedPWM);
 }
 
 void datalog(int loopTime)

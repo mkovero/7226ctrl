@@ -33,10 +33,10 @@ int lastMapVal;
 // Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
-  int boostControlVal; 
+  int boostControlVal;
   int boostSensorVal = boostRead() / maxBoostPressure * 255;
   shiftStartTime = millis(); // Beginning to count shiftStartTime
-  shiftBlocker = true; // Blocking any other shift operations during the shift
+  shiftBlocker = true;       // Blocking any other shift operations during the shift
   if (debugEnabled)
   {
     Serial.print("switchGearStart: Begin of gear change current/solenoid: ");
@@ -44,17 +44,17 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.print("-");
     Serial.println(cSolenoid);
   }
-  
+
   int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
 
   if (trans)
   {
     if (boostLimit)
     {
-     pollBoostControl();
+      pollBoostControl();
     }
     // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
-    spcSetVal = (100 - (spcVal+spcModVal)) * 2.55;
+    spcSetVal = (100 - (spcVal + spcModVal)) * 2.55;
     spcPercentVal = spcVal;
     mpcVal = (100 - mpcVal) * 2.55;
     analogWrite(spc, spcSetVal);
@@ -361,4 +361,3 @@ int decideGear(int wantedGear)
   }
 }
 // END OF CORE
-
