@@ -38,7 +38,7 @@ static const int mpcNormalMap[14][12] PROGMEM {
 
 //Shift solenoid using time map, ms. Time to keep current flowing to shift pressure solenoid (SPC), shift solenoid,
 //and to use shift-depedent maps for modulating pressure control (MPC) solenoid, instead of above map.
-static const int shiftTimeMap[14][12] {
+static const int shiftTimeMap[14][12] PROGMEM {
 {999,       0,   10,   20,   30,   40,   50,   60,   70,   80,   90,   100 },   //shift pressure %
 //-----------------------------------------------------------------------
 { -20,    1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100,  900,  800,  800 },
@@ -56,7 +56,7 @@ static const int shiftTimeMap[14][12] {
 { 100,    1000,  900,  800,  800,  800,  700,  600,  500,  320,  300,  300 }};
 //oil temp
 
-static const int boostControlPressureMap[14][12] {
+static const int boostControlPressureMap[14][12] PROGMEM {
 {999,       0,   10,   20,   30,   40,   50,   60,   70,   80,   90,   100 },   //throttle position %
 //-----------------------------------------------------------------------
 { -20,       0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },

@@ -3,7 +3,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino"
+                "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino",
+                "/Users/markus/Documents/Arduino/libraries/SoftTimer/src"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": false,
@@ -11,7 +12,8 @@
                     "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino",
                     "${workspaceRoot}",
                     "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/",
-                    "/Users/markus/7226ctrl/main"
+                    "/Users/markus/7226ctrl/main",
+                    "/Users/markus/Documents/Arduino/libraries/SoftTimer/src"
                 ]
             },
             "intelliSenseMode": "clang-x64",

@@ -35,3 +35,5 @@ extern boolean boostLimit;
 extern boolean drive;
 extern boolean datalogger;
 extern boolean wirespeedo;
+extern int wantedGear;
+extern int newGear;

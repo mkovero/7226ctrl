@@ -6,11 +6,21 @@
 #include "include/input.h"
 #include "include/ui.h"
 #include <EEPROM.h>
+#include <SoftTimer.h>
+
 unsigned long int startTime = 0;
 unsigned long int endTime = 0;
 
 // Work by Markus Kovero <mui@mui.fi>
 // Big thanks to Tuomas Kantola regarding maps and related math
+
+// Set internal check times.
+Task pollDisplay(500, updateDisplay); // 500ms to update display
+Task pollData(200, datalog); // 500ms to update display
+Task pollGear(200, decideGear);
+Task pollSensors(500, pollsensors); // 500ms to update sensor values
+Task pollStick(200, pollstick); // 200ms for checking stick position
+Task pollTrans(50, polltrans); // 50ms to check transmission state
 
 void setup()
 {
@@ -79,20 +89,14 @@ void setup()
   {
     Serial.println("Started.");
   }
+  // initialize timers
+  SoftTimer.add(&pollDisplay);
+  SoftTimer.add(&pollData);
+  SoftTimer.add(&pollGear);
+  SoftTimer.add(&pollStick);
+  SoftTimer.add(&pollTrans);
+  SoftTimer.add(&pollSensors);
+
 }
 
-void loop()
-{
-  startTime = micros();
-  int wantedGear = pollstick();
-  int newGear = decideGear(wantedGear);
-  polltrans(newGear, wantedGear);
-  pollsensors();
-  endTime = micros();
-  int loopTime = endTime - startTime;
-  updateDisplay(wantedGear, loopTime);
-  if (datalogger)
-  {
-    datalog(loopTime);
-  }
-}
+

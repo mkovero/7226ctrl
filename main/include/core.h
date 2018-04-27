@@ -1,5 +1,7 @@
+#include <SoftTimer.h>
+
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal);
-void switchGearStop(int cSolenoid, int newGear);
+void switchGearStop(Task* me);
 void gearchangeUp(int newGear);
 void gearchangeDown(int newGear);
-int decideGear(int wantedGear);
+void decideGear(Task* me);

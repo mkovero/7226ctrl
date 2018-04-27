@@ -1,11 +1,12 @@
 #include <Arduino.h>
+#include <SoftTimer.h>
 #include "include/config.h"
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
 #include "include/sensors.h"
 #include "include/input.h"
-
+#include "include/core.h"
 // CORE
 // input:pollstick -> core:decideGear -> core:gearChange[Up|Down] -> core:switchGearStart -> core:boostControl
 // input:polltrans -> core:switchGearStop
@@ -14,6 +15,7 @@
 // Obvious internals
 int gear = 2; // Start on gear 2
 int vehicleSpeed = 100;
+int newGear = 2;
 
 // Shift pressure defaults
 int spcSetVal = 255;
@@ -29,13 +31,18 @@ int cSolenoidEnabled = 0;
 int cSolenoid = 0; // Change solenoid pin to be controlled.
 int lastMapVal;
 
+Task endShift(1000, switchGearStop);
+
+
 // Gear shift logic
 // Beginning of gear change phase
 // Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
-  int boostControlVal; 
+  int boostControlVal;
   int boostSensorVal = boostRead() / maxBoostPressure * 255;
+  int atfTemp = atfRead();
+
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   shiftBlocker = true;
   if (debugEnabled)
@@ -45,7 +52,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.print("-");
     Serial.println(cSolenoid);
   }
-  adaptSPC(lastMapVal,lastXval,lastYval);
+  adaptSPC(lastMapVal, lastXval, lastYval);
   if (trans)
   {
     if (boostLimit)
@@ -77,25 +84,32 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
         Serial.print(boostControlVal);
       }
     }
+    int shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp);
+  Task endShift(shiftDelay, switchGearStop);
+  SoftTimer.add(&endShift);
   }
   cSolenoidEnabled = cSolenoid;
 }
 
 // End of gear change phase
-void switchGearStop(int cSolenoid, int newGear)
+void switchGearStop(Task* me)
 {
-  analogWrite(cSolenoid, 0); // turn shift solenoid off
-  analogWrite(spc, 0);       // let go of SPC-pressure
-  shiftBlocker = false;
-  gear = newGear; // we can happily say we're on new gear
-  if (debugEnabled)
+  if (shiftBlocker)
   {
-    Serial.print("switchGearStop: End of gear change current/solenoid: ");
-    Serial.print(gear);
-    Serial.print("-");
-    Serial.println(cSolenoid);
+    SoftTimer.remove(&endShift);
+    analogWrite(cSolenoid, 0); // turn shift solenoid off
+    analogWrite(spc, 0);       // let go of SPC-pressure
+    shiftBlocker = false;
+    gear = newGear; // we can happily say we're on new gear
+    if (debugEnabled)
+    {
+      Serial.print("switchGearStop: End of gear change current/solenoid: ");
+      Serial.print(gear);
+      Serial.print("-");
+      Serial.println(cSolenoid);
+    }
+    shiftStartTime = 0;
   }
-  shiftStartTime = 0;
 }
 
 // upshift parameter logic gathering
@@ -302,7 +316,7 @@ void gearchangeDown(int newGear)
 }
 
 // Logic for automatic new gear, this makes possible auto up/downshifts.
-int decideGear(int wantedGear)
+void decideGear(Task *me)
 {
 
   int moreGear = gear + 1;
@@ -316,7 +330,7 @@ int decideGear(int wantedGear)
   {
     if (autoGear > gear && wantedGear > gear)
     {
-      int newGear = moreGear;
+      newGear = moreGear;
       if (debugEnabled)
       {
         Serial.println("");
@@ -339,11 +353,10 @@ int decideGear(int wantedGear)
         Serial.println(gear);
       }
       gearchangeUp(newGear);
-      return newGear;
     }
     if (autoGear < gear || wantedGear < gear)
     {
-      int newGear = lessGear;
+      newGear = lessGear;
       if (debugEnabled)
       {
         Serial.println("");
@@ -366,9 +379,7 @@ int decideGear(int wantedGear)
         Serial.println(gear);
       }
       gearchangeDown(newGear);
-      return newGear;
     }
   }
 }
 // END OF CORE
-

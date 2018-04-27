@@ -6,6 +6,7 @@
 #include "include/pins.h"
 #include "include/sensors.h"
 #include "include/eeprom.h"
+#include <SoftTimer.h>
 
 #ifdef MEGA
 U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
@@ -13,6 +14,7 @@ U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
 #ifdef TEENSY
 U8GLIB_SSD1306_128X64 u8g(13, 11, 3, 6, 5);
 #endif
+int loopTime = 0;
 // UI STAGE
 // Control for what user sees and how gearbox is used with
 //
@@ -97,7 +99,7 @@ void rpmMeterUpdate()
 }
 
 // Display update
-void updateDisplay(int wantedGear, int loopTime)
+void updateDisplay(Task* me)
 {
   u8g.firstPage();
   do
@@ -124,7 +126,7 @@ void updateSpeedo()
   }
 }
 
-void datalog(int loopTime)
+void datalog(Task* me)
 {
   int atfTemp = atfRead();
   int tpsPercentValue = tpsRead();
@@ -161,5 +163,7 @@ void datalog(int loopTime)
   Serial.print(";");
   Serial.print(lastModVal);
   Serial.print(";");
-  Serial.println(loopTime);
+  Serial.print(wantedGear);
+  Serial.print(";");
+  Serial.println(newGear);
 }

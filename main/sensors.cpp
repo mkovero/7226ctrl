@@ -3,6 +3,9 @@
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
+#include "include/sensors.h"
+#include "include/ui.h"
+#include <SoftTimer.h>
 
 // Internals
 unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, vehicleSpeedRevs, lastSensorTime;
@@ -19,10 +22,14 @@ int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
 int atfSensorNumReadings = 10;  // number of readings
 int atfSensorAverage = 0;       // the  running average
 
+
 int tpsRead()
 {
   tpsPercentValue = tpsPercentValue + 10;
-  if ( tpsPercentValue >= 100 ) { tpsPercentValue = 0; }
+  if (tpsPercentValue >= 100)
+  {
+    tpsPercentValue = 0;
+  }
   return tpsPercentValue;
 }
 
@@ -42,7 +49,7 @@ void vehicleSpeedInterrupt()
 }
 
 // Polling sensors
-void pollsensors()
+void pollsensors(Task *me)
 {
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
@@ -77,7 +84,10 @@ void pollsensors()
 int rpmRead()
 {
   rpmValue = rpmValue + 1; // Datalog testing
-  if ( rpmValue >= 7000 ) { rpmValue = 0; }
+  if (rpmValue >= 7000)
+  {
+    rpmValue = 0;
+  }
 
   return rpmValue;
 }
@@ -85,7 +95,10 @@ int rpmRead()
 int boostRead()
 {
   boostValue = boostValue + 5; // Datalog testing
-  if ( boostValue >= 700 ) { boostValue = 0; }
+  if (boostValue >= 700)
+  {
+    boostValue = 0;
+  }
 
   return boostValue;
 }
@@ -115,7 +128,10 @@ int loadRead()
 int atfRead()
 {
   atfTemp = atfTemp + 14; // Datalog testing
-  if ( atfTemp >= 400 ) { atfTemp = -40; }
+  if (atfTemp >= 400)
+  {
+    atfTemp = -40;
+  }
 
   return atfTemp;
 }
@@ -123,7 +139,10 @@ int atfRead()
 int oilRead()
 {
   oilTemp = oilTemp + 12; // Datalog testing
-  if ( oilTemp >= 400 ) { oilTemp = -40; }
+  if (oilTemp >= 400)
+  {
+    oilTemp = -40;
+  }
 
   return oilTemp;
 }
@@ -132,7 +151,7 @@ int boostLimitRead()
 {
   int oilTemp = oilRead();
   int tps = tpsRead();
-  int allowedBoostPressure = readMapMem(boostControlPressureMap, tps, oilTemp);
-
+  //int allowedBoostPressure = readMapMem(boostControlPressureMap, tps, oilTemp);
+  int allowedBoostPressure = 250;
   return allowedBoostPressure;
 }
