@@ -33,7 +33,7 @@ void setup()
   // Lower the duty cycle, higher the pressures.
   if (debugEnabled)
   {
-    Serial.begin(9600);
+    Serial.begin(115200);
   }
   else
   {

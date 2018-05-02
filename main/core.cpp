@@ -31,9 +31,6 @@ int cSolenoidEnabled = 0;
 int cSolenoid = 0; // Change solenoid pin to be controlled.
 int lastMapVal;
 
-Task endShift(1000, switchGearStop);
-
-
 // Gear shift logic
 // Beginning of gear change phase
 // Send PWM signal to defined solenoid in transmission conductor plate.
@@ -84,19 +81,15 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
         Serial.print(boostControlVal);
       }
     }
-    int shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp);
-  Task endShift(shiftDelay, switchGearStop);
-  SoftTimer.add(&endShift);
   }
   cSolenoidEnabled = cSolenoid;
 }
 
 // End of gear change phase
-void switchGearStop(Task* me)
+void switchGearStop()
 {
   if (shiftBlocker)
   {
-    SoftTimer.remove(&endShift);
     analogWrite(cSolenoid, 0); // turn shift solenoid off
     analogWrite(spc, 0);       // let go of SPC-pressure
     shiftBlocker = false;
@@ -325,11 +318,11 @@ void decideGear(Task *me)
   int tpsPercentValue = tpsRead();
   // Determine speed related downshift and upshift here.
   int autoGear = readMap(gearMap, tpsPercentValue, vehicleSpeed);
-
   if (!shiftBlocker && wantedGear < 6)
   {
     if (autoGear > gear && wantedGear > gear)
     {
+      Serial.print(autoGear);
       newGear = moreGear;
       if (debugEnabled)
       {
@@ -357,6 +350,8 @@ void decideGear(Task *me)
     if (autoGear < gear || wantedGear < gear)
     {
       newGear = lessGear;
+       Serial.print(autoGear);
+
       if (debugEnabled)
       {
         Serial.println("");
@@ -380,6 +375,6 @@ void decideGear(Task *me)
       }
       gearchangeDown(newGear);
     }
-  }
+  } 
 }
 // END OF CORE

@@ -12,12 +12,10 @@
 boolean firstround = true;
 int wantedGear = 2;
 
-
-
 // INPUT
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
-void pollstick(Task* me)
+void pollstick(Task *me)
 {
   // Read the stick.
   int whiteState = digitalRead(whitepin);
@@ -160,15 +158,33 @@ void pollBoostControl()
 // R/N/P modulation pressure regulation
 // idle SPC regulation
 // Boost control
-void polltrans(Task* me)
+void polltrans(Task *me)
 {
   int atfTemp = atfRead();
   int trueLoad = loadRead();
   int oilTemp = oilRead();
-  
+  int shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp);
+
   if (boostLimit)
   {
     pollBoostControl();
+  }
+  if (shiftBlocker)
+  {
+    shiftDuration = millis() - shiftStartTime;
+    if (shiftDuration > shiftDelay)
+    {
+      if (debugEnabled)
+      {
+        Serial.print("polltrans->switchGearStop: shiftDelay/spcPercentVal/atfTemp=");
+        Serial.print(shiftDelay);
+        Serial.print("-");
+        Serial.print(spcPercentVal);
+        Serial.print("-");
+        Serial.println(atfTemp);
+      }
+      switchGearStop();
+    }
   }
 
   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf

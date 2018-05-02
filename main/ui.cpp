@@ -25,7 +25,7 @@ void draw(int wantedGear, int loopTime)
   int oilTemp = oilRead();
   int boostPressure = boostRead();
   int rpmValue = rpmRead();
-//  int freeSram = readFreeSram();
+  //  int freeSram = readFreeSram();
   // graphic commands to redraw the complete screen should be placed here
   u8g.setFont(u8g_font_ncenB18);
   u8g.setPrintPos(50, 20);
@@ -99,7 +99,7 @@ void rpmMeterUpdate()
 }
 
 // Display update
-void updateDisplay(Task* me)
+void updateDisplay(Task *me)
 {
   u8g.firstPage();
   do
@@ -126,44 +126,47 @@ void updateSpeedo()
   }
 }
 
-void datalog(Task* me)
+void datalog(Task *me)
 {
-  int atfTemp = atfRead();
-  int tpsPercentValue = tpsRead();
-  int oilTemp = oilRead();
-  int boostPressure = boostRead();
-  int rpmValue = rpmRead();
-  int boostPressureLimit = boostLimitRead();
-  int load = loadRead();
-  int lastModVal = readEEPROM(lastMapVal,lastXval,lastYval);
-  
-  if (debugEnabled)
+  if (datalogger)
   {
-    debugEnabled = false;
+    int atfTemp = atfRead();
+    int tpsPercentValue = tpsRead();
+    int oilTemp = oilRead();
+    int boostPressure = boostRead();
+    int rpmValue = rpmRead();
+    int boostPressureLimit = boostLimitRead();
+    int load = loadRead();
+    int lastModVal = readEEPROM(lastMapVal, lastXval, lastYval);
+
+    if (debugEnabled)
+    {
+      debugEnabled = false;
+    }
+    Serial.print(vehicleSpeed);
+    Serial.print(";");
+    Serial.print(rpmValue);
+    Serial.print(";");
+    Serial.print(tpsPercentValue);
+    Serial.print(";");
+    Serial.print(gear);
+    Serial.print(";");
+    Serial.print(oilTemp);
+    Serial.print(";");
+    Serial.print(atfTemp);
+    Serial.print(";");
+    Serial.print(load);
+    Serial.print(";");
+    Serial.print(boostPressure);
+    Serial.print(";");
+    Serial.print(boostPressureLimit);
+    Serial.print(";");
+    Serial.print(lastMapVal);
+    Serial.print(";");
+    Serial.print(lastModVal);
+    Serial.print(";");
+    Serial.print(wantedGear);
+    Serial.print(";");
+    Serial.println(newGear);
   }
-  Serial.print(vehicleSpeed);
-  Serial.print(";");
-  Serial.print(rpmValue);
-  Serial.print(";");
-  Serial.print(tpsPercentValue);
-  Serial.print(";");
-  Serial.print(gear);
-  Serial.print(";");
-  Serial.print(oilTemp);
-  Serial.print(";");
-  Serial.print(atfTemp);
-  Serial.print(";");
-  Serial.print(load);
-  Serial.print(";");
-  Serial.print(boostPressure);
-  Serial.print(";");
-  Serial.print(boostPressureLimit);
-  Serial.print(";");
-  Serial.print(lastMapVal);
-  Serial.print(";");
-  Serial.print(lastModVal);
-  Serial.print(";");
-  Serial.print(wantedGear);
-  Serial.print(";");
-  Serial.println(newGear);
 }
