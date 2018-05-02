@@ -88,10 +88,10 @@ void loop()
   int newGear = decideGear(wantedGear);
   polltrans(newGear, wantedGear);
   pollsensors();
-  updateDisplay(wantedGear, loopTime);
   endTime = micros();
   int loopTime = endTime - startTime;
-  
+  updateDisplay(wantedGear, loopTime);
+
   if (datalogger)
   {
     datalog(loopTime);

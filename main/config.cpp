@@ -24,7 +24,7 @@ boolean boostSensor = true;
 boolean shiftBlocker = false;
 
 // Output to serial console
-boolean debugEnabled = true;
+boolean debugEnabled = false;
 
 // Full automatic mode
 boolean fullAuto = true;

@@ -14,6 +14,7 @@
 // Obvious internals
 int gear = 2; // Start on gear 2
 int vehicleSpeed = 100;
+int fuelMaxRPM = 2000; // if fuelCtrl is enabled, this is the limit to turn off pumps.
 
 // Shift pressure defaults
 int spcSetVal = 255;
@@ -360,4 +361,14 @@ int decideGear(int wantedGear)
     }
   }
 }
+
+void fuelCtrl() {
+  curRPM = readRPM();
+
+  if ( curRPM > fuelMaxRPM) {
+    analogWrite(fuelPumpCtrl, 0);
+    if ( debugEnabled ) { Serial.print("Fuel Pump RPM limit hit: "); Serial.println(fuelMaxRPM); }
+  }
+}
+
 // END OF CORE

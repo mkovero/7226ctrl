@@ -12,6 +12,7 @@ U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
 #ifdef TEENSY
 U8GLIB_SSD1306_128X64 u8g(13, 11, 3, 6, 5);
 #endif
+
 // UI STAGE
 // Control for what user sees and how gearbox is used with
 //
@@ -22,7 +23,7 @@ void draw(int wantedGear, int loopTime)
   int oilTemp = oilRead();
   int boostPressure = boostRead();
   int rpmValue = rpmRead();
-//  int freeSram = readFreeSram();
+  //  int freeSram = readFreeSram();
   // graphic commands to redraw the complete screen should be placed here
   u8g.setFont(u8g_font_ncenB18);
   u8g.setPrintPos(50, 20);
@@ -94,6 +95,23 @@ void rpmMeterUpdate()
   int rpmPWM = map(rpmValue, 0, 6500, 0, 255);
   analogWrite(rpmMeter, rpmPWM);
 }
+void updateSpeedo()
+{
+  int tpsPos = tpsRead();
+  int speedPWM = map(tpsPos,0,100,0,255);
+  analogWrite(speedoCtrl, speedPWM);
+/*  int blipDuration = micros() - blipOntime;
+  int blipDelay = tpsPos * 1000;
+  if (blipDuration > blipDelay && tpsPos > 5)
+  {
+    blipOntime = micros();
+    digitalWrite(speedoCtrl, HIGH);
+  }
+  else
+  {
+    digitalWrite(speedoCtrl, LOW);
+  }*/
+}
 
 // Display update
 void updateDisplay(int wantedGear, int loopTime)
@@ -103,13 +121,8 @@ void updateDisplay(int wantedGear, int loopTime)
   {
     draw(wantedGear, loopTime);
   } while (u8g.nextPage());
-  rpmMeterUpdate();
-}
-
-void updateSpeedo()
-{
-  int speedPWM = map(vehicleSpeed, 0, 190, 0, 255);
-  analogWrite(speedoCtrl, speedPWM);
+  if ( w124rpm ) { rpmMeterUpdate(); }
+  if ( w124speedo ) { updateSpeedo(); }
 }
 
 void datalog(int loopTime)

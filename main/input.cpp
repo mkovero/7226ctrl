@@ -182,9 +182,11 @@ void pollBoostControl()
       {
         analogWrite(boostCtrl, 245);
       }
-      else
+      else if ( vehicleSpeed > 10 ) 
       {
         analogWrite(boostCtrl, 255);
+      } else {
+        analogWrite(boostCtrl, 0);
       }
     }
 
