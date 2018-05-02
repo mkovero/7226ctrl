@@ -35,3 +35,7 @@ extern boolean boostLimit;
 extern boolean drive;
 extern boolean datalogger;
 extern boolean wirespeedo;
+extern boolean w124speedo;
+extern boolean w124rpm;
+extern int wantedGear;
+extern int newGear;

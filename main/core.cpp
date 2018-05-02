@@ -5,6 +5,8 @@
 #include "include/maps.h"
 #include "include/sensors.h"
 #include "include/input.h"
+#include "include/core.h"
+#include <SoftTimer.h>
 
 // CORE
 // input:pollstick -> core:decideGear -> core:gearChange[Up|Down] -> core:switchGearStart -> core:boostControl
@@ -15,6 +17,7 @@
 int gear = 2; // Start on gear 2
 int vehicleSpeed = 100;
 int fuelMaxRPM = 2000; // if fuelCtrl is enabled, this is the limit to turn off pumps.
+int newGear = 2;
 
 // Shift pressure defaults
 int spcSetVal = 255;
@@ -73,7 +76,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 }
 
 // End of gear change phase
-void switchGearStop(int cSolenoid, int newGear)
+void switchGearStop()
 {
   analogWrite(cSolenoid, 0); // turn shift solenoid off
   analogWrite(spc, 0);       // let go of SPC-pressure
@@ -293,7 +296,7 @@ void gearchangeDown(int newGear)
 }
 
 // Logic for automatic new gear, this makes possible auto up/downshifts.
-int decideGear(int wantedGear)
+void decideGear(Task* me)
 {
 
   int moreGear = gear + 1;
@@ -330,7 +333,6 @@ int decideGear(int wantedGear)
         Serial.println(gear);
       }
       gearchangeUp(newGear);
-      return newGear;
     }
     if (autoGear < gear || wantedGear < gear)
     {
@@ -357,17 +359,16 @@ int decideGear(int wantedGear)
         Serial.println(gear);
       }
       gearchangeDown(newGear);
-      return newGear;
     }
   }
 }
 
 void fuelCtrl() {
-  curRPM = readRPM();
+  int curRPM = rpmRead();
 
   if ( curRPM > fuelMaxRPM) {
     analogWrite(fuelPumpCtrl, 0);
-    if ( debugEnabled ) { Serial.print("Fuel Pump RPM limit hit: "); Serial.println(fuelMaxRPM); }
+    if ( debugEnabled) { Serial.print("Fuel Pump RPM limit hit: "); Serial.println(fuelMaxRPM); }
   }
 }
 

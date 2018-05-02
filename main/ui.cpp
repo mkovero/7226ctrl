@@ -5,6 +5,10 @@
 #include "include/config.h"
 #include "include/pins.h"
 #include "include/sensors.h"
+#include "include/eeprom.h"
+#include <SoftTimer.h>
+int loopTime = 0;
+
 
 #ifdef MEGA
 U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
@@ -114,7 +118,7 @@ void updateSpeedo()
 }
 
 // Display update
-void updateDisplay(int wantedGear, int loopTime)
+void updateDisplay(Task* me)
 {
   u8g.firstPage();
   do
@@ -125,7 +129,7 @@ void updateDisplay(int wantedGear, int loopTime)
   if ( w124speedo ) { updateSpeedo(); }
 }
 
-void datalog(int loopTime)
+void datalog(Task* me)
 {
   int atfTemp = atfRead();
   int tpsPercentValue = tpsRead();

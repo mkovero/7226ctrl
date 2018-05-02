@@ -6,11 +6,15 @@
 #include "include/sensors.h"
 #include "include/maps.h"
 #include "include/eeprom.h"
+#include "include/input.h"
+#include <SoftTimer.h>
+
+int wantedGear = 2;
 
 // INPUT
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
-int pollstick()
+void pollstick(Task* me)
 {
   // Read the stick.
   int whiteState = digitalRead(whitepin);
@@ -18,7 +22,6 @@ int pollstick()
   int greenState = digitalRead(greenpin);
   int yellowState = digitalRead(yellowpin);
   int autoState = digitalRead(autoSwitch);
-  int wantedGear = 100;
 
   // Determine position
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
@@ -74,8 +77,6 @@ int pollstick()
       fullAuto = false;
     }
   }
-
-  return wantedGear;
 }
 
 // For manual microswitch control, gear up
@@ -205,7 +206,7 @@ void pollBoostControl()
   // R/N/P modulation pressure regulation
   // idle SPC regulation
   // Boost control
-  void polltrans(int newGear, int wantedGear)
+  void polltrans(Task* me)
   {
     int atfTemp = atfRead();
     int trueLoad = loadRead();
@@ -226,7 +227,7 @@ void pollBoostControl()
           Serial.print("-");
           Serial.println(atfTemp);
         }
-        switchGearStop(cSolenoidEnabled, newGear);
+        switchGearStop();
       }
     }
 

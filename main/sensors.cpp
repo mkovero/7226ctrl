@@ -3,6 +3,9 @@
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
+#include "include/sensors.h"
+#include "include/ui.h"
+#include <SoftTimer.h>
 
 // Internals
 unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, vehicleSpeedRevs, lastSensorTime, rpmPulse;
@@ -59,7 +62,7 @@ void rpmInterrupt()
 }
 
 // Polling sensors
-void pollsensors()
+void pollsensors(Task* me)
 {
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
@@ -102,7 +105,7 @@ void pollsensors()
     }
     else
     {
-      vehicleSpeed = tpsRead();
+      vehicleSpeed = 100;
     }
 
     
