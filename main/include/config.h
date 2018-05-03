@@ -39,3 +39,8 @@ extern boolean w124speedo;
 extern boolean w124rpm;
 extern int wantedGear;
 extern int newGear;
+#ifdef __arm__
+extern "C" char* sbrk(int incr);
+#else  // __ARM__
+extern char *__brkval;
+#endif  // __arm__

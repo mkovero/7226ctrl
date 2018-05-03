@@ -14,7 +14,7 @@ int n2Speed, n3Speed;
 // atf temperature sensor lowpass filtering
 int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
 int atfSensorNumReadings = 10;  // number of readings
-int atfSensorAverage = 0;             // the  running average
+int atfSensorAverage = 0;       // the  running average
 
 int tpsRead()
 {
@@ -62,12 +62,12 @@ void rpmInterrupt()
 }
 
 // Polling sensors
-void pollsensors(Task* me)
+void pollsensors(Task *me)
 {
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
   const int vehicleSpeedPulsesPerRev = 29; // number of teeths in w124 rear diff
-  float diffRatio = 3.27; // rear diff ratio
+  float diffRatio = 3.27;                  // rear diff ratio
   int vehicleSpeedRevs;
 
   if (millis() - lastSensorTime >= 1000)
@@ -100,7 +100,7 @@ void pollsensors(Task* me)
     {
       vehicleSpeedRevs = vehicleSpeedPulses / vehicleSpeedPulsesPerRev;
       int driveShaftSpeed = vehicleSpeedRevs / diffRatio;
-      
+
       vehicleSpeedPulses = 0;
     }
     else
@@ -108,7 +108,6 @@ void pollsensors(Task* me)
       vehicleSpeed = 100;
     }
 
-    
     lastSensorTime = millis();
 
     attachInterrupt(2, N2SpeedInterrupt, RISING); // Attach again
@@ -148,7 +147,7 @@ int boostLimitRead()
   int oilTemp = oilRead();
   int tps = tpsRead();
   int allowedBoostPressure = readMap(boostControlPressureMap, tps, oilTemp);
-  
+
   return allowedBoostPressure;
 }
 
@@ -205,8 +204,26 @@ int atfRead()
       // http://home.earthlink.net/~david.schultz/rnd/2002/KalmanApogee.pdf
     }
   }
-  if ( atfSensorAverage < -40 ) { atfSensorAverage = -40; }
-  if ( atfSensorAverage > 120 ) { atfSensorAverage = 120; }
-  
+  if (atfSensorAverage < -40)
+  {
+    atfSensorAverage = -40;
+  }
+  if (atfSensorAverage > 120)
+  {
+    atfSensorAverage = 120;
+  }
+
   return atfSensorAverage;
+}
+
+int freeMemory()
+{
+  char top;
+#ifdef __arm__
+  return &top - reinterpret_cast<char *>(sbrk(0));
+#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
+  return &top - __brkval;
+#else  // __arm__
+  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
+#endif // __arm__
 }
