@@ -11,3 +11,11 @@ int boostLimitRead();
 int loadRead();
 int atfRead();
 int oilRead();
+
+extern boolean trans;
+extern boolean sensors;
+extern boolean tpsSensor;
+extern boolean boostSensor;
+extern boolean debugEnabled;
+extern boolean boostLimit;
+extern boolean drive;

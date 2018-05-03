@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <U8glib.h>
-#include "include/config.h"
+#include "include/ui.h"
 #include "include/pins.h"
 #include "include/sensors.h"
 #include "include/eeprom.h"
@@ -33,23 +33,23 @@ void draw(int wantedGear, int loopTime)
   u8g.setPrintPos(50, 20);
   if (wantedGear == 6)
   {
-    u8g.print("N");
+    u8g.print(F("N"));
   }
   if (wantedGear == 7)
   {
-    u8g.print("R");
+    u8g.print(F("R"));
   }
   if (wantedGear == 8)
   {
-    u8g.print("P");
+    u8g.print(F("P"));
   }
   if (fullAuto && wantedGear == 5)
   {
-    u8g.print("D");
+    u8g.print(F("D"));
   }
   if (wantedGear == 100)
   {
-    u8g.print("");
+    u8g.print(F(""));
   }
   else
   {
@@ -57,38 +57,38 @@ void draw(int wantedGear, int loopTime)
   }
   if (fullAuto && wantedGear < 6)
   {
-    u8g.print("(");
+    u8g.print(F("("));
     u8g.print(gear);
-    u8g.print(")");
+    u8g.print(F(")"));
   }
   u8g.setFont(u8g_font_fub14);
   u8g.setPrintPos(60, 40);
   u8g.print(vehicleSpeed);
   u8g.setPrintPos(45, 60);
-  u8g.print("km/h");
+  u8g.print(F("km/h"));
   u8g.setFont(u8g_font_fixed_v0);
   u8g.setPrintPos(0, 10);
-  u8g.print("atfTemp:");
+  u8g.print(F("atfTemp:"));
   u8g.setPrintPos(0, 20);
   u8g.print(atfTemp);
   u8g.setPrintPos(0, 30);
-  u8g.print("oilTemp:");
+  u8g.print(F("oilTemp:"));
   u8g.setPrintPos(0, 40);
   u8g.print(oilTemp);
   u8g.setPrintPos(0, 50);
-  u8g.print("Boost:");
+  u8g.print(F("Boost:"));
   u8g.setPrintPos(0, 60);
   u8g.print(boostPressure);
   u8g.setPrintPos(100, 10);
-  u8g.print("TPS:");
+  u8g.print(F("TPS:"));
   u8g.setPrintPos(100, 20);
   u8g.print(tpsPercentValue);
   u8g.setPrintPos(100, 30);
-  u8g.print("RPM:");
+  u8g.print(F("RPM:"));
   u8g.setPrintPos(100, 40);
   u8g.print(rpmValue);
   u8g.setPrintPos(100, 50);
-  u8g.print("Looptime:");
+  u8g.print(F("Looptime:"));
   u8g.setPrintPos(100, 60);
   u8g.print(loopTime);
 }
@@ -144,24 +144,24 @@ void datalog(Task* me)
     debugEnabled = false;
   }
   Serial.print(vehicleSpeed);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(rpmValue);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(tpsPercentValue);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(gear);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(oilTemp);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(atfTemp);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(load);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(boostPressure);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(boostPressureLimit);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.print(lastMapVal);
-  Serial.print(";");
+  Serial.print(F(";"));
   Serial.println(loopTime);
 }

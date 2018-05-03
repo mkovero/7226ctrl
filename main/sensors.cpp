@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include "include/config.h"
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"

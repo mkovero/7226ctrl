@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include "include/config.h"
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/core.h"
@@ -65,7 +64,7 @@ void pollstick(Task* me)
   {
     if (!fullAuto)
     {
-      Serial.println("pollstick: Automode on ");
+      Serial.println(F("pollstick: Automode on "));
       fullAuto = true;
     }
   }
@@ -73,7 +72,7 @@ void pollstick(Task* me)
   {
     if (fullAuto)
     {
-      Serial.println("pollstick: Automode off ");
+      Serial.println(F("pollstick: Automode off "));
       fullAuto = false;
     }
   }
@@ -95,7 +94,7 @@ void gearup()
     } // Make sure not to switch more than 5.
     if (debugEnabled)
     {
-      Serial.println("gearup: Gear up requested");
+      Serial.println(F("gearup: Gear up requested"));
     }
     gearchangeUp(newGear);
   }
@@ -117,7 +116,7 @@ void geardown()
     } // Make sure not to switch less than 1.
     if (debugEnabled)
     {
-      Serial.println("gearup: Gear down requested");
+      Serial.println(F("gearup: Gear down requested"));
     }
     gearchangeDown(newGear);
   }
@@ -138,7 +137,7 @@ void pollkeys()
       int prevgupState = gupState;
       if (debugEnabled)
       {
-        Serial.println("pollkeys: Gear up button");
+        Serial.println(F("pollkeys: Gear up button"));
       }
       gearup();
     }
@@ -147,7 +146,7 @@ void pollkeys()
       int prevgdownState = gdownState;
       if (debugEnabled)
       {
-        Serial.println("pollkeys: Gear down button");
+        Serial.println(F("pollkeys: Gear down button"));
       }
       geardown();
     }
@@ -193,9 +192,9 @@ void pollBoostControl()
 
     if (debugEnabled)
     {
-      Serial.print("boostControl (allowedBoostPressure/bootSensor):");
+      Serial.print(F("boostControl (allowedBoostPressure/bootSensor):"));
       Serial.print(allowedBoostPressure);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.print(boostSensor);
     }
   }
@@ -220,11 +219,11 @@ void pollBoostControl()
       {
         if (debugEnabled)
         {
-          Serial.print("polltrans->switchGearStop: shiftDelay/spcPercentVal/atfTemp=");
+          Serial.print(F("polltrans->switchGearStop: shiftDelay/spcPercentVal/atfTemp="));
           Serial.print(shiftDelay);
-          Serial.print("-");
+          Serial.print(F("-"));
           Serial.print(spcPercentVal);
-          Serial.print("-");
+          Serial.print(F("-"));
           Serial.println(atfTemp);
         }
         switchGearStop();
@@ -326,14 +325,14 @@ void pollBoostControl()
 
         if (debugEnabled)
         {
-          Serial.println("adaptSPC: More pressure button");
-          Serial.print("adaptSPC: request values: ");
+          Serial.println(F("adaptSPC: More pressure button"));
+          Serial.print(F("adaptSPC: request values: "));
           Serial.print(mapId);
-          Serial.print("-");
+          Serial.print(F("-"));
           Serial.print(xVal);
-          Serial.print("-");
+          Serial.print(F("-"));
           Serial.println(yVal);
-          Serial.print("adaptSPC: old adapt pressure is: ");
+          Serial.print(F("adaptSPC: old adapt pressure is: "));
           Serial.println(current);
         }
         current = current + modVal;
@@ -341,7 +340,7 @@ void pollBoostControl()
 
         if (debugEnabled)
         {
-          Serial.print("adaptSPC: New adapt pressure is: ");
+          Serial.print(F("adaptSPC: New adapt pressure is: "));
           Serial.println(current);
         }
       }
@@ -351,14 +350,14 @@ void pollBoostControl()
 
         if (debugEnabled)
         {
-          Serial.println("adaptSPC: Less pressure button");
-          Serial.print("adaptSPC: request values: ");
+          Serial.println(F("adaptSPC: Less pressure button"));
+          Serial.print(F("adaptSPC: request values: "));
           Serial.print(mapId);
-          Serial.print("-");
+          Serial.print(F("-"));
           Serial.print(xVal);
-          Serial.print("-");
+          Serial.print(F("-"));
           Serial.println(yVal);
-          Serial.print("adaptSPC: old adapt pressure is: ");
+          Serial.print(F("adaptSPC: old adapt pressure is: "));
           Serial.println(current);
         }
         current = current - modVal;
@@ -366,7 +365,7 @@ void pollBoostControl()
 
         if (debugEnabled)
         {
-          Serial.print("adaptSPC: New adapt pressure is: ");
+          Serial.print(F("adaptSPC: New adapt pressure is: "));
           Serial.println(current);
         }
       }

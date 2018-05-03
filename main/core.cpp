@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include "include/config.h"
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
@@ -43,9 +42,9 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   shiftBlocker = true;       // Blocking any other shift operations during the shift
   if (debugEnabled)
   {
-    Serial.print("switchGearStart: Begin of gear change current/solenoid: ");
+    Serial.print(F("switchGearStart: Begin of gear change current/solenoid: "));
     Serial.print(gear);
-    Serial.print("-");
+    Serial.print(F("-"));
     Serial.println(cSolenoid);
   }
 
@@ -66,9 +65,9 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     analogWrite(cSolenoid, 255); // Beginning of gear change
     if (debugEnabled)
     {
-      Serial.print("switchGearStart: spcPressure/mpcPressure/boostControlVal: ");
+      Serial.print(F("switchGearStart: spcPressure/mpcPressure/boostControlVal: "));
       Serial.print(spcSetVal);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(mpcVal);
     }
   }
@@ -84,9 +83,9 @@ void switchGearStop()
   gear = newGear; // we can happily say we're on new gear
   if (debugEnabled)
   {
-    Serial.print("switchGearStop: End of gear change current/solenoid: ");
+    Serial.print(F("switchGearStop: End of gear change current/solenoid: "));
     Serial.print(gear);
-    Serial.print("-");
+    Serial.print(F("-"));
     Serial.println(cSolenoid);
   }
   shiftStartTime = 0;
@@ -99,15 +98,15 @@ void gearchangeUp(int newGear)
   {
     if (debugEnabled)
     {
-      Serial.print("gearChangeUp: performing change from prev->new: ");
+      Serial.print(F("gearChangeUp: performing change from prev->new: "));
       Serial.print(gear);
-      Serial.print("->");
+      Serial.print(F("->"));
       Serial.println(newGear);
     }
   }
   else
   {
-    Serial.println("gearChangeUp: Blocking change");
+    Serial.println(F("gearChangeUp: Blocking change"));
   }
   int atfTemp = atfRead();
   int trueLoad = loadRead();
@@ -120,9 +119,9 @@ void gearchangeUp(int newGear)
   case 2:
     if (debugEnabled)
     {
-      Serial.print("gearchangeUp->switchGearStart: Solenoid y3 requested with spcMap12/mpcMap12, load/atfTemp ");
+      Serial.print(F("gearchangeUp->switchGearStart: Solenoid y3 requested with spcMap12/mpcMap12, load/atfTemp "));
       Serial.print(trueLoad);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(atfTemp);
     }
     if (!sensors)
@@ -138,9 +137,9 @@ void gearchangeUp(int newGear)
   case 3:
     if (debugEnabled)
     {
-      Serial.print("gearchangeUp->switchGearStart: Solenoid y4 requested with spcMap23/mpcMap23, load/atfTemp ");
+      Serial.print(F("gearchangeUp->switchGearStart: Solenoid y4 requested with spcMap23/mpcMap23, load/atfTemp "));
       Serial.print(trueLoad);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(atfTemp);
     }
     if (!sensors)
@@ -156,9 +155,9 @@ void gearchangeUp(int newGear)
   case 4:
     if (debugEnabled)
     {
-      Serial.print("gearchangeUp->switchGearStart: Solenoid y5 requested with spcMap34/mpcMap34, load/atfTemp ");
+      Serial.print(F("gearchangeUp->switchGearStart: Solenoid y5 requested with spcMap34/mpcMap34, load/atfTemp "));
       Serial.print(trueLoad);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(atfTemp);
     }
     if (!sensors)
@@ -174,9 +173,9 @@ void gearchangeUp(int newGear)
   case 5:
     if (debugEnabled)
     {
-      Serial.print("gearchangeUp->switchGearStart: Solenoid y3 requested with spcMap45/mpcMap45, load/atfTemp ");
+      Serial.print(F("gearchangeUp->switchGearStart: Solenoid y3 requested with spcMap45/mpcMap45, load/atfTemp "));
       Serial.print(trueLoad);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(atfTemp);
     }
     if (!sensors)
@@ -201,15 +200,15 @@ void gearchangeDown(int newGear)
   {
     if (debugEnabled)
     {
-      Serial.print("gearChangeDown: performing change from prev->new: ");
+      Serial.print(F("gearChangeDown: performing change from prev->new: "));
       Serial.print(gear);
-      Serial.print("->");
+      Serial.print(F("->"));
       Serial.println(newGear);
     }
   }
   else
   {
-    Serial.println("gearChangeDown: Blocking change");
+    Serial.println(F("gearChangeDown: Blocking change"));
   }
   int atfTemp = atfRead();
   int trueLoad = loadRead();
@@ -218,9 +217,9 @@ void gearchangeDown(int newGear)
   case 1:
     if (debugEnabled)
     {
-      Serial.print("gearchangeDown->switchGearStart: Solenoid y3 requested with spcMap21/mpcMap21, load/atfTemp ");
+      Serial.print(F("gearchangeDown->switchGearStart: Solenoid y3 requested with spcMap21/mpcMap21, load/atfTemp "));
       Serial.print(trueLoad);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(atfTemp);
     }
     if (!sensors)
@@ -236,9 +235,9 @@ void gearchangeDown(int newGear)
   case 2:
     if (debugEnabled)
     {
-      Serial.print("gearchangeDown->switchGearStart: Solenoid y4 requested with spcMap32/mpcMap32, load/atfTemp ");
+      Serial.print(F("gearchangeDown->switchGearStart: Solenoid y4 requested with spcMap32/mpcMap32, load/atfTemp "));
       Serial.print(trueLoad);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(atfTemp);
     }
     if (!sensors)
@@ -254,9 +253,9 @@ void gearchangeDown(int newGear)
   case 3:
     if (debugEnabled)
     {
-      Serial.print("gearchangeDown->switchGearStart: Solenoid y5 requested with spcMap43/mpcMap43, load/atfTemp ");
+      Serial.print(F("gearchangeDown->switchGearStart: Solenoid y5 requested with spcMap43/mpcMap43, load/atfTemp "));
       Serial.print(trueLoad);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(atfTemp);
     }
     if (!sensors)
@@ -272,9 +271,9 @@ void gearchangeDown(int newGear)
   case 4:
     if (debugEnabled)
     {
-      Serial.print("gearchangeDown->switchGearStart: Solenoid y3 requested with spcMap54/mpcMap54, load/atfTemp ");
+      Serial.print(F("gearchangeDown->switchGearStart: Solenoid y3 requested with spcMap54/mpcMap54, load/atfTemp "));
       Serial.print(trueLoad);
-      Serial.print("-");
+      Serial.print(F("-"));
       Serial.println(atfTemp);
     }
     if (!sensors)
@@ -313,23 +312,23 @@ void decideGear(Task* me)
       int newGear = moreGear;
       if (debugEnabled)
       {
-        Serial.println("");
-        Serial.print("decideGear->gearchangeUp: tpsPercent/vehicleSpeed/atfTemp: ");
+        Serial.println(F(""));
+        Serial.print(F("decideGear->gearchangeUp: tpsPercent/vehicleSpeed/atfTemp: "));
         Serial.print(tpsPercentValue);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.print(vehicleSpeed);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.println(atfTemp);
       }
       if (debugEnabled)
       {
-        Serial.print("decideGear->gearchangeUp: wantedGear/autoGear/newGear/gear: ");
+        Serial.print(F("decideGear->gearchangeUp: wantedGear/autoGear/newGear/gear: "));
         Serial.print(wantedGear);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.print(autoGear);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.print(newGear);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.println(gear);
       }
       gearchangeUp(newGear);
@@ -339,23 +338,23 @@ void decideGear(Task* me)
       int newGear = lessGear;
       if (debugEnabled)
       {
-        Serial.println("");
-        Serial.print("decideGear->gearchangeDown: tpsPercent/vehicleSpeed/atfTemp: ");
+        Serial.println(F(""));
+        Serial.print(F("decideGear->gearchangeDown: tpsPercent/vehicleSpeed/atfTemp: "));
         Serial.print(tpsPercentValue);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.print(vehicleSpeed);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.println(atfTemp);
       }
       if (debugEnabled)
       {
-        Serial.print("decideGear->gearchangeDown: wantedGear/autoGear/newGear/gear: ");
+        Serial.print(F("decideGear->gearchangeDown: wantedGear/autoGear/newGear/gear: "));
         Serial.print(wantedGear);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.print(autoGear);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.print(newGear);
-        Serial.print("-");
+        Serial.print(F("-"));
         Serial.println(gear);
       }
       gearchangeDown(newGear);
@@ -368,7 +367,7 @@ void fuelCtrl() {
 
   if ( curRPM > fuelMaxRPM) {
     analogWrite(fuelPumpCtrl, 0);
-    if ( debugEnabled) { Serial.print("Fuel Pump RPM limit hit: "); Serial.println(fuelMaxRPM); }
+    if ( debugEnabled) { Serial.print(F("Fuel Pump RPM limit hit: ")); Serial.println(fuelMaxRPM); }
   }
 }
 

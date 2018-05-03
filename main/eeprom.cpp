@@ -13,7 +13,7 @@ int readEEPROM(int mapId, int xVal, int yVal)
     // [mapId][xVal][yVal][modVal] = 4bytes
     // mapId is always greater than 100.
     int address = mapId + xVal + yVal;
-    Serial.print("EEPROM: reading from address:");
+    Serial.print(F("EEPROM: reading from address:"));
     Serial.println(address);
     modVal = EEPROM.read(address);
 
@@ -40,7 +40,7 @@ int writeEEPROM(int mapId, int xVal, int yVal, int modVal)
     // [mapId][xVal][yVal][modVal] = 4bytes
     // mapId is greater than 10000.
     int address = mapId + xVal + yVal;
-    Serial.print("EEPROM: writing to address:");
+    Serial.print(F("EEPROM: writing to address:"));
     Serial.println(address);
     EEPROM.write(address, modVal);
 

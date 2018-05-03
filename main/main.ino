@@ -1,14 +1,11 @@
 #include <Arduino.h>
 #include "include/pins.h"
-#include "include/config.h"
 #include "include/sensors.h"
 #include "include/core.h"
 #include "include/input.h"
 #include "include/ui.h"
 #include <EEPROM.h>
 #include <SoftTimer.h>
-unsigned long int startTime = 0;
-unsigned long int endTime = 0;
 
 // Work by Markus Kovero <mui@mui.fi>
 // Big thanks to Tuomas Kantola regarding maps and related math
@@ -84,7 +81,7 @@ void setup()
 
   if (debugEnabled)
   {
-    Serial.println("Started.");
+    Serial.println(F("Started."));
   }
   // initialize timers
   SoftTimer.add(&pollDisplay);
