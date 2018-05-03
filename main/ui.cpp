@@ -138,6 +138,7 @@ void datalog(Task *me)
     int boostPressureLimit = boostLimitRead();
     int load = loadRead();
     int lastModVal = readEEPROM(lastMapVal, lastXval, lastYval);
+    int freeSram = freeMemory();
 
     if (debugEnabled)
     {
@@ -167,6 +168,9 @@ void datalog(Task *me)
     Serial.print(";");
     Serial.print(wantedGear);
     Serial.print(";");
-    Serial.println(newGear);
+    Serial.print(newGear);
+    Serial.print(";");
+    Serial.println(freeSram);
+    Serial.println("");
   }
 }

@@ -37,3 +37,4 @@ extern boolean datalogger;
 extern boolean wirespeedo;
 extern int wantedGear;
 extern int newGear;
+extern int __heap_start, *__brkval; 

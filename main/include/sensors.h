@@ -11,3 +11,4 @@ int boostLimitRead();
 int loadRead();
 int atfRead();
 int oilRead();
+int freeMemory();
