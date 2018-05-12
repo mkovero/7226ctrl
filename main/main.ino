@@ -10,12 +10,15 @@
 // Work by Markus Kovero <mui@mui.fi>
 // Big thanks to Tuomas Kantola regarding maps and related math
 
+// "Protothreading", we have time slots for different functions to be run.
 Task pollDisplay(500, updateDisplay); // 500ms to update display
 Task pollData(200, datalog); // 500ms to update display
-Task pollGear(200, decideGear);
-Task pollSensors(500, pollsensors); // 500ms to update sensor values
 Task pollStick(200, pollstick); // 200ms for checking stick position
+Task pollGear(200, decideGear);
+Task pollSensors(500, pollsensors); // 500ms to update sensor values*/
 Task pollTrans(50, polltrans); // 50ms to check transmission state
+Task pollFuelControl(1000, fuelControl); // 1000ms for fuel pump control
+Task pollBoostControl(100, boostControl); // 100ms for boost control*/
 
 void setup()
 {
@@ -28,7 +31,7 @@ void setup()
   // Lower the duty cycle, higher the pressures.
   if (debugEnabled)
   {
-    Serial.begin(9600);
+    Serial.begin(115200);
   }
   else
   {
@@ -45,6 +48,7 @@ void setup()
   pinMode(rpmMeter, OUTPUT);
   pinMode(boostCtrl, OUTPUT);
   pinMode(speedoCtrl, OUTPUT);
+  pinMode(fuelPumpCtrl, OUTPUT);
 #ifdef TEENSY
   analogWriteFrequency(spc, 1000); // 1khz for spc
   analogWriteFrequency(mpc, 1000); // and mpc
@@ -90,4 +94,9 @@ void setup()
   SoftTimer.add(&pollStick);
   SoftTimer.add(&pollTrans);
   SoftTimer.add(&pollSensors);
+  SoftTimer.add(&pollFuelControl);
+  SoftTimer.add(&pollBoostControl);
 }
+
+
+

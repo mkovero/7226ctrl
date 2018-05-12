@@ -8,12 +8,12 @@
 #include "include/input.h"
 #include <SoftTimer.h>
 
-int wantedGear = 2;
+byte wantedGear = 100;
 
 // INPUT
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
-void pollstick(Task* me)
+void pollstick(Task *me)
 {
   // Read the stick.
   int whiteState = digitalRead(whitepin);
@@ -81,7 +81,6 @@ void pollstick(Task* me)
 // For manual microswitch control, gear up
 void gearup()
 {
-  int newGear;
   if (!gear > 5)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker)
@@ -103,7 +102,6 @@ void gearup()
 // For manual microswitch control, gear down
 void geardown()
 {
-  int newGear;
   if (!gear > 5)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker)
@@ -153,20 +151,17 @@ void pollkeys()
   }
 }
 
-void pollBoostControl()
+void boostControl(Task *me)
 {
   if (boostLimit)
   {
-    int shiftDropPressure = 50; // Pressure drop during the shift
-    int maxBoostPressure = 700;
-
-    float boostSensor = boostRead();
-    int allowedBoostPressure = boostLimitRead();
+    struct SensorVals sensor = readSensors();
+    struct ConfigParam config = readConfig();
 
     if (shiftBlocker)
     {
       // During the shift
-      if (boostSensor > (allowedBoostPressure - shiftDropPressure))
+      if (sensor.curBoost > (sensor.curBoostLim - config.boostDrop))
       {
         analogWrite(boostCtrl, 245);
       }
@@ -178,198 +173,211 @@ void pollBoostControl()
     else
     {
       // Not during the shift
-      if (boostSensor > allowedBoostPressure)
+      if (sensor.curBoost > sensor.curBoostLim)
       {
         analogWrite(boostCtrl, 245);
       }
-      else if ( vehicleSpeed > 10 ) 
+      else if (sensor.curSpeed > 10)
       {
         analogWrite(boostCtrl, 255);
-      } else {
+      }
+      else
+      {
         analogWrite(boostCtrl, 0);
       }
     }
 
-    if (debugEnabled)
+    /*if (debugEnabled)
     {
       Serial.print(F("boostControl (allowedBoostPressure/bootSensor):"));
-      Serial.print(allowedBoostPressure);
+      Serial.print(sensor.curBoostLim);
       Serial.print(F("-"));
-      Serial.print(boostSensor);
+      Serial.print(sensor.curBoost);
+    }*/
+  }
+}
+
+void fuelControl(Task *me)
+{
+  if (fuelPumpControl)
+  {
+    struct SensorVals sensor = readSensors();
+    struct ConfigParam config = readConfig();
+
+    if (sensor.curRPM > config.fuelMaxRPM)
+    {
+      analogWrite(fuelPumpCtrl, 0);
+      if (debugEnabled)
+      {
+        Serial.print(F("Fuel Pump RPM limit hit: "));
+        Serial.println(config.fuelMaxRPM);
+      }
     }
   }
 }
 
+// Polling time for transmission control
+// R/N/P modulation pressure regulation
+// idle SPC regulation
+// Boost control
+void polltrans(Task *me)
+{
+  struct SensorVals sensor = readSensors();
 
-  // Polling time for transmission control
-  // R/N/P modulation pressure regulation
-  // idle SPC regulation
-  // Boost control
-  void polltrans(Task* me)
+  int shiftDelay = readMapInt(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
+
+  if (shiftBlocker)
   {
-    int atfTemp = atfRead();
-    int trueLoad = loadRead();
-    int oilTemp = oilRead();
-    int shiftDelay = readMap(shiftTimeMap, spcPercentVal, atfTemp);
-
-    if (shiftBlocker)
+    shiftDuration = millis() - shiftStartTime;
+    if (shiftDuration > shiftDelay)
     {
-      shiftDuration = millis() - shiftStartTime;
-      if (shiftDuration > shiftDelay)
+      if (debugEnabled)
       {
-        if (debugEnabled)
-        {
-          Serial.print(F("polltrans->switchGearStop: shiftDelay/spcPercentVal/atfTemp="));
-          Serial.print(shiftDelay);
-          Serial.print(F("-"));
-          Serial.print(spcPercentVal);
-          Serial.print(F("-"));
-          Serial.println(atfTemp);
-        }
-        switchGearStop();
+        Serial.print(F("polltrans->switchGearStop: shiftDelay/spcPercentVal/atfTemp="));
+        Serial.print(shiftDelay);
+        Serial.print(F("-"));
+        Serial.print(spcPercentVal);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
       }
+      switchGearStop();
     }
+  }
 
-    if (boostLimit)
-    {
-      pollBoostControl();
-    }
+  //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
+  // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
+  int mpcVal = readMap(mpcNormalMap, sensor.curLoad, sensor.curAtfTemp);
 
-    //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
-    // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
-    int mpcVal = readMap(mpcNormalMap, trueLoad, atfTemp);
-
-    if (wantedGear > 6)
-    {
-      analogWrite(spc, 102);
-    }
-    else if (wantedGear < 6 && sensors)
-    {
-      mpcVal = (100 - mpcVal) * 2.55;
-    }
-    else if (wantedGear = 6)
-    {
-      mpcVal = (100 - 70) * 2.55;
-    }
-    if (!shiftBlocker)
-    {
-      analogWrite(mpc, mpcVal);
-      /*  if (debugEnabled)
+  if (wantedGear > 6)
+  {
+    analogWrite(spc, 102);
+  }
+  else if (wantedGear < 6 && sensors)
+  {
+    mpcVal = (100 - mpcVal) * 2.55;
+  }
+  else if (wantedGear = 6)
+  {
+    mpcVal = (100 - 70) * 2.55;
+  }
+  if (!shiftBlocker)
+  {
+    analogWrite(mpc, mpcVal);
+    /*  if (debugEnabled)
     {
       Serial.print("polltrans: mpcVal/atfTemp");
       Serial.print(mpcVal);
       Serial.print("-");
       Serial.println(atfTemp);
     }*/
-    };
+  }
+}
+
+int evaluateGear(float ratio)
+{
+  int evaluatedGear = 0;
+  int n3n2 = n3Speed / n2Speed;
+  int incomingShaftSpeed = 0;
+  int measuredGear = 0;
+  if (n3Speed == 0)
+  {
+    incomingShaftSpeed = n2Speed * 1.64;
+  }
+  else
+  {
+    incomingShaftSpeed = n2Speed;
+    //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
   }
 
-  int evaluateGear(float ratio)
+  if (3.4 < ratio && n3n2 < 0.50)
   {
-    int evaluatedGear = 0;
-    int n3n2 = n3Speed / n2Speed;
-    int incomingShaftSpeed = 0;
-    int measuredGear = 0;
-    if (n3Speed == 0)
-    {
-      incomingShaftSpeed = n2Speed * 1.64;
-    }
-    else
-    {
-      incomingShaftSpeed = n2Speed;
-      //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
-    }
-
-    if (3.4 < ratio && n3n2 < 0.50)
-    {
-      measuredGear = 1;
-    }
-    else if (2.05 < ratio && ratio < 2.20 && n3n2 >= 0.50)
-    {
-      measuredGear = 2;
-    }
-    else if (1.38 < ratio && ratio < 1.45 && n3n2 >= 0.50)
-    {
-      measuredGear = 3;
-    }
-    else if (0.97 < ratio && ratio < 1.05 && n3n2 >= 0.50)
-    {
-      measuredGear = 4;
-    }
-    else if (ratio < 0.90 && n3n2 < 0.50)
-    {
-      measuredGear = 5;
-    }
-
-    if (measuredGear != 0)
-    {
-      return measuredGear;
-    }
+    measuredGear = 1;
+  }
+  else if (2.05 < ratio && ratio < 2.20 && n3n2 >= 0.50)
+  {
+    measuredGear = 2;
+  }
+  else if (1.38 < ratio && ratio < 1.45 && n3n2 >= 0.50)
+  {
+    measuredGear = 3;
+  }
+  else if (0.97 < ratio && ratio < 1.05 && n3n2 >= 0.50)
+  {
+    measuredGear = 4;
+  }
+  else if (ratio < 0.90 && n3n2 < 0.50)
+  {
+    measuredGear = 5;
   }
 
-  int adaptSPC(int mapId, int xVal, int yVal)
+  if (measuredGear != 0)
   {
-    int modVal = 5;
-    int aSpcUpState = digitalRead(aSpcUpSwitch);     // Adapt pressure up
-    int aSpcDownState = digitalRead(aSpcDownSwitch); // Adapt pressure down
-    static int prevaSpcUpState = 0;
-    static int prevaSpcDownState = 0;
-    int current = readEEPROM(mapId, xVal, yVal);
+    return measuredGear;
+  }
+}
 
+int adaptSPC(int mapId, int xVal, int yVal)
+{
+  int modVal = 5;
+  int aSpcUpState = digitalRead(aSpcUpSwitch);     // Adapt pressure up
+  int aSpcDownState = digitalRead(aSpcDownSwitch); // Adapt pressure down
+  static int prevaSpcUpState = 0;
+  static int prevaSpcDownState = 0;
+  int current = readEEPROM(mapId, xVal, yVal);
 
-    if (aSpcDownState != prevaSpcDownState || aSpcUpState != prevaSpcUpState)
+  if (aSpcDownState != prevaSpcDownState || aSpcUpState != prevaSpcUpState)
+  {
+    if (aSpcDownState == LOW && aSpcUpState == HIGH)
     {
-      if (aSpcDownState == LOW && aSpcUpState == HIGH)
+      prevaSpcUpState = aSpcUpState;
+
+      if (debugEnabled)
       {
-        prevaSpcUpState = aSpcUpState;
-
-        if (debugEnabled)
-        {
-          Serial.println(F("adaptSPC: More pressure button"));
-          Serial.print(F("adaptSPC: request values: "));
-          Serial.print(mapId);
-          Serial.print(F("-"));
-          Serial.print(xVal);
-          Serial.print(F("-"));
-          Serial.println(yVal);
-          Serial.print(F("adaptSPC: old adapt pressure is: "));
-          Serial.println(current);
-        }
-        current = current + modVal;
-        writeEEPROM(mapId, xVal, yVal, current);
-
-        if (debugEnabled)
-        {
-          Serial.print(F("adaptSPC: New adapt pressure is: "));
-          Serial.println(current);
-        }
+        Serial.println(F("adaptSPC: More pressure button"));
+        Serial.print(F("adaptSPC: request values: "));
+        Serial.print(mapId);
+        Serial.print(F("-"));
+        Serial.print(xVal);
+        Serial.print(F("-"));
+        Serial.println(yVal);
+        Serial.print(F("adaptSPC: old adapt pressure is: "));
+        Serial.println(current);
       }
-      else if (aSpcUpState == LOW && aSpcDownState == HIGH)
+      current = current + modVal;
+      writeEEPROM(mapId, xVal, yVal, current);
+
+      if (debugEnabled)
       {
-        prevaSpcDownState = aSpcDownState;
-
-        if (debugEnabled)
-        {
-          Serial.println(F("adaptSPC: Less pressure button"));
-          Serial.print(F("adaptSPC: request values: "));
-          Serial.print(mapId);
-          Serial.print(F("-"));
-          Serial.print(xVal);
-          Serial.print(F("-"));
-          Serial.println(yVal);
-          Serial.print(F("adaptSPC: old adapt pressure is: "));
-          Serial.println(current);
-        }
-        current = current - modVal;
-        writeEEPROM(mapId, xVal, yVal, current);
-
-        if (debugEnabled)
-        {
-          Serial.print(F("adaptSPC: New adapt pressure is: "));
-          Serial.println(current);
-        }
+        Serial.print(F("adaptSPC: New adapt pressure is: "));
+        Serial.println(current);
       }
     }
+    else if (aSpcUpState == LOW && aSpcDownState == HIGH)
+    {
+      prevaSpcDownState = aSpcDownState;
 
-    return current;
+      if (debugEnabled)
+      {
+        Serial.println(F("adaptSPC: Less pressure button"));
+        Serial.print(F("adaptSPC: request values: "));
+        Serial.print(mapId);
+        Serial.print(F("-"));
+        Serial.print(xVal);
+        Serial.print(F("-"));
+        Serial.println(yVal);
+        Serial.print(F("adaptSPC: old adapt pressure is: "));
+        Serial.println(current);
+      }
+      current = current - modVal;
+      writeEEPROM(mapId, xVal, yVal, current);
+
+      if (debugEnabled)
+      {
+        Serial.print(F("adaptSPC: New adapt pressure is: "));
+        Serial.println(current);
+      }
+    }
   }
+
+  return current;
+}

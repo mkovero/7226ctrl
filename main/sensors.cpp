@@ -5,40 +5,14 @@
 #include "include/sensors.h"
 #include "include/ui.h"
 #include <SoftTimer.h>
+using namespace std;
 
 // Internals
 unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, vehicleSpeedRevs, lastSensorTime, rpmPulse;
 int n2Speed, n3Speed;
 
-// atf temperature sensor lowpass filtering
-int atfSensorFilterWeight = 16; // higher numbers = heavier filtering
-int atfSensorNumReadings = 10;  // number of readings
-int atfSensorAverage = 0;       // the  running average
-
-int tpsRead()
-{
-  int tpsPercentValue = 0;
-  if (tpsSensor)
-  {
-    //reading TPS
-    float tpsVoltage = analogRead(tpsPin) * 4.89;
-    tpsPercentValue = readTPSVoltage(tpsVoltage);
-
-    if (tpsPercentValue > 100)
-    {
-      tpsPercentValue = 100;
-    }
-    if (tpsPercentValue < 0)
-    {
-      tpsPercentValue = 0;
-    }
-  }
-  else
-  {
-    tpsPercentValue = 0;
-  }
-  return tpsPercentValue;
-}
+// sensor smoothing
+int avgAtfTemp, avgBoostValue;
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -63,11 +37,10 @@ void rpmInterrupt()
 // Polling sensors
 void pollsensors(Task *me)
 {
+
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
   const int vehicleSpeedPulsesPerRev = 29; // number of teeths in w124 rear diff
-  float diffRatio = 3.27;                  // rear diff ratio
-  int vehicleSpeedRevs;
 
   if (millis() - lastSensorTime >= 1000)
   {
@@ -98,13 +71,7 @@ void pollsensors(Task *me)
     if (vehicleSpeedPulses >= vehicleSpeedPulsesPerRev)
     {
       vehicleSpeedRevs = vehicleSpeedPulses / vehicleSpeedPulsesPerRev;
-      int driveShaftSpeed = vehicleSpeedRevs / diffRatio;
-
       vehicleSpeedPulses = 0;
-    }
-    else
-    {
-      vehicleSpeed = 100;
     }
 
     lastSensorTime = millis();
@@ -114,6 +81,37 @@ void pollsensors(Task *me)
     attachInterrupt(4, vehicleSpeedInterrupt, RISING);
     attachInterrupt(5, rpmInterrupt, RISING);
   }
+}
+
+int speedRead() {
+//  int vehicleSpeed = 2.188 * vehicleSpeedRevs;
+  int vehicleSpeed = 100;
+  return vehicleSpeed;
+}
+
+int tpsRead()
+{
+  int tpsPercentValue = 0;
+  if (tpsSensor)
+  {
+    //reading TPS
+    float tpsVoltage = analogRead(tpsPin) * 4.89;
+    tpsPercentValue = readTPSVoltage(tpsVoltage);
+
+    if (tpsPercentValue > 100)
+    {
+      tpsPercentValue = 100;
+    }
+    if (tpsPercentValue < 0)
+    {
+      tpsPercentValue = 0;
+    }
+  }
+  else
+  {
+    tpsPercentValue = 0;
+  }
+  return tpsPercentValue;
 }
 
 int rpmRead()
@@ -137,26 +135,21 @@ int boostRead()
     //reading MAP/boost
     float boostVoltage = analogRead(boostPin) * 4.89;
     boostValue = readBoostVoltage(boostVoltage);
+    avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
   }
-  return boostValue;
+  return avgBoostValue;
 }
 
-int boostLimitRead()
+int boostLimitRead(int oilTemp, int tps)
 {
-  int oilTemp = oilRead();
-  int tps = tpsRead();
   int allowedBoostPressure = readMap(boostControlPressureMap, tps, oilTemp);
-
   return allowedBoostPressure;
 }
 
-int loadRead()
+int loadRead(int boostSensor, int allowedBoostPressure, int tpsPercentValue)
 {
   int trueLoad = 0;
-  float boostSensor = boostRead();
-  int allowedBoostPressure = boostLimitRead();
   int boostPercentValue = 100 * boostSensor / allowedBoostPressure;
-  int tpsPercentValue = tpsRead();
 
   if (boostSensor && tpsSensor)
   {
@@ -180,8 +173,6 @@ int atfRead()
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   int atfTemp = 0;
-  int sensorReading = 0;
-  int i = 0;
 
   if (atfTempRaw > 1015)
   {
@@ -194,25 +185,19 @@ int atfRead()
     drive = true;
     atfTempCalculated = (0.0309 * atfTempRaw * atfTempRaw) - 44.544 * atfTempRaw + 16629;
     atfTemp = -0.000033059 * atfTempCalculated * atfTempCalculated + 0.2031 * atfTempCalculated - 144.09; //same as above
-    if (i < atfSensorNumReadings)
-    {
-      sensorReading = atfTemp;
-      atfSensorAverage = atfSensorAverage + (sensorReading - atfSensorAverage) / atfSensorFilterWeight;
-      i++;
-      // Kalman filter
-      // http://home.earthlink.net/~david.schultz/rnd/2002/KalmanApogee.pdf
-    }
-  }
-  if (atfSensorAverage < -40)
-  {
-    atfSensorAverage = -40;
-  }
-  if (atfSensorAverage > 120)
-  {
-    atfSensorAverage = 120;
+    avgAtfTemp = (avgAtfTemp * 9 + atfTemp) / 10;
   }
 
-  return atfSensorAverage;
+  if (avgAtfTemp < -40)
+  {
+    avgAtfTemp = 0;
+  }
+  if (avgAtfTemp > 120)
+  {
+    avgAtfTemp = 120;
+  }
+
+  return avgAtfTemp;
 }
 
 int freeMemory()
@@ -225,4 +210,28 @@ int freeMemory()
 #else  // __arm__
   return __brkval ? &top - __brkval : &top - __malloc_heap_start;
 #endif // __arm__
+}
+
+struct SensorVals readSensors()
+{
+  struct ConfigParam config = readConfig();
+  struct SensorVals sensor;
+  sensor.curOilTemp = oilRead();
+  sensor.curBoost = boostRead();
+  sensor.curBoostLim = boostLimitRead(sensor.curOilTemp, sensor.curTps);
+  sensor.curTps = tpsRead();
+  sensor.curLoad = loadRead(sensor.curBoost, sensor.curBoostLim, sensor.curTps);
+  sensor.curAtfTemp = atfRead();
+  sensor.curRPM = rpmRead();
+  sensor.curSpeed = speedRead();
+  return sensor;
+}
+
+struct ConfigParam readConfig()
+{
+  struct ConfigParam config;
+  config.boostMax = 700;
+  config.boostDrop = 50;
+  config.fuelMaxRPM = 2000;
+  return config;
 }

@@ -5,14 +5,13 @@ void updateDisplay(Task* me);
 void datalog(Task* me);
 void updateSpeedo();
 
-extern int gear;         
-extern int vehicleSpeed;
+extern byte gear;         
 extern boolean debugEnabled;
 extern boolean fullAuto;
 extern boolean datalogger;
 extern boolean w124speedo;
 extern boolean w124rpm;
-extern int wantedGear;
+extern byte wantedGear;
 extern int lastMapVal;
 
 #ifdef __arm__
