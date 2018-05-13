@@ -12,12 +12,12 @@
 
 // "Protothreading", we have time slots for different functions to be run.
 Task pollDisplay(500, updateDisplay); // 500ms to update display
-Task pollData(200, datalog); // 500ms to update display
-Task pollStick(200, pollstick); // 200ms for checking stick position
+Task pollData(200, datalog);          // 500ms to update display
+Task pollStick(200, pollstick);       // 200ms for checking stick position
 Task pollGear(200, decideGear);
-Task pollSensors(500, pollsensors); // 500ms to update sensor values*/
-Task pollTrans(50, polltrans); // 50ms to check transmission state
-Task pollFuelControl(1000, fuelControl); // 1000ms for fuel pump control
+Task pollSensors(500, pollsensors);       // 500ms to update sensor values*/
+Task pollTrans(50, polltrans);            // 50ms to check transmission state
+Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
 Task pollBoostControl(100, boostControl); // 100ms for boost control*/
 
 void setup()
@@ -50,10 +50,10 @@ void setup()
   pinMode(speedoCtrl, OUTPUT);
   pinMode(fuelPumpCtrl, OUTPUT);
 #ifdef TEENSY
-  analogWriteFrequency(spc, 1000); // 1khz for spc
-  analogWriteFrequency(mpc, 1000); // and mpc
+  analogWriteFrequency(spc, 1000);     // 1khz for spc
+  analogWriteFrequency(mpc, 1000);     // and mpc
   analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
-  analogWriteFrequency(rpmMeter, 50); // 50hz for w124 rpm meter
+  analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
 #endif
   // Sensor input
   pinMode(boostPin, INPUT); // boost sensor
@@ -82,6 +82,10 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
+  analogWrite(speedoCtrl, 255); // Wake up speedometer motor so it wont 
+  analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
+  
+  // resetEEPROM();
 
   if (debugEnabled)
   {
@@ -97,6 +101,3 @@ void setup()
   SoftTimer.add(&pollFuelControl);
   SoftTimer.add(&pollBoostControl);
 }
-
-
-

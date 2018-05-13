@@ -4,6 +4,7 @@
 #include "include/maps.h"
 #include "include/sensors.h"
 #include "include/ui.h"
+#include "include/config.h"
 #include <SoftTimer.h>
 using namespace std;
 
@@ -225,13 +226,4 @@ struct SensorVals readSensors()
   sensor.curRPM = rpmRead();
   sensor.curSpeed = speedRead();
   return sensor;
-}
-
-struct ConfigParam readConfig()
-{
-  struct ConfigParam config;
-  config.boostMax = 700;
-  config.boostDrop = 50;
-  config.fuelMaxRPM = 2000;
-  return config;
 }

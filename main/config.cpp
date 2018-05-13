@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "include/config.h"
 
 // Environment configuration
 
@@ -41,10 +42,20 @@ boolean datalogger = false;
 // Old style w124 speed meter controlling
 boolean w124speedo = true;
 
+// Old style w124 rpm meter pwm
 boolean w124rpm = true;
 
-// control fuel pumps
+// control fuel pumps (turn off below certain rpm)
 boolean fuelPumpControl = true;
+
+struct ConfigParam readConfig()
+{
+  struct ConfigParam config;
+  config.boostMax = 700; // boost sensor max kpa
+  config.boostDrop = 50; // kpa to drop on shifts
+  config.fuelMaxRPM = 2000; // RPM limit to turn off fuel pumps
+  return config;
+}
 
 // End of environment conf
 

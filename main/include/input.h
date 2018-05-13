@@ -1,13 +1,15 @@
 #include <SoftTimer.h>
 void pollstick(Task* me);
-void gearup();
-void geardown();
-void pollkeys();
+void gearUp();
+void gearDown();
 void polltrans(Task* me);
 int evaluateGear(float ratio);
 void boostControl(Task* me);
 void fuelControl(Task* me);
 int adaptSPC(int mapId, int xVal, int yVal);
+void adaptSPCup();
+void adaptSPCdown();
+void onReleased(unsigned long pressTimespanMs);
 
 extern int spcPercentVal;       
 extern unsigned long int shiftStartTime;

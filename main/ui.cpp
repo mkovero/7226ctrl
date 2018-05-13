@@ -6,6 +6,7 @@
 #include "include/pins.h"
 #include "include/sensors.h"
 #include "include/eeprom.h"
+#include "include/config.h"
 #include <SoftTimer.h>
 
 #ifdef MEGA

@@ -6,6 +6,7 @@
 #include "include/maps.h"
 #include "include/eeprom.h"
 #include "include/input.h"
+#include "include/config.h"
 #include <SoftTimer.h>
 
 byte wantedGear = 100;
@@ -204,15 +205,15 @@ void fuelControl(Task *me)
     struct SensorVals sensor = readSensors();
     struct ConfigParam config = readConfig();
 
-    if (sensor.curRPM > config.fuelMaxRPM)
+    if (sensor.curRPM > config.fuelMaxRPM || millis() < 5000 )
     {
-      analogWrite(fuelPumpCtrl, 0);
+      analogWrite(fuelPumpCtrl, 255);
       if (debugEnabled)
       {
-        Serial.print(F("Fuel Pump RPM limit hit: "));
+        Serial.print(F("[fuelControl->fuelControl] Fuel Pump RPM limit hit/Prestart init, enabling pumps: "));
         Serial.println(config.fuelMaxRPM);
       }
-    }
+    } 
   }
 }
 
@@ -220,11 +221,11 @@ void fuelControl(Task *me)
 // R/N/P modulation pressure regulation
 // idle SPC regulation
 // Boost control
-void polltrans(Task *me)
+void polltrans(Task* me)
 {
   struct SensorVals sensor = readSensors();
 
-  int shiftDelay = readMapInt(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
+  int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
 
   if (shiftBlocker)
   {
@@ -233,7 +234,7 @@ void polltrans(Task *me)
     {
       if (debugEnabled)
       {
-        Serial.print(F("polltrans->switchGearStop: shiftDelay/spcPercentVal/atfTemp="));
+        Serial.print(F("[polltrans->switchGearStop] shiftDelay-spcPercentVal-atfTemp "));
         Serial.print(shiftDelay);
         Serial.print(F("-"));
         Serial.print(spcPercentVal);

@@ -6,11 +6,6 @@ struct SensorVals
     byte curTps, curLoad, curSpeed;
 };
 
-struct ConfigParam
-{
-    int boostMax, boostDrop, fuelMaxRPM;
-};
-
 void N2SpeedInterrupt();
 void N3SpeedInterrupt();
 void vehicleSpeedInterrupt();
@@ -24,7 +19,6 @@ int loadRead(int boostSensor, int allowedBoostPressure, int tps);
 int atfRead();
 int oilRead();
 struct SensorVals readSensors();
-struct ConfigParam readConfig();
 
 extern boolean trans;
 extern boolean sensors;
