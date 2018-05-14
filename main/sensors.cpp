@@ -89,16 +89,28 @@ int speedRead()
 {
   struct ConfigParam config = readConfig();
   struct SensorVals sensor = readSensors();
+  int vehicleSpeed;
 
   // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
   float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
   float tireCircumference = 3.14 * tireDiameter;
-  int vehicleSpeed = tireCircumference * sensor.curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
+  if (rpmSpeed)
+  {
+    // speed based on engine rpm
+    int vehicleSpeed = tireCircumference * sensor.curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
+  }
+  else if (diffSpeed)
+  {
+    // speed based on diff abs sensor
+    int vehicleSpeed = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
+  }
+  else
+  {
+    // we're on testing mode, no real speed
+    int vehicleSpeed = 100;
+  }
   avgVehicleSpeed = (avgVehicleSpeed * 5 + vehicleSpeed) / 10;
   return vehicleSpeed;
-
-  // int vehicleSpeed = 100;
-  // return vehicleSpeed;
 }
 
 int tpsRead()

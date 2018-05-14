@@ -27,3 +27,5 @@ extern boolean boostSensor;
 extern boolean debugEnabled;
 extern boolean boostLimit;
 extern boolean drive;
+extern boolean diffSpeed;
+extern boolean rpmSpeed;

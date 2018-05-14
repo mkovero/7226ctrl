@@ -48,6 +48,11 @@ boolean w124rpm = true;
 // control fuel pumps (turn off below certain rpm)
 boolean fuelPumpControl = true;
 
+// calculate vehicleSpeed from engine RPM
+boolean rpmSpeed = false; 
+// calculate vehicleSpeed from diff abs sensor
+boolean diffSpeed = false; 
+
 struct ConfigParam readConfig()
 {
   struct ConfigParam config;
