@@ -5,6 +5,8 @@ void switchGearStop();
 void gearchangeUp(int newGear);
 void gearchangeDown(int newGear);
 void decideGear(Task* me);
+float ratioFromGear(int inputGear);
+int gearFromRatio(float inputRatio);
 
 extern byte gear;         
 extern int cSolenoid;  

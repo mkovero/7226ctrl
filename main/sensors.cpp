@@ -5,6 +5,7 @@
 #include "include/sensors.h"
 #include "include/ui.h"
 #include "include/config.h"
+#include "include/core.h"
 #include <SoftTimer.h>
 using namespace std;
 
@@ -13,7 +14,7 @@ unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, vehicleSpeedRevs
 int n2Speed, n3Speed;
 
 // sensor smoothing
-int avgAtfTemp, avgBoostValue;
+int avgAtfTemp, avgBoostValue, avgVehicleSpeed, avgRpmValue;
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -84,10 +85,20 @@ void pollsensors(Task *me)
   }
 }
 
-int speedRead() {
-//  int vehicleSpeed = 2.188 * vehicleSpeedRevs;
-  int vehicleSpeed = 100;
+int speedRead()
+{
+  struct ConfigParam config = readConfig();
+  struct SensorVals sensor = readSensors();
+
+  // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
+  float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
+  float tireCircumference = 3.14 * tireDiameter;
+  int vehicleSpeed = tireCircumference * sensor.curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
+  avgVehicleSpeed = (avgVehicleSpeed * 5 + vehicleSpeed) / 10;
   return vehicleSpeed;
+
+  // int vehicleSpeed = 100;
+  // return vehicleSpeed;
 }
 
 int tpsRead()
@@ -118,7 +129,9 @@ int tpsRead()
 int rpmRead()
 {
   int rpmValue = rpmPulse * 60;
-  return rpmValue;
+  avgRpmValue = (avgRpmValue * 5 + rpmValue) / 10;
+
+  return avgRpmValue;
 }
 
 int oilRead()
@@ -218,11 +231,11 @@ struct SensorVals readSensors()
   struct ConfigParam config = readConfig();
   struct SensorVals sensor;
   sensor.curOilTemp = oilRead();
+  sensor.curAtfTemp = atfRead();
   sensor.curBoost = boostRead();
   sensor.curBoostLim = boostLimitRead(sensor.curOilTemp, sensor.curTps);
   sensor.curTps = tpsRead();
   sensor.curLoad = loadRead(sensor.curBoost, sensor.curBoostLim, sensor.curTps);
-  sensor.curAtfTemp = atfRead();
   sensor.curRPM = rpmRead();
   sensor.curSpeed = speedRead();
   return sensor;

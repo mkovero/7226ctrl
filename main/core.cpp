@@ -48,19 +48,37 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
   }
 
   int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
-  if ( spcModVal < 10 ) { spcModVal = 10; };
-  if ( spcModVal > 190 ) { spcModVal = 200; };
+  if (spcModVal < 10)
+  {
+    spcModVal = 10;
+  };
+  if (spcModVal > 190)
+  {
+    spcModVal = 200;
+  };
 
   if (trans)
   {
     // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
-    
-    spcPercentVal = spcModVal/100*spcVal;
-    if ( spcPercentVal > 100 ) { spcPercentVal = 100; // to make sure we're on the bounds.
-    if ( debugEnabled ) { Serial.println (F("[switchGearStart->switchGearStart] SPC high limit hit.")); }; };
-    if ( spcPercentVal < 10 ) { spcPercentVal = 10; // to be on safe side.
-    if ( debugEnabled ) { Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit.")); }; };
-    spcSetVal = (100-spcPercentVal) * 2.55;
+
+    spcPercentVal = spcModVal / 100 * spcVal;
+    if (spcPercentVal > 100)
+    {
+      spcPercentVal = 100; // to make sure we're on the bounds.
+      if (debugEnabled)
+      {
+        Serial.println(F("[switchGearStart->switchGearStart] SPC high limit hit."));
+      };
+    };
+    if (spcPercentVal < 10)
+    {
+      spcPercentVal = 10; // to be on safe side.
+      if (debugEnabled)
+      {
+        Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit."));
+      };
+    };
+    spcSetVal = (100 - spcPercentVal) * 2.55;
     mpcVal = (100 - mpcVal) * 2.55;
     analogWrite(spc, spcSetVal);
     analogWrite(mpc, mpcVal);
@@ -76,8 +94,6 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
       Serial.print(mpcVal);
       Serial.print(F("-"));
       Serial.println(spcModVal);
-
-
     }
   }
   cSolenoidEnabled = cSolenoid;
@@ -88,7 +104,7 @@ void switchGearStop()
 {
   analogWrite(cSolenoid, 0); // turn shift solenoid off
   analogWrite(spc, 0);       // let go of SPC-pressure
-  gear = pendingGear; // we can happily say we're on new gear
+  gear = pendingGear;        // we can happily say we're on new gear
   shiftBlocker = false;
   shiftPending = false;
 
@@ -100,7 +116,6 @@ void switchGearStop()
     Serial.print(newGear);
     Serial.print(F("-"));
     Serial.println(cSolenoid);
-    
   }
   shiftStartTime = 0;
 }
@@ -372,6 +387,65 @@ void decideGear(Task *me)
       shiftPending = true;
       gearchangeDown(newGear);
     }
+  }
+}
+
+float ratioFromGear(int inputGear)
+{
+  float gearRatio;
+  switch (inputGear)
+  {
+  case 1:
+    gearRatio = 3.59;
+    return gearRatio;
+    break;
+  case 2:
+    gearRatio = 2.19;
+    return gearRatio;
+    break;
+  case 3:
+    gearRatio = 1.41;
+    return gearRatio;
+    break;
+  case 4:
+    gearRatio = 1.00;
+    return gearRatio;
+    break;
+  case 5:
+    gearRatio = 0.83;
+    return gearRatio;
+    break;
+  default:
+    break;
+  }
+}
+
+int gearFromRatio(float inputRatio)
+{
+  if (inputRatio < 3.62 && inputRatio > 3.56)
+  {
+    int returnGear = 1;
+    return returnGear;
+  }
+  else if (inputRatio < 2.22 && inputRatio > 2.16)
+  {
+    int returnGear = 2;
+    return returnGear;
+  }
+  else if (inputRatio < 1.44 && inputRatio > 1.38)
+  {
+    int returnGear = 3;
+    return returnGear;
+  }
+  else if (inputRatio < 1.03 && inputRatio > 0.97)
+  {
+    int returnGear = 4;
+    return returnGear;
+  }
+  else if (inputRatio < 0.86 && inputRatio > 0.8)
+  {
+    int returnGear = 5;
+    return returnGear;
   }
 }
 // END OF CORE

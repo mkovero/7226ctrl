@@ -54,6 +54,10 @@ struct ConfigParam readConfig()
   config.boostMax = 700; // boost sensor max kpa
   config.boostDrop = 50; // kpa to drop on shifts
   config.fuelMaxRPM = 2000; // RPM limit to turn off fuel pumps
+  config.tireWidth = 225;
+  config.tireProfile = 45;
+  config.tireInches = 17;
+  config.diffRatio = 3.27;
   return config;
 }
 

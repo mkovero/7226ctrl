@@ -12,7 +12,7 @@
 
 // "Protothreading", we have time slots for different functions to be run.
 Task pollDisplay(500, updateDisplay); // 500ms to update display
-Task pollData(200, datalog);          // 500ms to update display
+Task pollData(200, datalog);          // 200ms to update datalogging
 Task pollStick(200, pollstick);       // 200ms for checking stick position
 Task pollGear(200, decideGear);
 Task pollSensors(500, pollsensors);       // 500ms to update sensor values*/
@@ -82,7 +82,7 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 255); // Wake up speedometer motor so it wont 
+  analogWrite(speedoCtrl, 255); // Wake up speedometer motor so it wont stick
   analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
   
   // resetEEPROM();
