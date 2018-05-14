@@ -13,23 +13,23 @@ Currently should work:
 - SPI OLED for data output
 - Boost limit maps
 - Boost limiting (eg. drop boost on shifts)
+- adaptative shift pressure
+- External datalogging (format, method)
+- Fuel pump control on idle (initial pressure on startup, enable pumps after certain RPM)
 
 Work in progress:
-- adaptative shift pressure
 - evaluateGear, make sure which gear is in (pending hallsensor testing)
-- External datalogging (format, method)
-
+- External datalogging (hardware implementation, visualization)
+- vehicle speed reading (static calculation should work)
+- rpm reading (pending sensor installation, started)
 
 Not started/pending:
-- vehicle speed reading (pending powertrain to be installed, going to read abs hallsensor from diff)
-- rpm reading (pending sensor installation, going to read original om606 rpm hallsensor)
 - n2/n3 speed sensors (pending moving car)
 - oil temperature (pending sensor installation)
 - PID controlled PWM for temperature stability
 - percentual map reads preferably without floats (eg. value between point x and y).
 
 Considered:
-- Fuel pump control on idle
 - Electric steering wheel support
 
 work by Markus Kovero (mui@mui.fi) with regards to Tuomas Kantola.
