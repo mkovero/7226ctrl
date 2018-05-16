@@ -5,26 +5,30 @@ controller for 722.6 automatic transmission
 - Use at your own risk!
 
 Currently should work:
-- Automatic downshift / upshift based on vehicle speed and throttle position
-- Manual shifting
-- Throttle position sensor
-- Pressure maps for shifts and modulation pressure based on oil temperature and load, even when P/N/R
-- W202 gearstick can be read
-- SPI OLED for data output
-- Boost limit maps
-- Boost limiting (eg. drop boost on shifts)
-- adaptative shift pressure
-- External datalogging (format, method)
-- Fuel pump control on idle (initial pressure on startup, enable pumps after certain RPM)
+- Automatic downshift / upshift based on vehicle speed and throttle position (tested and works)
+- Manual shifting (tested and works)
+- Throttle position sensor (tested and works)
+- Pressure maps for shifts and modulation pressure based on oil temperature and load, even when P/N/R (tested and works)
+- W202 gearstick can be read (tested and works)
+- SPI OLED for data output (tested and works)
+- Boost limit maps (tested and works)
+- Boost limiting (eg. drop boost on shifts) (tested and works)
+- w124 wire-speedometer (tested and works)
+
+Implemented but needs real life testing:
+- adaptative shift pressure (works in lab)
+- External datalogging (format, method, works in lab)
+- Fuel pump control on idle (initial pressure on startup, enable pumps after certain RPM, works in lab)
+- evaluateGear, make sure which gear is in (works in lab)
+- n2/n3 speed sensors (works in lab)
+- vehicle speed reading based on tire size and diff ratio with and without engine rpm (works in lab)
+- rpm reading (works in lab)
+- w124 rpm meter (works in theory)
 
 Work in progress:
-- evaluateGear, make sure which gear is in (pending hallsensor testing)
 - External datalogging (hardware implementation, visualization)
-- vehicle speed reading (static calculation should work)
-- rpm reading (pending sensor installation, started)
 
 Not started/pending:
-- n2/n3 speed sensors (pending moving car)
 - oil temperature (pending sensor installation)
 - PID controlled PWM for temperature stability
 - percentual map reads preferably without floats (eg. value between point x and y).

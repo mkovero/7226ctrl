@@ -3,7 +3,6 @@ void pollstick(Task* me);
 void gearUp();
 void gearDown();
 void polltrans(Task* me);
-int evaluateGear(float ratio);
 void boostControl(Task* me);
 void fuelControl(Task* me);
 int adaptSPC(int mapId, int xVal, int yVal);

@@ -5,6 +5,7 @@ void switchGearStop();
 void gearchangeUp(int newGear);
 void gearchangeDown(int newGear);
 void decideGear(Task* me);
+int evaluateGear();
 float ratioFromGear(int inputGear);
 int gearFromRatio(float inputRatio);
 
@@ -24,3 +25,5 @@ extern byte wantedGear;
 extern byte newGear;
 extern byte pendingGear;
 extern boolean shiftPending;
+extern int vehicleSpeedRevs;
+extern boolean evalGear;

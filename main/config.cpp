@@ -50,8 +50,12 @@ boolean fuelPumpControl = true;
 
 // calculate vehicleSpeed from engine RPM
 boolean rpmSpeed = false; 
+
 // calculate vehicleSpeed from diff abs sensor
 boolean diffSpeed = false; 
+
+// gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
+boolean evalGear = false;
 
 struct ConfigParam readConfig()
 {

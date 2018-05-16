@@ -10,8 +10,8 @@
 using namespace std;
 
 // Internals
-unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, vehicleSpeedRevs, lastSensorTime, rpmPulse;
-int n2Speed, n3Speed;
+unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse;
+int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
 int avgAtfTemp, avgBoostValue, avgVehicleSpeed, avgRpmValue;
@@ -76,6 +76,12 @@ void pollsensors(Task *me)
       vehicleSpeedPulses = 0;
     }
 
+    if (rpmPulse >= 60)
+    {
+      rpmRevs = rpmPulse * 60;
+      rpmPulse = 0;
+    }
+
     lastSensorTime = millis();
 
     attachInterrupt(2, N2SpeedInterrupt, RISING); // Attach again
@@ -88,8 +94,8 @@ void pollsensors(Task *me)
 int speedRead()
 {
   struct ConfigParam config = readConfig();
-  struct SensorVals sensor = readSensors();
-  int vehicleSpeed;
+  int curRPM = rpmRead();
+  int vehicleSpeed = 100;
 
   // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
   float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
@@ -97,20 +103,16 @@ int speedRead()
   if (rpmSpeed)
   {
     // speed based on engine rpm
-    int vehicleSpeed = tireCircumference * sensor.curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
+    vehicleSpeed = tireCircumference * curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
   }
   else if (diffSpeed)
   {
     // speed based on diff abs sensor
-    int vehicleSpeed = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
+    vehicleSpeed = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
   }
-  else
-  {
-    // we're on testing mode, no real speed
-    int vehicleSpeed = 100;
-  }
-  avgVehicleSpeed = (avgVehicleSpeed * 5 + vehicleSpeed) / 10;
-  return vehicleSpeed;
+
+  avgVehicleSpeed = (avgVehicleSpeed * 1 + vehicleSpeed) / 2;
+  return avgVehicleSpeed;
 }
 
 int tpsRead()
@@ -140,8 +142,7 @@ int tpsRead()
 
 int rpmRead()
 {
-  int rpmValue = rpmPulse * 60;
-  avgRpmValue = (avgRpmValue * 5 + rpmValue) / 10;
+  avgRpmValue = (avgRpmValue * 5 + rpmRevs) / 10;
 
   return avgRpmValue;
 }
@@ -240,7 +241,6 @@ int freeMemory()
 
 struct SensorVals readSensors()
 {
-  struct ConfigParam config = readConfig();
   struct SensorVals sensor;
   sensor.curOilTemp = oilRead();
   sensor.curAtfTemp = atfRead();

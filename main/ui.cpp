@@ -147,6 +147,6 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(sensor.curBoostLim);
     Serial.print(F(";"));
-    Serial.print(lastMapVal);
+    Serial.println(lastMapVal);
   }
 }

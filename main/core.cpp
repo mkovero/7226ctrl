@@ -326,7 +326,7 @@ void gearchangeDown(int newGear)
 }
 
 // Logic for automatic new gear, this makes possible auto up/downshifts.
-void decideGear(Task *me)
+void decideGear(Task* me)
 {
   int moreGear = gear + 1;
   int lessGear = gear - 1;
@@ -359,9 +359,29 @@ void decideGear(Task *me)
         Serial.print(F("-"));
         Serial.println(gear);
       }
-      shiftPending = true;
-      gearchangeUp(newGear);
+      if (evalGear)
+      {
+        int evaluatedGear = evaluateGear();
+        if (evaluatedGear == gear)
+        {
+          shiftPending = true;
+          gearchangeUp(newGear);
+        }
+        else
+        {
+          if (debugEnabled)
+          {
+            Serial.println("Blocking shift, evaluatedGear != gear");
+          }
+        }
+      }
+      else
+      {
+        shiftPending = true;
+        gearchangeUp(newGear);
+      }
     }
+
     if (autoGear < gear || wantedGear < gear)
     {
       int newGear = lessGear;
@@ -384,10 +404,49 @@ void decideGear(Task *me)
         Serial.print(F("-"));
         Serial.println(gear);
       }
-      shiftPending = true;
-      gearchangeDown(newGear);
+      if (evalGear)
+      {
+        int evaluatedGear = evaluateGear();
+        if (evaluatedGear == gear)
+        {
+          shiftPending = true;
+          gearchangeDown(newGear);
+        }
+        else
+        {
+          if (debugEnabled)
+          {
+            Serial.println("Blocking shift, evaluatedGear != gear");
+          }
+        }
+      }
+      else
+      {
+        shiftPending = true;
+        gearchangeDown(newGear);
+      }
     }
   }
+}
+
+int evaluateGear()
+{
+  int incomingShaftSpeed = 0;
+  int measuredGear = 0;
+
+  if (n3Speed == 0)
+  {
+    incomingShaftSpeed = n2Speed * 1.64;
+  }
+  else
+  {
+    incomingShaftSpeed = n2Speed;
+    //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
+  }
+  float ratio = incomingShaftSpeed / vehicleSpeedRevs;
+
+  measuredGear = gearFromRatio(ratio);
+  return measuredGear;
 }
 
 float ratioFromGear(int inputGear)
