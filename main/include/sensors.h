@@ -9,7 +9,8 @@ struct SensorVals
 void N2SpeedInterrupt();
 void N3SpeedInterrupt();
 void vehicleSpeedInterrupt();
-void pollsensors(Task *me);
+void rpmInterrupt();
+void pollsensors(Task* me);
 int speedRead();
 int tpsRead();
 int rpmRead();

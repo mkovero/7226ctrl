@@ -76,18 +76,15 @@ void pollsensors(Task *me)
       vehicleSpeedPulses = 0;
     }
 
-    if (rpmPulse >= 60)
-    {
-      rpmRevs = rpmPulse * 60;
-      rpmPulse = 0;
-    }
+    rpmRevs = rpmPulse * 60;
+    rpmPulse = 0;
 
     lastSensorTime = millis();
 
-    attachInterrupt(2, N2SpeedInterrupt, RISING); // Attach again
-    attachInterrupt(3, N3SpeedInterrupt, RISING);
-    attachInterrupt(4, vehicleSpeedInterrupt, RISING);
-    attachInterrupt(5, rpmInterrupt, RISING);
+    attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING); // Attach again
+    attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
+    attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
+    attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
   }
 }
 
@@ -142,7 +139,13 @@ int tpsRead()
 
 int rpmRead()
 {
-  avgRpmValue = (avgRpmValue * 5 + rpmRevs) / 10;
+  struct ConfigParam config = readConfig();
+
+  if (rpmRevs > config.maxRPM)
+  {
+    rpmRevs = config.maxRPM;
+  }
+  avgRpmValue = (avgRpmValue * 1 + rpmRevs) / 2;
 
   return avgRpmValue;
 }

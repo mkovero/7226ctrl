@@ -84,8 +84,14 @@ void setup()
   analogWrite(tcc, 0);
   analogWrite(speedoCtrl, 255);   // Wake up speedometer motor so it wont stick
   analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
+  digitalWrite(rpmPin, HIGH); // pull-up
 
   // resetEEPROM();
+
+  attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
 
   if (debugEnabled)
   {
