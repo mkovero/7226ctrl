@@ -1,5 +1,6 @@
 # Settings:
 # by Pete 2018/05
+# for raspbian lite
 
 NODEJS_VERSION="8.11.2";
 
