@@ -15,6 +15,11 @@ U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
 #ifdef TEENSY
 U8GLIB_SSD1306_128X64 u8g(13, 11, 3, 6, 5);
 #endif
+// 13 = green <-> brown/white/pink
+// 11 = red <-> brown/white
+// 3 = red <-> green/red
+// 6 = green <-> red/yellow fat
+// 5 = red <-> black
 
 // UI STAGE
 // Control for what user sees and how gearbox is used with
