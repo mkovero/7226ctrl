@@ -7,8 +7,11 @@ int readEEPROM(int mapId, int xVal, int yVal)
 {
     int modVal = 0;
     int address = mapId + xVal + yVal;
-    Serial.print(F("EEPROM: reading from address:"));
-    Serial.println(address);
+    if (debugEnabled)
+    {
+        Serial.print(F("[EEPROM->EEPROM] EEPROM: reading from address:"));
+        Serial.println(address);
+    }
     modVal = EEPROM.read(address);
     if (modVal == 0)
     {
@@ -21,8 +24,11 @@ int readEEPROM(int mapId, int xVal, int yVal)
 int writeEEPROM(int mapId, int xVal, int yVal, int modVal)
 {
     int address = mapId + xVal + yVal;
-    Serial.print(F("EEPROM: writing to address:"));
-    Serial.println(address);
+    if (debugEnabled)
+    {
+        Serial.print(F("[EEPROM->EEPROM] writing to address:"));
+        Serial.println(address);
+    }
     EEPROM.write(address, modVal);
 }
 

@@ -25,46 +25,69 @@
 #endif
 
 #ifdef TEENSY
-#define y3 36 // FMT3, orange<->brown/red
-#define y4 35 // orange <-> brown/grey
-#define y5 34 //ex 14, orange <-> brown/black
-#define mpc 38 // red <-> brown/pink
-#define spc 37 // red <-> brown/yellow
-#define tcc 8 // pink <-> brown/yellow/white
-#define speedoCtrl 7 // ex 7, blue <-> blue/green
-#define rpmMeter 30 // FMT2 missing
-#define boostCtrl 4 // FMT1, green <-> green/white/yellow
-#define fuelPumpCtrl 3 // missing
+#define y3 36 // FMT3, orange<->brown/red // DOUT3
+#define y4 35 // orange <-> brown/grey // DOUT2
+#define y5 8 //ex 14, orange <-> brown/black // DOUT1
+#define mpc 38 // red <-> brown/pink // DOUT5 // FMT3
+#define spc 37 // red <-> brown/yellow // DOUT4 // FMT3
+#define tcc 29 // pink <-> brown/yellow/white // DOUT6
+#define speedoCtrl 7 // ex 7, blue <-> blue/green // DOUT7
+#define rpmMeter 30 // FMT2 missing // DOUT10
+#define boostCtrl 4 // FMT1, green <-> green/white/yellow // DOUT8
+#define fuelPumpCtrl 3 // missing // DOUT9
 #endif
 // END OUTPUT PINS
 
 // INPUT PINS
 // Stick input
-#define whitepin 27 // 0.5kohm <-> yellow <-> missing
-#define bluepin 29 // 0.5kohm <-> yellow <-> missing
-#define greenpin 26 // 0.5kohm <-> yellow <-> missing
-#define yellowpin 28 // 0.5kohm <-> yellow <-> missing
+#ifdef MEGA
+#define whitepin 27 // 0.5kohm <-> yellow <-> missing // DIN2
+#define bluepin 29 // 0.5kohm <-> yellow <-> missing // DIN4
+#define greenpin 26 // 0.5kohm <-> yellow <-> missing // DIN1
+#define yellowpin 28 // 0.5kohm <-> yellow <-> missing // DIN3
+#endif
+#ifdef TEENSY
+#define whitepin 27 // 0.5kohm <-> yellow <-> missing // DIN2
+#define bluepin 34 // 0.5kohm <-> yellow <-> missing // DIN4
+#define greenpin 26 // 0.5kohm <-> yellow <-> missing // DIN1
+#define yellowpin 28 // 0.5kohm <-> yellow <-> missing // DIN3
+#endif
+
 
 // Switches
-#define autoSwitch 51 // ex. 22, 0.5kohm <-> yellow <-> missing
-#define gdownSwitch 25 // ex. 23 <-> NC
-#define gupSwitch 24 // <-> NC
-
 #ifdef MEGA
-#define aSpcUpSwitch 39 // ex 18 <-> missing
-#define aSpcDownSwitch 40 // ex 17 <-> missing
+#define autoSwitch 51 // ex. 22, 0.5kohm <-> yellow <-> missing
+#endif
+#ifdef TEENSY
+#define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> missing // DIN5
 #endif
 
 #ifdef TEENSY
-#define aSpcUpSwitch 32 // ex 18
-#define aSpcDownSwitch 31 // ex 17
+#define gdownSwitch 23 // ex. 23 <-> NC // DIN6
+#define gupSwitch 16 // <-> NC // DIN7
 #endif
+
+#ifdef MEGA
+#define gdownSwitch 25 // ex. 23 <-> NC
+#define gupSwitch 24 // <-> NC
+#endif
+
+#ifdef MEGA
+#define aSpcUpSwitch 39 // ex 18 
+#define aSpcDownSwitch 40 // ex 17 
+#endif
+
+#ifdef TEENSY
+#define aSpcUpSwitch 32 // ex 18 <-> missing grey? // DIN13
+#define aSpcDownSwitch 31 // ex 17 <-> missing grey? // DIN12
+#endif
+
 // Car sensor input pins, black
-#define tpsPin A0 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div
-#define atfPin A1 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div
-#define boostPin A2 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div
-#define oilPin A3 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div
-#define n2pin 19 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div
-#define n3pin 20 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div
-#define speedPin 21 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div
-#define rpmPin 18 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div
+#define tpsPin A0 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // ANAIN3
+#define atfPin A1 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // ANAIN2
+#define boostPin A2 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // ANAIN4
+#define oilPin A3 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div // ANAIN1
+#define n2pin 19 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // DIN14
+#define n3pin 20 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // DIN15
+#define speedPin 21 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div // DIN10
+#define rpmPin 18 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div // DIN12

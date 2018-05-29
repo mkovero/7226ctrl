@@ -38,8 +38,8 @@ Considered:
 
 work by Markus Kovero (mui@mui.fi) with regards to Tuomas Kantola.
 
-Pinout is for mega2560 with SPI OLED display and is subject to change.
-IFR540 in schematics is actually presenting 4channel mosfet board including protection circuit and logic level changer. (5usd, can be found from ebay).
+Schematics are for teensy, can be utilized with mega as well to some extent.
+I'm in progress of designing PCB for this to make things easier, currently its just too much wire to handle in reasonable manner.
 
-![Alt text](/schematics.png?raw=true "Title")
+![Alt text](/schematics.png?raw=true "Schematics for teensy")
 

@@ -5,7 +5,6 @@
 int lastXval, lastYval;
 int maxBoostPressure = 700; // Max pressure on boost sensor
 
-
 // Calculation helpers
 
 // Mapping throttle position sensor voltage to percentage
@@ -23,8 +22,6 @@ int readBoostVoltage(int voltage)
 }
 
 // Function to read 2d maps from flash (maps declared with PROGMEM)
-// I'm hitting some silly limit here, pgm_read_byte_near does not seem to be
-// able to read four digit values in full. Probably some little thing I'm missing. (pgm_read_byte_far?)
 int readMap(const int theMap[14][12], int x, int y)
 {
   int xidx = 0; // by default near first element
@@ -56,5 +53,6 @@ int readMap(const int theMap[14][12], int x, int y)
   lastXval = xidx;
   lastYval = yidx;
   int mapValue = pgm_read_word_near(&theMap[yidx][xidx]);
+  
   return mapValue;
 }

@@ -13,7 +13,7 @@
 U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
 #endif
 #ifdef TEENSY
-U8GLIB_SSD1306_128X64 u8g(13, 11, 3, 6, 5);
+U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
 #endif
 // 13 = green <-> brown/white/pink
 // 11 = red <-> brown/white
