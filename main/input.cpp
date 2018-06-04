@@ -257,7 +257,7 @@ void polltrans(Task* me)
   {
     mpcVal = (100 - mpcVal) * 2.55;
   }
-  else if (wantedGear = 6)
+  else if (wantedGear == 6)
   {
     mpcVal = (100 - 70) * 2.55;
   }

@@ -22,6 +22,7 @@ Task pollBoostControl(100, boostControl); // 100ms for boost control
 
 void setup()
 {
+  delay(10000);
 #ifdef MEGA
   TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
   TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46

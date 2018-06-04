@@ -3,11 +3,13 @@
         {
             "name": "Mac",
             "includePath": [
+                "/Users/markus/Documents/Arduino/libraries/U8g2/src",
                 "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": false,
                 "path": [
+                    "/Users/markus/Documents/Arduino/libraries/U8g2/src",
                     "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino",
                     "${workspaceRoot}",
                     "/Users/markus/Downloads/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/",

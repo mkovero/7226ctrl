@@ -47,19 +47,19 @@
 #define yellowpin 28 // 0.5kohm <-> yellow <-> missing // DIN3
 #endif
 #ifdef TEENSY
-#define whitepin 27 // 0.5kohm <-> yellow <-> missing // DIN2
-#define bluepin 34 // 0.5kohm <-> yellow <-> missing // DIN4
-#define greenpin 26 // 0.5kohm <-> yellow <-> missing // DIN1
-#define yellowpin 28 // 0.5kohm <-> yellow <-> missing // DIN3
+#define whitepin 27 // 0.5kohm <-> yellow <-> grey-yellow-grey // DIN2 <-> blue
+#define bluepin 34 // 0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
+#define greenpin 26 // 0.5kohm <-> yellow <-> grey-white-grey // DIN1 <-> whiteblue
+#define yellowpin 28 // 0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
 #endif
 
 
 // Switches
 #ifdef MEGA
-#define autoSwitch 51 // ex. 22, 0.5kohm <-> yellow <-> missing
+#define autoSwitch 51 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey <->pink <-> orange
 #endif
 #ifdef TEENSY
-#define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> missing // DIN5
+#define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey // DIN5
 #endif
 
 #ifdef TEENSY
@@ -83,11 +83,11 @@
 #endif
 
 // Car sensor input pins, black
-#define tpsPin A0 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // ANAIN3
-#define atfPin A1 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // ANAIN2
-#define boostPin A2 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // ANAIN4
-#define oilPin A3 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div // ANAIN1
-#define n2pin 19 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // DIN14
-#define n3pin 20 // voltage div 5/3 <-> black <-> missing = 1kohm/1.8kohm div // DIN15
-#define speedPin 21 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div // DIN10
-#define rpmPin 18 // voltage div 12/3 <-> black <-> missing = 1kohm/380ohm div // DIN12
+#define tpsPin A0 // voltage div 5/3 <-> black <-> blue-black-blue = 1kohm/1.8kohm div // ANAIN3
+#define atfPin A1 // voltage div 5/3 <-> black <-> pink = 1kohm/1.8kohm div // ANAIN2
+#define boostPin A2 // voltage div 5/3 <-> black <-> blue-brown-blue = 1kohm/1.8kohm div // ANAIN4
+#define oilPin A3 // voltage div 12/3 <-> black <-> white-pink-white = 1kohm/380ohm div // ANAIN1
+#define n2pin 19 // voltage div 5/3 <-> black <-> whiteredwhite = 1kohm/1.8kohm div // DIN14
+#define n3pin 18 // voltage div 5/3 <-> black <-> brownredwhite = 1kohm/1.8kohm div // DIN15
+#define speedPin 21 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
+#define rpmPin 20 // voltage div 12/3 <-> black <-> whitebluewhite = 1kohm/380ohm div // DIN12

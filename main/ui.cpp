@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
-#include <U8glib.h>
+#include <U8g2lib.h>
+#include <U8x8lib.h>
 #include "include/ui.h"
 #include "include/pins.h"
 #include "include/sensors.h"
@@ -10,11 +11,22 @@
 #include <SoftTimer.h>
 
 #ifdef MEGA
-U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8);
+//U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8); 
+U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 6, 5);
 #endif
 #ifdef TEENSY
-U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
+//U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
+U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 6, 5);
 #endif
+/*
+9 needs to be 13
+6 4. redyellowfat
+10 3. black
+5 5. bronwhitepink
+11 2. yellow-brown
+9 1. yellow
+*/
+// yellow, yellow-brown, black, redyellowfat, brownwhitepink
 // 13 = green <-> brown/white/pink
 // 11 = red <-> brown/white
 // 3 = red <-> green/red
@@ -24,71 +36,59 @@ U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
 // UI STAGE
 // Control for what user sees and how gearbox is used with
 //
+typedef u8g2_uint_t u8g_uint_t;
+
 void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
 
   //  int freeSram = readFreeSram();
   // graphic commands to redraw the complete screen should be placed here
-  u8g.setFont(u8g_font_ncenB18);
-  u8g.setPrintPos(50, 20);
+  u8g2.setFont(u8g_font_ncenB18);
   if (wantedGear == 6)
   {
-    u8g.print(F("N"));
+  u8g2.drawStr(60, 40, "N");
   }
   if (wantedGear == 7)
   {
-    u8g.print(F("R"));
+  u8g2.drawStr(60, 40, "R");
   }
   if (wantedGear == 8)
   {
-    u8g.print(F("P"));
+  u8g2.drawStr(60, 40, "P");
   }
   if (fullAuto && wantedGear == 5)
   {
-    u8g.print(F("D"));
+  u8g2.drawStr(60, 40, "D");
   }
   if (wantedGear == 100)
   {
-    u8g.print(F(""));
+  u8g2.drawStr(60, 40, "");
   }
   else
   {
-    u8g.print(gear);
+  u8g2.drawStr(60, 40, gear);
   }
   if (fullAuto && wantedGear < 6)
   {
-    u8g.print(F("("));
-    u8g.print(gear);
-    u8g.print(F(")"));
+  u8g2.drawStr(60, 40, "(");
+  u8g2.drawStr(60, 42, gear);
+  u8g2.drawStr(60, 44, ")");
   }
-  u8g.setFont(u8g_font_fub14);
-  u8g.setPrintPos(60, 40);
-  u8g.print(sensor.curSpeed);
-  u8g.setPrintPos(45, 60);
-  u8g.print(F("km/h"));
-  u8g.setFont(u8g_font_fixed_v0);
-  u8g.setPrintPos(0, 10);
-  u8g.print(F("atfTemp:"));
-  u8g.setPrintPos(0, 20);
-  u8g.print(sensor.curAtfTemp);
-  u8g.setPrintPos(0, 30);
-  u8g.print(F("oilTemp:"));
-  u8g.setPrintPos(0, 40);
-  u8g.print(sensor.curOilTemp);
-  u8g.setPrintPos(0, 50);
-  u8g.print(F("Boost:"));
-  u8g.setPrintPos(0, 60);
-  u8g.print(sensor.curBoost);
-  u8g.setPrintPos(100, 10);
-  u8g.print(F("TPS:"));
-  u8g.setPrintPos(100, 20);
-  u8g.print(sensor.curTps);
-  u8g.setPrintPos(100, 30);
-  u8g.print(F("RPM:"));
-  u8g.setPrintPos(100, 40);
-  u8g.print(sensor.curRPM);
-  u8g.setPrintPos(100, 50);
+  u8g2.setFont(u8g2_font_fub14_tf);
+  u8g2.drawStr(60, 40, sensor.curSpeed);
+  u8g2.drawStr(45, 60, "km/h");
+  u8g2.setFont(u8g2_font_5x8_tn);
+  u8g2.drawStr(0, 10, "atfTemp:");
+  u8g2.drawStr(0, 20, sensor.curAtfTemp);
+  u8g2.drawStr(0, 30, "oilTemp:");
+  u8g2.drawStr(0, 40, sensor.curOilTemp);
+  u8g2.drawStr(0, 50, "Boost:");
+  u8g2.drawStr(0, 60, sensor.curBoost);
+  u8g2.drawStr(100, 10, "TPS:");
+  u8g2.drawStr(100, 20, sensor.curTps);
+  u8g2.drawStr(100, 30, "RPM:");
+  u8g2.drawStr(100, 40, sensor.curRPM);
 }
 
 void rpmMeterUpdate()
@@ -108,11 +108,12 @@ void updateSpeedo()
 // Display update
 void updateDisplay(Task *me)
 {
-  u8g.firstPage();
+  u8g2.begin();
+  u8g2.firstPage();
   do
   {
     draw(wantedGear);
-  } while (u8g.nextPage());
+  } while (u8g2.nextPage());
   if (w124rpm)
   {
     rpmMeterUpdate();
