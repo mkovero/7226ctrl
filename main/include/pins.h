@@ -34,7 +34,9 @@
 #define speedoCtrl 7 // ex 7, blue <-> blue/green // DOUT7
 #define rpmMeter 30 // FMT2 missing // DOUT10
 #define boostCtrl 4 // FMT1, green <-> green/white/yellow // DOUT8
+// #define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8
 #define fuelPumpCtrl 3 // missing // DOUT9
+//#define fuelPumpCtrl 2 // missing // DOUT9
 #endif
 // END OUTPUT PINS
 

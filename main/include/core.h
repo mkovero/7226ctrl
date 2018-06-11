@@ -27,3 +27,4 @@ extern byte pendingGear;
 extern boolean shiftPending;
 extern int vehicleSpeedRevs;
 extern boolean evalGear;
+extern boolean speedFault;

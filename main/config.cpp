@@ -37,7 +37,7 @@ boolean boostLimit = true;
 boolean drive = false;
 
 // Datalogging (enabling this disables debug)
-boolean datalogger = true;
+boolean datalogger = false;
 
 // Old style w124 speed meter controlling
 boolean w124speedo = true;
@@ -54,6 +54,9 @@ boolean rpmSpeed = false;
 // calculate vehicleSpeed from diff abs sensor
 boolean diffSpeed = false; 
 
+// fault mode for speed sensors
+boolean speedFault = false; 
+
 // gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
 boolean evalGear = false;
 
@@ -62,7 +65,7 @@ struct ConfigParam readConfig()
   struct ConfigParam config;
   config.boostMax = 700; // boost sensor max kpa
   config.boostDrop = 50; // kpa to drop on shifts
-  config.fuelMaxRPM = 2000; // RPM limit to turn off fuel pumps
+  config.fuelMaxRPM = 2000; // RPM limit to turn on fuel pumps
   config.maxRPM = 7000; // Max engine RPM
   config.tireWidth = 225;
   config.tireProfile = 45;

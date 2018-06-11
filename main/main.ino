@@ -6,6 +6,8 @@
 #include "include/ui.h"
 #include <EEPROM.h>
 #include <SoftTimer.h>
+#include <SPI.h>
+#include <U8g2lib.h>
 
 // Work by Markus Kovero <mui@mui.fi>
 // Big thanks to Tuomas Kantola regarding maps and related math
@@ -22,7 +24,7 @@ Task pollBoostControl(100, boostControl); // 100ms for boost control
 
 void setup()
 {
-  delay(10000);
+  delay(1000);
 #ifdef MEGA
   TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
   TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46
@@ -38,6 +40,12 @@ void setup()
   {
     Serial.begin(115200);
   }
+  #ifdef TEENSY
+//U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
+// 9->13 would allow hardware SPI
+U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
+
+#endif
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -83,7 +91,7 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 255);   // Wake up speedometer motor so it wont stick
+  analogWrite(speedoCtrl, 0);   // Wake up speedometer motor so it wont stick
   analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
   digitalWrite(rpmPin, HIGH); // pull-up
 

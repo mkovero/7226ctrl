@@ -14,7 +14,7 @@ unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, 
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
-int avgAtfTemp, avgBoostValue, avgVehicleSpeed, avgRpmValue;
+int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue;
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -92,7 +92,7 @@ int speedRead()
 {
   struct ConfigParam config = readConfig();
   int curRPM = rpmRead();
-  int vehicleSpeed = 100;
+  int vehicleSpeed,vehicleSpeedRPM,vehicleSpeedDiff = 100;
 
   // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
   float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
@@ -100,16 +100,27 @@ int speedRead()
   if (rpmSpeed)
   {
     // speed based on engine rpm
-    vehicleSpeed = tireCircumference * curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
+    vehicleSpeedRPM = tireCircumference * curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
+    avgVehicleSpeedRPM = (avgVehicleSpeedRPM * 1 + vehicleSpeedRPM) / 2;
   }
   else if (diffSpeed)
   {
     // speed based on diff abs sensor
-    vehicleSpeed = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
+    vehicleSpeedDiff = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
+    avgVehicleSpeedDiff = (avgVehicleSpeedDiff * 1 + vehicleSpeedDiff) / 2;
   }
-
-  avgVehicleSpeed = (avgVehicleSpeed * 1 + vehicleSpeed) / 2;
-  return avgVehicleSpeed;
+  if (rpmSpeed && diffSpeed)
+  {
+    if (avgVehicleSpeedRPM / avgVehicleSpeedDiff > 1.1 || avgVehicleSpeedRPM / avgVehicleSpeedDiff < 0.9)
+    {
+      speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
+      if (debugEnabled)
+      {
+        Serial.println(F("SPEED FAULT DETECTED, disabling autoshift"));
+      }
+    }
+  }
+  return avgVehicleSpeedDiff;
 }
 
 int tpsRead()
