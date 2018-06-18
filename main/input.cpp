@@ -82,7 +82,7 @@ void pollstick(Task *me)
 // For manual microswitch control, gear up
 void gearup()
 {
-  if (!gear > 5)
+  if (!wantedGear > 5 && !fullAuto)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker)
     {
@@ -103,7 +103,7 @@ void gearup()
 // For manual microswitch control, gear down
 void geardown()
 {
-  if (!gear > 5)
+  if (!wantedGear > 5 && !fullAuto)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker)
     {

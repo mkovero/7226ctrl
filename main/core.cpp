@@ -337,7 +337,7 @@ void decideGear(Task* me)
 
   if (!shiftBlocker && !shiftPending && !speedFault && wantedGear < 6)
   {
-    if (autoGear > gear && wantedGear > gear)
+    if (autoGear > gear && wantedGear > gear && fullAuto)
     {
       int newGear = moreGear;
       if (debugEnabled)
