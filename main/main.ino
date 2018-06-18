@@ -48,7 +48,6 @@ void setup()
 
 
   // Solenoid outputs
-  boolean ignition = true;
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
   pinMode(y4, OUTPUT);  // 2-3
   pinMode(y5, OUTPUT);  // 3-4

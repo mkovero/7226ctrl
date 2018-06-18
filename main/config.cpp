@@ -60,6 +60,9 @@ boolean speedFault = false;
 // gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
 boolean evalGear = false;
 
+// everything starts with ignition (do not change.)
+boolean ignition = true;
+
 struct ConfigParam readConfig()
 {
   struct ConfigParam config;
