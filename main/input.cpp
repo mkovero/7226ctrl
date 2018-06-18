@@ -60,7 +60,7 @@ void pollstick(Task *me)
   {
     wantedGear = 100;
   }
-  
+
   if (autoState == HIGH)
   {
     if (!fullAuto)
@@ -152,7 +152,7 @@ void pollkeys()
   }
 }
 
-void boostControl(Task* me)
+void boostControl(Task *me)
 {
   if (boostLimit)
   {
@@ -198,14 +198,14 @@ void boostControl(Task* me)
   }
 }
 
-void fuelControl(Task* me)
+void fuelControl(Task *me)
 {
   if (fuelPumpControl)
   {
     struct SensorVals sensor = readSensors();
     struct ConfigParam config = readConfig();
 
-    if (sensor.curRPM > config.fuelMaxRPM || millis() < 5000 )
+    if (sensor.curRPM > config.fuelMaxRPM || millis() < 5000)
     {
       analogWrite(fuelPumpCtrl, 255);
       if (debugEnabled)
@@ -213,7 +213,7 @@ void fuelControl(Task* me)
         Serial.print(F("[fuelControl->fuelControl] Fuel Pump RPM limit hit/Prestart init, enabling pumps: "));
         Serial.println(config.fuelMaxRPM);
       }
-    } 
+    }
   }
 }
 
@@ -221,7 +221,7 @@ void fuelControl(Task* me)
 // R/N/P modulation pressure regulation
 // idle SPC regulation
 // Boost control
-void polltrans(Task* me)
+void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
 
@@ -247,30 +247,36 @@ void polltrans(Task* me)
 
   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
   // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
+  // MPC = varying with load, SPC constant 33%
   int mpcVal = readMap(mpcNormalMap, 100, atfRead());
-
-  if (wantedGear > 7 && wantedGear < 9)
+  if (!shiftPending)
   {
-    analogWrite(spc, 102);
-  }
-  else if (wantedGear < 6 && sensors)
-  {
-    mpcVal = (100 - mpcVal) * 2.55;
-  }
-  else if (wantedGear == 6)
-  {
-    mpcVal = (100 - 70) * 2.55;
-  }
-  if (!shiftBlocker)
-  {
-    analogWrite(mpc, mpcVal);
-    /*  if (debugEnabled)
+    // Pulsed constantly while idling in Park or Neutral at approximately 33% Duty cycle.
+    if (wantedGear == 6 || wantedGear == 8)
     {
-      Serial.print("polltrans: mpcVal/atfTemp");
-      Serial.print(mpcVal);
-      Serial.print("-");
-      Serial.println(atfTemp);
-    }*/
+      analogWrite(spc, 85);
+    }
+    // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
+    if (wantedGear < 6 || wantedGear == 6 || wantedGear == 8)
+    {
+      mpcVal = (100 - mpcVal) * 2.55;
+      analogWrite(mpc, mpcVal);
+    }
+    // 3-4 Shift solenoid is pulsed continuously while in Park and during selector lever movement (Garage Shifts).
+    if (wantedGear > 5)
+    {
+      analogWrite(y5, 255);
+    }
+    else
+    {
+      // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
+      if (ignition)
+      {
+        analogWrite(y3, 0);
+        ignition = false;
+      }
+      analogWrite(y5, 0);
+    }
   }
 }
 

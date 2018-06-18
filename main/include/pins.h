@@ -9,7 +9,7 @@
 // Green = Fuel pump control ground
 // Green-White = TPS signal
 
-#define TEENSY // we're running this on arduino mega other option is TEENSY
+#define MEGA // we're running this on arduino mega other option is TEENSY
 
 #ifdef MEGA
 #define y3 47

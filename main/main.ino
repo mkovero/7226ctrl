@@ -18,7 +18,7 @@ Task pollData(200, datalog);          // 200ms to update datalogging
 Task pollStick(100, pollstick);       // 200ms for checking stick position*
 Task pollGear(200, decideGear);
 Task pollSensors(200, pollsensors);       // 500ms to update sensor values*/
-Task pollTrans(50, polltrans);            // 50ms to check transmission state
+Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
 Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
 Task pollBoostControl(50, boostControl); // 100ms for boost control*/
 
@@ -48,6 +48,7 @@ void setup()
 
 
   // Solenoid outputs
+  boolean ignition = true;
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
   pinMode(y4, OUTPUT);  // 2-3
   pinMode(y5, OUTPUT);  // 3-4
@@ -103,7 +104,7 @@ void setup()
   *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 #endif
   // Make sure solenoids are all off.
-  analogWrite(y3, 0);
+  analogWrite(y3, 255); // 1-2/4-5 Solenoid is pulsed during ignition crank.
   analogWrite(y4, 0);
   analogWrite(y5, 0);
   analogWrite(spc, 0);
