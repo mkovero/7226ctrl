@@ -10,11 +10,12 @@
 using namespace std;
 
 // Internals
-unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse;
+unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog;
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
-int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, avgTemp;
+int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgTemp;
+float alpha = 0.7;
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -49,10 +50,10 @@ void pollsensors(Task *me)
     detachInterrupt(2); // Detach interrupts for calculation
     detachInterrupt(3);
     detachInterrupt(4);
-
+    float elapsedTime = millis() - lastSensorTime;
     if (n2SpeedPulses >= 60)
     {
-      n2Speed = n2SpeedPulses / 60;
+      n2Speed = n2SpeedPulses * 60 / 60 / elapsedTime * 1000;
       n2SpeedPulses = 0;
     }
     else
@@ -62,7 +63,7 @@ void pollsensors(Task *me)
 
     if (n3SpeedPulses >= 60)
     {
-      n3Speed = n3SpeedPulses / 60;
+      n3Speed = n3SpeedPulses * 60 / 60 / elapsedTime * 1000;
       n3SpeedPulses = 0;
     }
     else
@@ -72,13 +73,19 @@ void pollsensors(Task *me)
 
     if (vehicleSpeedPulses >= vehicleSpeedPulsesPerRev)
     {
-      vehicleSpeedRevs = vehicleSpeedPulses / vehicleSpeedPulsesPerRev;
+      vehicleSpeedRevs = vehicleSpeedPulses * 60 / vehicleSpeedPulsesPerRev / elapsedTime * 1000;
       vehicleSpeedPulses = 0;
     }
-
-    rpmRevs = rpmPulse * 60;
+    // RPM as per elapsedTime
+    int rpmRevsCalc = rpmPulse / elapsedTime * 1000;
+    rpmRevs = rpmRevsCalc * 60;
     rpmPulse = 0;
-
+  /*  Serial.print(n2Speed);
+    Serial.print("-");
+    Serial.print(n3Speed);
+    int evalgear = evaluateGear();
+    Serial.print("-");
+    Serial.println(evalgear);*/
     lastSensorTime = millis();
 
     attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING); // Attach again
@@ -92,7 +99,7 @@ int speedRead()
 {
   struct ConfigParam config = readConfig();
   int curRPM = rpmRead();
-  int vehicleSpeed, vehicleSpeedRPM, vehicleSpeedDiff = 100;
+  int vehicleSpeed, vehicleSpeedRPM, vehicleSpeedDiff, speedValue;
 
   // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
   float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
@@ -101,36 +108,44 @@ int speedRead()
   {
     // speed based on engine rpm
     vehicleSpeedRPM = tireCircumference * curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
-    avgVehicleSpeedRPM = (avgVehicleSpeedRPM * 1 + vehicleSpeedRPM) / 2;
+    speedValue = vehicleSpeedRPM;
   }
-  else if (diffSpeed)
+  if (diffSpeed)
   {
     // speed based on diff abs sensor
     vehicleSpeedDiff = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
-    avgVehicleSpeedDiff = (avgVehicleSpeedDiff * 1 + vehicleSpeedDiff) / 2;
+    speedValue = vehicleSpeedDiff;
   }
   if (rpmSpeed && diffSpeed)
   {
-    if (avgVehicleSpeedRPM / avgVehicleSpeedDiff > 1.1 || avgVehicleSpeedRPM / avgVehicleSpeedDiff < 0.9)
+    if (vehicleSpeedRPM / vehicleSpeedDiff > 1.3 || vehicleSpeedRPM / vehicleSpeedDiff < 0.7)
     {
-      speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
-      if (debugEnabled)
+      if (!speedFault)
       {
-        Serial.println(F("SPEED FAULT: detected - autoshift disabled"));
+        speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
+        if (debugEnabled)
+        {
+          Serial.print(F("SPEED FAULT: detected - autoshift disabled "));
+          Serial.print(vehicleSpeedDiff);
+          Serial.print(F("-"));
+          Serial.println(vehicleSpeedRPM);
+        }
       }
     }
     else
     {
-      speedFault = false; // we're in sync, good to go
-      if (debugEnabled)
+      if (speedFault)
       {
-        Serial.println(F("SPEED FAULT: recovery"));
+        speedFault = false; // we're in sync, good to go
+        if (debugEnabled)
+        {
+          Serial.println(F("SPEED FAULT: recovery"));
+        }
       }
     }
-  } else {
-    avgVehicleSpeedDiff = 100;
   }
-  return avgVehicleSpeedDiff;
+  return speedValue;
+  // return vehicleSpeedRevs;
 }
 
 int tpsRead()
@@ -141,7 +156,7 @@ int tpsRead()
 
     float tpsVoltage = analogRead(tpsPin) * 3.00;
     tpsPercentValue = readTPSVoltage(tpsVoltage);
- 
+
     if (tpsPercentValue > 100)
     {
       tpsPercentValue = 100;
@@ -166,9 +181,10 @@ int rpmRead()
   {
     rpmRevs = config.maxRPM;
   }
-  avgRpmValue = (avgRpmValue * 1 + rpmRevs) / 2;
-
-  return avgRpmValue;
+  // Sensor smoothing if needed.
+  /*avgRpmValue = alpha*oldRpmValue + (1-alpha)*rpmRevs;
+  oldRpmValue = avgRpmValue;*/
+  return rpmRevs;
 }
 
 int oilRead()
@@ -180,7 +196,7 @@ int oilRead()
   avgTemp = (avgTemp * 5 + tempRead) / 10;
   int R2 = 2250 * (1023.0 / (float)avgTemp);
   float logR2 = log(R2);
-  float T = (1.0 / (c1 + c2*logR2 + c3*logR2*logR2*logR2));
+  float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
   return oilTemp;
 }

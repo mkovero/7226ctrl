@@ -24,3 +24,4 @@ extern boolean fullAuto;
 extern boolean fuelPumpControl;
 extern boolean shiftPending;
 extern boolean ignition;
+extern boolean fuelPumps;

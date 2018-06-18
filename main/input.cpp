@@ -208,11 +208,13 @@ void fuelControl(Task *me)
     if (sensor.curRPM > config.fuelMaxRPM || millis() < 5000)
     {
       analogWrite(fuelPumpCtrl, 255);
-      if (debugEnabled)
+      
+      if (debugEnabled && !fuelPumps)
       {
         Serial.print(F("[fuelControl->fuelControl] Fuel Pump RPM limit hit/Prestart init, enabling pumps: "));
         Serial.println(config.fuelMaxRPM);
       }
+      fuelPumps = true;
     }
   }
 }
