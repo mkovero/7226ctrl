@@ -10,15 +10,19 @@ int maxBoostPressure = 700; // Max pressure on boost sensor
 // Mapping throttle position sensor voltage to percentage
 int readTPSVoltage(int voltage)
 {
-  int result = map(voltage, 340, 4000, 0, 100);
-  return result;
+ 
+  int result = map(voltage, 2358, 1150, 0, 100);
+    return result;
+  
 }
 
 // Mapping boost sensor voltage to percentage
 int readBoostVoltage(int voltage)
 {
-  int result = map(voltage, 820, 4587, 0, maxBoostPressure); // NXP MPX5700AP (range 0-700kPa)
-  return result;
+ 
+  int result = map(voltage, 450, 2400, 0, maxBoostPressure); // NXP MPX5700AP (range 0-700kPa)
+    return result;
+
 }
 
 // Function to read 2d maps from flash (maps declared with PROGMEM)

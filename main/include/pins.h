@@ -9,7 +9,7 @@
 // Green = Fuel pump control ground
 // Green-White = TPS signal
 
-#define MEGA // we're running this on arduino mega other option is TEENSY
+#define TEENSY // we're running this on arduino mega other option is TEENSY
 
 #ifdef MEGA
 #define y3 47
@@ -30,11 +30,11 @@
 #define y5 8 //ex 14, orange <-> brown/black // DOUT1
 #define mpc 38 // red <-> brown/pink // DOUT5 // FMT3
 #define spc 37 // red <-> brown/yellow // DOUT4 // FMT3
-#define tcc 29 // pink <-> brown/yellow/white // DOUT6
+#define tcc 23 // pink <-> brown/yellow/white // DOUT6
 #define speedoCtrl 7 // ex 7, blue <-> blue/green // DOUT7
 #define rpmMeter 30 // FMT2 missing // DOUT10
 #define boostCtrl 4 // FMT1, green <-> green/white/yellow // DOUT8
-// #define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8
+//#define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8
 #define fuelPumpCtrl 3 // missing // DOUT9
 //#define fuelPumpCtrl 2 // missing // DOUT9
 #endif
@@ -50,9 +50,9 @@
 #endif
 #ifdef TEENSY
 #define whitepin 27 // 0.5kohm <-> yellow <-> grey-yellow-grey // DIN2 <-> blue
-#define bluepin 34 // 0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
+#define bluepin 28 // 0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
 #define greenpin 26 // 0.5kohm <-> yellow <-> grey-white-grey // DIN1 <-> whiteblue
-#define yellowpin 28 // 0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
+#define yellowpin 34     // 0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
 #endif
 
 
@@ -65,7 +65,7 @@
 #endif
 
 #ifdef TEENSY
-#define gdownSwitch 23 // ex. 23 <-> NC // DIN6
+#define gdownSwitch 29 // ex. 23 <-> NC // DIN6
 #define gupSwitch 16 // <-> NC // DIN7
 #endif
 

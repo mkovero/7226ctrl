@@ -68,16 +68,16 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
       if (debugEnabled)
       {
         Serial.println(F("[switchGearStart->switchGearStart] SPC high limit hit."));
-      };
-    };
+      }
+    }
     if (spcPercentVal < 10)
     {
       spcPercentVal = 10; // to be on safe side.
       if (debugEnabled)
       {
         Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit."));
-      };
-    };
+      }
+    }
     spcSetVal = (100 - spcPercentVal) * 2.55;
     mpcVal = (100 - mpcVal) * 2.55;
     analogWrite(spc, spcSetVal);
@@ -102,7 +102,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 // End of gear change phase
 void switchGearStop()
 {
-  analogWrite(cSolenoid, 0); // turn shift solenoid off
+  analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
   analogWrite(spc, 0);       // let go of SPC-pressure
   gear = pendingGear;        // we can happily say we're on new gear
   shiftBlocker = false;

@@ -13,14 +13,14 @@
 // Big thanks to Tuomas Kantola regarding maps and related math
 
 // "Protothreading", we have time slots for different functions to be run.
-Task pollDisplay(500, updateDisplay); // 500ms to update display
+Task pollDisplay(500, updateDisplay); // 500ms to update display*/
 Task pollData(200, datalog);          // 200ms to update datalogging
-Task pollStick(200, pollstick);       // 200ms for checking stick position*
+Task pollStick(100, pollstick);       // 200ms for checking stick position*
 Task pollGear(200, decideGear);
-Task pollSensors(500, pollsensors);       // 500ms to update sensor values*/
+Task pollSensors(200, pollsensors);       // 500ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state
 Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
-Task pollBoostControl(100, boostControl); // 100ms for boost control
+Task pollBoostControl(50, boostControl); // 100ms for boost control*/
 
 void setup()
 {
@@ -40,12 +40,12 @@ void setup()
   {
     Serial.begin(115200);
   }
-  #ifdef TEENSY
-//U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
-// 9->13 would allow hardware SPI
-U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
 
-#endif
+  //U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
+  // 9->13 would allow hardware SPI
+  U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
+
+
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -67,23 +67,41 @@ U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
   // Sensor input
   pinMode(boostPin, INPUT); // boost sensor
   pinMode(tpsPin, INPUT);   // throttle position sensor
+  pinMode(oilPin, INPUT);   // engine coolant sensor
   pinMode(atfPin, INPUT);   // ATF temp
   pinMode(n2pin, INPUT);    // N2 sensor
   pinMode(n3pin, INPUT);    // N3 sensor
   pinMode(speedPin, INPUT); // vehicle speed
   pinMode(rpmPin, INPUT);
-
+#ifdef TEENSY
+  *portConfigRegister(boostPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+#endif
   //For manual control
   pinMode(autoSwitch, INPUT);
   pinMode(gupSwitch, INPUT);   // gear up
   pinMode(gdownSwitch, INPUT); // gear down
-
+#ifdef TEENSY
+  *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+#endif
   //For stick control
   pinMode(whitepin, INPUT);
   pinMode(bluepin, INPUT);
   pinMode(greenpin, INPUT);
   pinMode(yellowpin, INPUT);
-
+#ifdef TEENSY
+  *portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+#endif
   // Make sure solenoids are all off.
   analogWrite(y3, 0);
   analogWrite(y4, 0);
@@ -91,9 +109,9 @@ U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 0);   // Wake up speedometer motor so it wont stick
+  analogWrite(speedoCtrl, 255);     // Wake up speedometer motor so it wont stick
   analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
-  digitalWrite(rpmPin, HIGH); // pull-up
+  digitalWrite(rpmPin, HIGH);     // pull-up
 
   // resetEEPROM();
 

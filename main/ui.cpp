@@ -8,23 +8,29 @@
 #include "include/config.h"
 #include <SoftTimer.h>
 
-#ifdef MEGA
+/*#ifdef MEGA
 //U8GLIB_SSD1306_128X64 u8g(13, 11, 7, 6, 8); 
 U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 6, 5);
-#endif
+#endif*/
 
-#ifdef TEENSY
+//#ifdef TEENSY
 //U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
 // 9->13 would allow hardware SPI
-//U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
-U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 13, 5);
-#endif
+U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
+//U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 13, 5);
+//#endif
 
 
 
 
 /* 
-yellow, yellow-brown, black, redyellowfat, brownwhitepink
+yellow(res), yellow-brown(dc), black(clock), redyellowfat (cs), brownwhitepink (data)
+5 6 9 10 11
+clock, data, cs, dc [, reset]
+9       11    10  6    5
+res,dc,clock,cs,data
+
+
 whitegreen<->black
 green<->brownwhitepink
 orangewhite<->redyellow
@@ -114,7 +120,7 @@ void updateSpeedo()
 {
   struct SensorVals sensor = readSensors();
   int speedPWM = map(sensor.curTps, 0, 100, 0, 255);
-  analogWrite(speedoCtrl, 0);
+  analogWrite(speedoCtrl, speedPWM);
 }
 
 // Display update
@@ -135,12 +141,11 @@ void updateDisplay(Task *me)
   }
 }
 
-void datalog(Task *me)
+void datalog(Task* me)
 {
   if (datalogger)
   {
     struct SensorVals sensor = readSensors();
-    struct ConfigParam config = readConfig();
 
     if (debugEnabled)
     {

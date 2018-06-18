@@ -14,7 +14,7 @@ unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, 
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
-int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue;
+int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, avgTemp;
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -92,7 +92,7 @@ int speedRead()
 {
   struct ConfigParam config = readConfig();
   int curRPM = rpmRead();
-  int vehicleSpeed,vehicleSpeedRPM,vehicleSpeedDiff = 100;
+  int vehicleSpeed, vehicleSpeedRPM, vehicleSpeedDiff = 100;
 
   // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
   float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
@@ -116,9 +116,19 @@ int speedRead()
       speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
       if (debugEnabled)
       {
-        Serial.println(F("SPEED FAULT DETECTED, disabling autoshift"));
+        Serial.println(F("SPEED FAULT: detected - autoshift disabled"));
       }
     }
+    else
+    {
+      speedFault = false; // we're in sync, good to go
+      if (debugEnabled)
+      {
+        Serial.println(F("SPEED FAULT: recovery"));
+      }
+    }
+  } else {
+    avgVehicleSpeedDiff = 100;
   }
   return avgVehicleSpeedDiff;
 }
@@ -128,10 +138,10 @@ int tpsRead()
   int tpsPercentValue = 0;
   if (tpsSensor)
   {
-    //reading TPS
-    float tpsVoltage = analogRead(tpsPin) * 4.89;
-    tpsPercentValue = readTPSVoltage(tpsVoltage);
 
+    float tpsVoltage = analogRead(tpsPin) * 3.00;
+    tpsPercentValue = readTPSVoltage(tpsVoltage);
+ 
     if (tpsPercentValue > 100)
     {
       tpsPercentValue = 100;
@@ -164,7 +174,14 @@ int rpmRead()
 int oilRead()
 {
   // wip
-  int oilTemp = 100;
+  // w124 temp sensor B = 3500 roughly, 2.0kohm at 25c
+  float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
+  float tempRead = analogRead(oilPin);
+  avgTemp = (avgTemp * 5 + tempRead) / 10;
+  int R2 = 2250 * (1023.0 / (float)avgTemp);
+  float logR2 = log(R2);
+  float T = (1.0 / (c1 + c2*logR2 + c3*logR2*logR2*logR2));
+  float oilTemp = T - 273.15;
   return oilTemp;
 }
 
@@ -174,7 +191,7 @@ int boostRead()
   if (boostSensor)
   {
     //reading MAP/boost
-    float boostVoltage = analogRead(boostPin) * 4.89;
+    float boostVoltage = analogRead(boostPin) * 3.00;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
   }

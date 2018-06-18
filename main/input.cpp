@@ -60,7 +60,7 @@ void pollstick(Task *me)
   {
     wantedGear = 100;
   }
-
+  
   if (autoState == HIGH)
   {
     if (!fullAuto)
@@ -176,15 +176,15 @@ void boostControl(Task* me)
       // Not during the shift
       if (sensor.curBoost > sensor.curBoostLim)
       {
-        analogWrite(boostCtrl, 245);
+        analogWrite(boostCtrl, 0);
       }
-      else if (sensor.curSpeed > 10)
+      else if (sensor.curSpeed < 10)
       {
-        analogWrite(boostCtrl, 255);
+        analogWrite(boostCtrl, 0);
       }
       else
       {
-        analogWrite(boostCtrl, 0);
+        analogWrite(boostCtrl, 255);
       }
     }
 
@@ -249,7 +249,7 @@ void polltrans(Task* me)
   // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
   int mpcVal = readMap(mpcNormalMap, 100, atfRead());
 
-  if (wantedGear > 6)
+  if (wantedGear > 7 && wantedGear < 9)
   {
     analogWrite(spc, 102);
   }
