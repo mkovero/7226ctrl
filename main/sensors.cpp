@@ -50,10 +50,11 @@ void pollsensors(Task *me)
     detachInterrupt(2); // Detach interrupts for calculation
     detachInterrupt(3);
     detachInterrupt(4);
-    float elapsedTime = millis() - lastSensorTime;
+    float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
+
     if (n2SpeedPulses >= 60)
     {
-      n2Speed = n2SpeedPulses * 60 / 60 / elapsedTime * 1000;
+      n2Speed = n2SpeedPulses / elapsedTime * 1000; // there are 60 pulses in one rev and 60 seconds in minute, so this is quite simple
       n2SpeedPulses = 0;
     }
     else
@@ -63,7 +64,7 @@ void pollsensors(Task *me)
 
     if (n3SpeedPulses >= 60)
     {
-      n3Speed = n3SpeedPulses * 60 / 60 / elapsedTime * 1000;
+      n3Speed = n3SpeedPulses / elapsedTime * 1000;
       n3SpeedPulses = 0;
     }
     else
@@ -76,11 +77,11 @@ void pollsensors(Task *me)
       vehicleSpeedRevs = vehicleSpeedPulses * 60 / vehicleSpeedPulsesPerRev / elapsedTime * 1000;
       vehicleSpeedPulses = 0;
     }
+
     // RPM as per elapsedTime
-    int rpmRevsCalc = rpmPulse / elapsedTime * 1000;
-    rpmRevs = rpmRevsCalc * 60;
+    rpmRevs = rpmPulse / elapsedTime * 1000 * 60;
     rpmPulse = 0;
-  /*  Serial.print(n2Speed);
+    /*  Serial.print(n2Speed);
     Serial.print("-");
     Serial.print(n3Speed);
     int evalgear = evaluateGear();
@@ -191,7 +192,14 @@ int oilRead()
 {
   // wip
   // w124 temp sensor B = 3500 roughly, 2.0kohm at 25c
-  float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
+/*
+  Steinhart-Hart coefficients
+a[0] = 1.689126553357672e-03
+a[1] = 8.951863613981253e-05
+a[2] = 2.411208545519697e-05
+a[3] = -9.456539654701360e-07
+*/
+  float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   float tempRead = analogRead(oilPin);
   avgTemp = (avgTemp * 5 + tempRead) / 10;
   int R2 = 2250 * (1023.0 / (float)avgTemp);
@@ -244,6 +252,13 @@ int loadRead(int boostSensor, int allowedBoostPressure, int tpsPercentValue)
 //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 int atfRead()
 {
+  /*
+  Steinhart-Hart coefficients
+a[0] = 1.428001776691670e-02
+a[1] = 3.123372804552903e-04
+a[2] = -5.605468817359506e-04
+a[3] = 4.141869911401698e-05
+*/
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   int atfTemp = 0;
