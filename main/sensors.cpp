@@ -199,12 +199,13 @@ a[1] = 8.951863613981253e-05
 a[2] = 2.411208545519697e-05
 a[3] = -9.456539654701360e-07
 */
-  float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
+  float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05, c4 = -9.456539654701360e-07;
   float tempRead = analogRead(oilPin);
   avgTemp = (avgTemp * 5 + tempRead) / 10;
   int R2 = 2250 * (1023.0 / (float)avgTemp);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
+  // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
   return oilTemp;
 }

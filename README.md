@@ -14,27 +14,27 @@ Currently should work:
 - Boost limit maps (tested and works)
 - Boost limiting (eg. drop boost on shifts) (tested and works)
 - w124 wire-speedometer (tested and works)
+- Fuel pump control on idle (tested and works)
+- vehicle speed reading based on tire size and diff ratio with and without engine rpm (tested and works)
+- rpm reading (tested and works)
 
 Implemented but needs real life testing:
 - adaptative shift pressure (works in lab)
 - External datalogging (format, method, works in lab)
-- Fuel pump control on idle (initial pressure on startup, enable pumps after certain RPM, works in lab)
 - evaluateGear, make sure which gear is in (works in lab)
 - n2/n3 speed sensors (works in lab)
-- vehicle speed reading based on tire size and diff ratio with and without engine rpm (works in lab)
-- rpm reading (works in lab)
 - w124 rpm meter (works in theory)
+- oil temperature (works in lab)
 
 Work in progress:
 - External datalogging (hardware implementation, visualization)
 
 Not started/pending:
-- oil temperature (pending sensor installation)
 - PID controlled PWM for temperature stability
 - percentual map reads preferably without floats (eg. value between point x and y).
-
-Considered:
 - Electric steering wheel support
+
+
 
 work by Markus Kovero (mui@mui.fi) with regards to Tuomas Kantola.
 
