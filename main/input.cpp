@@ -65,7 +65,11 @@ void pollstick(Task *me)
   {
     if (!fullAuto)
     {
-      Serial.println(F("pollstick: Automode on "));
+      if (debugEnabled)
+      {
+        Serial.println(F("pollstick: Automode on "));
+         
+      }
       fullAuto = true;
     }
   }
@@ -73,7 +77,10 @@ void pollstick(Task *me)
   {
     if (fullAuto)
     {
-      Serial.println(F("pollstick: Automode off "));
+      if (debugEnabled)
+      {
+        Serial.println(F("pollstick: Automode off "));
+      }
       fullAuto = false;
     }
   }
@@ -84,18 +91,16 @@ void gearup()
 {
   if (!wantedGear > 5 && !fullAuto)
   { // Do nothing if we're on N/R/P
-    if (!shiftBlocker)
+    if (!shiftBlocker && !shiftPending && gear <= 5)
     {
       newGear++;
-    };
-    if (gear > 4)
-    {
-      newGear = 5;
-    } // Make sure not to switch more than 5.
+    }
+
     if (debugEnabled)
     {
       Serial.println(F("gearup: Gear up requested"));
     }
+    shiftPending = true;
     gearchangeUp(newGear);
   }
 }
@@ -105,18 +110,16 @@ void geardown()
 {
   if (!wantedGear > 5 && !fullAuto)
   { // Do nothing if we're on N/R/P
-    if (!shiftBlocker)
+    if (!shiftBlocker && !shiftPending && gear <= 5)
     {
       newGear--;
-    };
-    if (gear < 2)
-    {
-      newGear = 1;
-    } // Make sure not to switch less than 1.
+    }
+
     if (debugEnabled)
     {
       Serial.println(F("gearup: Gear down requested"));
     }
+    shiftPending = true;
     gearchangeDown(newGear);
   }
 }
@@ -208,7 +211,7 @@ void fuelControl(Task *me)
     if (sensor.curRPM > config.fuelMaxRPM || millis() < 5000)
     {
       analogWrite(fuelPumpCtrl, 255);
-      
+
       if (debugEnabled && !fuelPumps)
       {
         Serial.print(F("[fuelControl->fuelControl] Fuel Pump RPM limit hit/Prestart init, enabling pumps: "));
@@ -250,8 +253,9 @@ void polltrans(Task *me)
   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
   // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
   // MPC = varying with load, SPC constant 33%
-  int mpcVal = readMap(mpcNormalMap, 100, sensor.curAtfTemp);
-  if (!shiftPending)
+  int mpcVal = readMap(mpcNormalMap, sensor.curLoad, sensor.curAtfTemp);
+
+  if (!shiftBlocker)
   {
     // Pulsed constantly while idling in Park or Neutral at approximately 33% Duty cycle.
     if (wantedGear == 6 || wantedGear == 8)
@@ -261,8 +265,8 @@ void polltrans(Task *me)
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
     if (wantedGear <= 6 || wantedGear == 8)
     {
-      mpcVal = (100 - mpcVal) * 2.55;
-      analogWrite(mpc, mpcVal);
+      int mpcSetVal = (100 - mpcVal) * 2.55;
+      analogWrite(mpc, mpcSetVal);
     }
     // 3-4 Shift solenoid is pulsed continuously while in Park and during selector lever movement (Garage Shifts).
     if (wantedGear > 5)
