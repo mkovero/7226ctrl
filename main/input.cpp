@@ -56,10 +56,7 @@ void pollstick(Task *me)
   {
     wantedGear = 1;
   }
-  if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == LOW)
-  {
-    wantedGear = 100;
-  }
+ 
 
   if (autoState == HIGH)
   {

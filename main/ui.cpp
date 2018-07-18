@@ -67,16 +67,14 @@ void draw(int wantedGear)
   {
     u8g2.print(F("D"));
   }
-  if (wantedGear == 100)
-  {
-    u8g2.print(F(""));
-  }
   else
   {
     u8g2.print(gear);
   }
   if (fullAuto && wantedGear < 6)
   {
+
+    u8g2.setCursor(50, 30);
     u8g2.print(F("("));
     u8g2.print(wantedGear);
     u8g2.print(F(")"));
