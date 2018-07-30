@@ -67,7 +67,7 @@ void draw(int wantedGear)
   {
     u8g2.print(F("D"));
   }
-  if (wantedGear < 5 || !fullAuto && wantedGear == 5) 
+  if (wantedGear < 5 || ( !fullAuto && wantedGear == 5)) 
   {
     u8g2.print(wantedGear);
   }

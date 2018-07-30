@@ -54,7 +54,7 @@ void pollsensors(Task *me)
 
     if (n2SpeedPulses >= 60)
     {
-      n2Speed = n2SpeedPulses / elapsedTime * 1000; // there are 60 pulses in one rev and 60 seconds in minute, so this is quite simple
+      n2Speed = n2SpeedPulses / n2PulsesPerRev / elapsedTime * 1000 * 60; // there are 60 pulses in one rev and 60 seconds in minute, so this is quite simple
       n2SpeedPulses = 0;
     }
     else
@@ -64,7 +64,7 @@ void pollsensors(Task *me)
 
     if (n3SpeedPulses >= 60)
     {
-      n3Speed = n3SpeedPulses / elapsedTime * 1000;
+      n3Speed = n3SpeedPulses / n3PulsesPerRev / elapsedTime * 1000 * 60;
       n3SpeedPulses = 0;
     }
     else
@@ -104,7 +104,7 @@ int speedRead()
 {
   struct ConfigParam config = readConfig();
   int curRPM = rpmRead();
-  int vehicleSpeed, vehicleSpeedRPM, vehicleSpeedDiff, speedValue;
+  int vehicleSpeedRPM = 0, vehicleSpeedDiff = 0, speedValue = 0;
 
   // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
   float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
@@ -201,9 +201,9 @@ int oilRead()
 a[0] = 1.689126553357672e-03
 a[1] = 8.951863613981253e-05
 a[2] = 2.411208545519697e-05
-a[3] = -9.456539654701360e-07
+a[3] = -9.456539654701360e-07 <- this can be c4
 */
-  float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05, c4 = -9.456539654701360e-07;
+  float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   float tempRead = analogRead(oilPin);
   avgTemp = (avgTemp * 5 + tempRead) / 10;
   int R2 = 2250 * (1023.0 / (float)avgTemp);

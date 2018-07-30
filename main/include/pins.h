@@ -30,7 +30,7 @@
 #define y5 8 //ex 14, orange <-> brown/black // DOUT1
 #define mpc 38 // red <-> brown/pink // DOUT5 // FMT3
 #define spc 37 // red <-> brown/yellow // DOUT4 // FMT3
-#define tcc 23 // pink <-> brown/yellow/white // DOUT6
+#define tcc 29 // pink <-> brown/yellow/white // DOUT6
 #define speedoCtrl 7 // ex 7, blue <-> blue/green // DOUT7
 #define rpmMeter 30 // FMT2 missing // DOUT10
 #define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8

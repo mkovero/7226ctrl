@@ -103,8 +103,8 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 void switchGearStop()
 {
   analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
-  analogWrite(spc, 0);       // let go of SPC-pressure
-  gear = pendingGear;        // we can happily say we're on new gear
+  analogWrite(spc, 0);              // let go of SPC-pressure
+  gear = pendingGear;               // we can happily say we're on new gear
   shiftBlocker = false;
   shiftPending = false;
 
@@ -326,7 +326,7 @@ void gearchangeDown(int newGear)
 }
 
 // Logic for automatic new gear, this makes possible auto up/downshifts.
-void decideGear(Task* me)
+void decideGear(Task *me)
 {
   int moreGear = gear + 1;
   int lessGear = gear - 1;
@@ -475,6 +475,8 @@ float ratioFromGear(int inputGear)
     return gearRatio;
     break;
   default:
+    gearRatio = 0.00;
+    return gearRatio;
     break;
   }
 }
@@ -505,7 +507,9 @@ int gearFromRatio(float inputRatio)
   {
     int returnGear = 5;
     return returnGear;
-  } else {
+  }
+  else
+  {
     int returnGear = 6;
     return returnGear;
   }

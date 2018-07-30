@@ -22,7 +22,7 @@ int readEEPROM(int mapId, int xVal, int yVal)
     return modVal;
 }
 
-int writeEEPROM(int mapId, int xVal, int yVal, int modVal)
+void writeEEPROM(int mapId, int xVal, int yVal, int modVal)
 {
     int address = mapId + xVal + yVal;
     if (debugEnabled)

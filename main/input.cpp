@@ -56,7 +56,6 @@ void pollstick(Task *me)
   {
     wantedGear = 1;
   }
- 
 
   if (autoState == HIGH)
   {
@@ -85,7 +84,7 @@ void pollstick(Task *me)
 // For manual microswitch control, gear up
 void gearup()
 {
-  if (!wantedGear > 5 && !fullAuto)
+  if (wantedGear < 6 && !fullAuto)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker && !shiftPending && gear <= 5)
     {
@@ -104,7 +103,7 @@ void gearup()
 // For manual microswitch control, gear down
 void geardown()
 {
-  if (!wantedGear > 5 && !fullAuto)
+  if (wantedGear < 6 && !fullAuto)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker && !shiftPending && gear <= 5)
     {
@@ -132,7 +131,7 @@ void pollkeys()
   {
     if (gdownState == LOW && gupState == HIGH)
     {
-      int prevgupState = gupState;
+      prevgupState = gupState;
       if (debugEnabled)
       {
         Serial.println(F("pollkeys: Gear up button"));
@@ -141,7 +140,7 @@ void pollkeys()
     }
     else if (gupState == LOW && gdownState == HIGH)
     {
-      int prevgdownState = gdownState;
+     prevgdownState = gdownState;
       if (debugEnabled)
       {
         Serial.println(F("pollkeys: Gear down button"));
@@ -226,7 +225,7 @@ void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
 
- int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
+  unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
   if (shiftBlocker)
   {
     shiftDuration = millis() - shiftStartTime;
@@ -273,11 +272,11 @@ void polltrans(Task *me)
       // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
       analogWrite(y5, 0);
     }
-     if (ignition)
-      {
-        analogWrite(y3, 0);
-        ignition = false;
-      }
+    if (ignition)
+    {
+      analogWrite(y3, 0);
+      ignition = false;
+    }
   }
 }
 
