@@ -74,8 +74,12 @@ void pollsensors(Task *me)
 
     if (vehicleSpeedPulses >= vehicleSpeedPulsesPerRev)
     {
-      vehicleSpeedRevs = vehicleSpeedPulses * 60 / vehicleSpeedPulsesPerRev / elapsedTime * 1000;
+      vehicleSpeedRevs = vehicleSpeedPulses / vehicleSpeedPulsesPerRev / elapsedTime * 1000 * 60;
       vehicleSpeedPulses = 0;
+    } else
+    {
+      vehicleSpeedPulses = 0;
+      vehicleSpeedRevs = 0;
     }
 
     // RPM as per elapsedTime

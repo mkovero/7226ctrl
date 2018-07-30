@@ -63,20 +63,20 @@ void draw(int wantedGear)
   {
     u8g2.print(F("P"));
   }
-  if (fullAuto && wantedGear == 5)
+  if (wantedGear == 5)
   {
     u8g2.print(F("D"));
   }
-  else
+  if (wantedGear < 5 || !fullAuto && wantedGear == 5) 
   {
-    u8g2.print(gear);
+    u8g2.print(wantedGear);
   }
   if (fullAuto && wantedGear < 6)
   {
 
-    u8g2.setCursor(50, 30);
+    u8g2.setCursor(60, 20);
     u8g2.print(F("("));
-    u8g2.print(wantedGear);
+    u8g2.print(gear);
     u8g2.print(F(")"));
   }
   u8g2.setFont(u8g2_font_fub14_tf);
@@ -118,8 +118,8 @@ void rpmMeterUpdate()
 void updateSpeedo()
 {
   struct SensorVals sensor = readSensors();
-  int speedPWM = map(sensor.curTps, 0, 100, 0, 255);
-  analogWrite(speedoCtrl, speedPWM);
+//  int speedPWM = map(sensor.curSpeed, 0, 255, 0, 255);
+  analogWrite(speedoCtrl, sensor.curSpeed);
 }
 
 // Display update

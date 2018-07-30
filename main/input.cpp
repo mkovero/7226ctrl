@@ -65,7 +65,6 @@ void pollstick(Task *me)
       if (debugEnabled)
       {
         Serial.println(F("pollstick: Automode on "));
-         
       }
       fullAuto = true;
     }
@@ -227,8 +226,7 @@ void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
 
-  int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
-
+ int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
   if (shiftBlocker)
   {
     shiftDuration = millis() - shiftStartTime;
@@ -273,13 +271,13 @@ void polltrans(Task *me)
     else
     {
       // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
-      if (ignition)
+      analogWrite(y5, 0);
+    }
+     if (ignition)
       {
         analogWrite(y3, 0);
         ignition = false;
       }
-      analogWrite(y5, 0);
-    }
   }
 }
 

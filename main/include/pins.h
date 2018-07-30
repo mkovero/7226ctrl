@@ -9,7 +9,7 @@
 // Green = Fuel pump control ground
 // Green-White = TPS signal
 
-#define MEGA // we're running this on arduino mega other option is TEENSY
+#define TEENSY // we're running this on arduino mega other option is TEENSY
 
 #ifdef MEGA
 #define y3 47
@@ -33,10 +33,8 @@
 #define tcc 23 // pink <-> brown/yellow/white // DOUT6
 #define speedoCtrl 7 // ex 7, blue <-> blue/green // DOUT7
 #define rpmMeter 30 // FMT2 missing // DOUT10
-#define boostCtrl 4 // FMT1, green <-> green/white/yellow // DOUT8
-//#define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8
-#define fuelPumpCtrl 3 // missing // DOUT9
-//#define fuelPumpCtrl 2 // missing // DOUT9
+#define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8
+#define fuelPumpCtrl 2 // missing // DOUT9
 #endif
 // END OUTPUT PINS
 
