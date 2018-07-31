@@ -37,7 +37,7 @@ boolean boostLimit = true;
 boolean drive = false;
 
 // Datalogging (enabling this disables debug)
-boolean datalogger = true;
+boolean datalogger = false;
 
 // Old style w124 speed meter controlling
 boolean w124speedo = true;
@@ -49,10 +49,10 @@ boolean w124rpm = true;
 boolean fuelPumpControl = true;
 
 // calculate vehicleSpeed from engine RPM
-boolean rpmSpeed = false; 
+boolean rpmSpeed = true; 
 
 // calculate vehicleSpeed from diff abs sensor
-boolean diffSpeed = true; 
+boolean diffSpeed = false; 
 
 // fault mode for speed sensors
 boolean speedFault = false; 

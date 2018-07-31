@@ -16,7 +16,7 @@ int tpsRead();
 int rpmRead();
 int boostRead();
 int boostLimitRead(int oilTemp, int tps);
-int loadRead(int boostSensor, int allowedBoostPressure, int tps);
+int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM);
 int atfRead();
 int oilRead();
 struct SensorVals readSensors();

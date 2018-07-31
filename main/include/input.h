@@ -25,3 +25,5 @@ extern boolean fuelPumpControl;
 extern boolean shiftPending;
 extern boolean ignition;
 extern boolean fuelPumps;
+extern double boostPWM, pidBoost, pidBoostLim;
+extern const double  Kp, Ki, Kd;

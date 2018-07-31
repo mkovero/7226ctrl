@@ -76,7 +76,8 @@ void pollsensors(Task *me)
     {
       vehicleSpeedRevs = vehicleSpeedPulses / vehicleSpeedPulsesPerRev / elapsedTime * 1000 * 60;
       vehicleSpeedPulses = 0;
-    } else
+    }
+    else
     {
       vehicleSpeedPulses = 0;
       vehicleSpeedRevs = 0;
@@ -196,7 +197,7 @@ int oilRead()
 {
   // wip
   // w124 temp sensor B = 3500 roughly, 2.0kohm at 25c
-/*
+  /*
   Steinhart-Hart coefficients
 a[0] = 1.689126553357672e-03
 a[1] = 8.951863613981253e-05
@@ -211,6 +212,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
+  oilTemp = 100;
   return oilTemp;
 }
 
@@ -233,24 +235,31 @@ int boostLimitRead(int oilTemp, int tps)
   return allowedBoostPressure;
 }
 
-int loadRead(int boostSensor, int allowedBoostPressure, int tpsPercentValue)
+int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
 {
-  int trueLoad = 0;
-  int boostPercentValue = 100 * boostSensor / allowedBoostPressure;
+  struct ConfigParam config = readConfig();
+  unsigned int trueLoad = 0;
+  int boostPercent = 100 * curBoost / curBoostLim;
+  int vehicleRPM = 100 * curRPM / config.maxRPM;
 
-  if (boostSensor && tpsSensor)
+  if (boostSensor && tpsSensor && rpmSpeed)
   {
-    trueLoad = (tpsPercentValue * 0.60) + (boostPercentValue * 0.40);
+    trueLoad = (curTps * 0.60) + (boostPercent * 0.40);
+  }
+  else if (boostSensor && tpsSensor && !rpmSpeed)
+  {
+    trueLoad = (curTps * 0.48) + (boostPercent * 0.20) + (vehicleRPM * 0.32);
   }
   else if (tpsSensor && !boostSensor)
   {
-    trueLoad = tpsPercentValue;
+    trueLoad = curTps;
   }
-  else if (!tpsSensor)
+  else if (!tpsSensor || trueLoad >= 100)
   {
     trueLoad = 100;
   }
 
+  //int trueLoad = 100;
   return trueLoad;
 }
 
@@ -314,8 +323,8 @@ struct SensorVals readSensors()
   sensor.curBoost = boostRead();
   sensor.curBoostLim = boostLimitRead(sensor.curOilTemp, sensor.curTps);
   sensor.curTps = tpsRead();
-  sensor.curLoad = loadRead(sensor.curBoost, sensor.curBoostLim, sensor.curTps);
   sensor.curRPM = rpmRead();
   sensor.curSpeed = speedRead();
+  sensor.curLoad = loadRead(sensor.curTps, sensor.curBoost, sensor.curBoostLim, sensor.curRPM);
   return sensor;
 }

@@ -7,6 +7,7 @@
 #include <SoftTimer.h>
 #include <SPI.h>
 #include <U8g2lib.h>
+#include <AutoPID.h>
 
 // Work by Markus Kovero <mui@mui.fi>
 // Big thanks to Tuomas Kantola regarding maps and related math
@@ -19,7 +20,7 @@ Task pollGear(200, decideGear);       // 200ms for deciding new gear
 Task pollSensors(100, pollsensors);      // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);           // 50ms to check transmission state (this needs to be faster than stick.)
 Task pollFuelControl(1000, fuelControl); // 1000ms for fuel pump control
-Task pollBoostControl(50, boostControl); // 50ms for boost control*/
+Task pollBoostControl(500, boostControl); // 50ms for boost control*/
 
 void setup()
 {
@@ -46,7 +47,7 @@ void setup()
   // 9->13 would allow hardware SPI
   U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
   u8g2.begin();
-  
+
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
   pinMode(y4, OUTPUT);  // 2-3
@@ -120,7 +121,7 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
-
+  
   if (debugEnabled)
   {
     Serial.println(F("Started."));
@@ -134,5 +135,5 @@ void setup()
   SoftTimer.add(&pollSensors);
   SoftTimer.add(&pollTrans);
   SoftTimer.add(&pollFuelControl);
-  SoftTimer.add(&pollBoostControl);
+ SoftTimer.add(&pollBoostControl);
 }

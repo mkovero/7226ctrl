@@ -8,10 +8,21 @@
 #include "include/input.h"
 #include "include/config.h"
 #include <SoftTimer.h>
+#include <AutoPID.h>
 
 byte wantedGear = 100;
 
 // INPUT
+
+// Pid tuning parameters
+const double Kp = 7;  //Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
+const double Ki = 20; //Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
+const double Kd = 0;  //Pid Derivative Gain. Not Sure what to do with it.....
+double pidBoost, boostPWM, pidBoostLim;
+
+//Load PID controller
+AutoPID myPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 180, Kp,  Ki,  Kd);
+
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
 void pollstick(Task *me)
@@ -140,7 +151,7 @@ void pollkeys()
     }
     else if (gupState == LOW && gdownState == HIGH)
     {
-     prevgdownState = gdownState;
+      prevgdownState = gdownState;
       if (debugEnabled)
       {
         Serial.println(F("pollkeys: Gear down button"));
@@ -152,11 +163,14 @@ void pollkeys()
 
 void boostControl(Task *me)
 {
+  struct SensorVals sensor = readSensors();
+  struct ConfigParam config = readConfig();
+  pidBoost = sensor.curBoost;
+  pidBoostLim = sensor.curBoostLim;
+  myPID.run();
+
   if (boostLimit)
   {
-    struct SensorVals sensor = readSensors();
-    struct ConfigParam config = readConfig();
-
     if (shiftBlocker)
     {
       // During the shift
@@ -176,13 +190,14 @@ void boostControl(Task *me)
       {
         analogWrite(boostCtrl, 0);
       }
-      else if (sensor.curSpeed < 10)
+    /*  else if (sensor.curSpeed < 10)
       {
         analogWrite(boostCtrl, 0);
-      }
+      }*/
       else
       {
-        analogWrite(boostCtrl, 255);
+        analogWrite(boostCtrl, boostPWM);
+       if (debugEnabled) { Serial.print("Current boost setpoint:"); Serial.println(boostPWM); }
       }
     }
 
