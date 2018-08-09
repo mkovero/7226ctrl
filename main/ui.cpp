@@ -111,14 +111,16 @@ void draw(int wantedGear)
 void rpmMeterUpdate()
 {
   struct SensorVals sensor = readSensors();
-  int rpmPWM = map(sensor.curRPM, 0, 6500, 0, 255);
+  struct ConfigParam config = readConfig();
+
+  int rpmPWM = map(sensor.curRPM, 0, config.maxRPM, 0, 255);
   analogWrite(rpmMeter, rpmPWM);
 }
 
 void updateSpeedo()
 {
   struct SensorVals sensor = readSensors();
-//  int speedPWM = map(sensor.curSpeed, 0, 255, 0, 255);
+  //int speedPWM = map(sensor.curSpeed, 0, 255, 0, 255);
   analogWrite(speedoCtrl, sensor.curSpeed);
 }
 

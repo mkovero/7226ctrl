@@ -229,9 +229,9 @@ int boostRead()
   return avgBoostValue;
 }
 
-int boostLimitRead(int oilTemp, int tps)
+int boostLimitRead(int oilTemp)
 {
-  int allowedBoostPressure = readMap(boostControlPressureMap, tps, oilTemp);
+  int allowedBoostPressure = readBoostMap(boostControlPressureMap, gear, oilTemp);
   return allowedBoostPressure;
 }
 
@@ -321,7 +321,7 @@ struct SensorVals readSensors()
   sensor.curOilTemp = oilRead();
   sensor.curAtfTemp = atfRead();
   sensor.curBoost = boostRead();
-  sensor.curBoostLim = boostLimitRead(sensor.curOilTemp, sensor.curTps);
+  sensor.curBoostLim = boostLimitRead(sensor.curOilTemp);
   sensor.curTps = tpsRead();
   sensor.curRPM = rpmRead();
   sensor.curSpeed = speedRead();

@@ -15,13 +15,19 @@ byte wantedGear = 100;
 // INPUT
 
 // Pid tuning parameters
-const double Kp = 7;  //Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
-const double Ki = 20; //Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
-const double Kd = 0;  //Pid Derivative Gain. Not Sure what to do with it.....
+const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
+double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
+const double Kd = 0; //100, 1 Pid Derivative Gain.
+
+/*
+const double Kp = 200; 
+double Ki = 100;      
+const double Kd = 25; //This is not necessarily good idea.
+*/
 double pidBoost, boostPWM, pidBoostLim;
 
 //Load PID controller
-AutoPID myPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 180, Kp,  Ki,  Kd);
+AutoPID myPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, Kp, Ki, Kd);
 
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
@@ -93,7 +99,7 @@ void pollstick(Task *me)
 }
 
 // For manual microswitch control, gear up
-void gearup()
+void gearUp()
 {
   if (wantedGear < 6 && !fullAuto)
   { // Do nothing if we're on N/R/P
@@ -112,7 +118,7 @@ void gearup()
 }
 
 // For manual microswitch control, gear down
-void geardown()
+void gearDown()
 {
   if (wantedGear < 6 && !fullAuto)
   { // Do nothing if we're on N/R/P
@@ -147,7 +153,7 @@ void pollkeys()
       {
         Serial.println(F("pollkeys: Gear up button"));
       }
-      gearup();
+      gearUp();
     }
     else if (gupState == LOW && gdownState == HIGH)
     {
@@ -156,50 +162,43 @@ void pollkeys()
       {
         Serial.println(F("pollkeys: Gear down button"));
       }
-      geardown();
+      gearDown();
     }
   }
 }
 
 void boostControl(Task *me)
 {
-  struct SensorVals sensor = readSensors();
-  struct ConfigParam config = readConfig();
-  pidBoost = sensor.curBoost;
-  pidBoostLim = sensor.curBoostLim;
-  myPID.run();
-
   if (boostLimit)
   {
+    struct SensorVals sensor = readSensors();
+    struct ConfigParam config = readConfig();
+    pidBoost = sensor.curBoost;
+    pidBoostLim = sensor.curBoostLim;
+    myPID.setBangBang(100, 50);
+    myPID.setTimeStep(100);
+
     if (shiftBlocker)
     {
       // During the shift
-      if (sensor.curBoost > (sensor.curBoostLim - config.boostDrop))
+      if (sensor.curBoostLim > config.boostDrop)
       {
-        analogWrite(boostCtrl, 245);
+        pidBoostLim = sensor.curBoostLim - config.boostDrop;
       }
       else
       {
-        analogWrite(boostCtrl, 255);
+        pidBoostLim = 0;
       }
+      Ki = 5; // New integral gain value; we want change of pressure to be aggressive here.
     }
     else
     {
-      // Not during the shift
-      if (sensor.curBoost > sensor.curBoostLim)
-      {
-        analogWrite(boostCtrl, 0);
-      }
-    /*  else if (sensor.curSpeed < 10)
-      {
-        analogWrite(boostCtrl, 0);
-      }*/
-      else
-      {
-        analogWrite(boostCtrl, boostPWM);
-       if (debugEnabled) { Serial.print("Current boost setpoint:"); Serial.println(boostPWM); }
-      }
+      pidBoostLim = sensor.curBoostLim;
+      Ki = 20; // New integral gain value; we want change of pressure to be more modest.
     }
+
+    myPID.run();
+    analogWrite(boostCtrl, boostPWM);
 
     /*if (debugEnabled)
     {
@@ -218,16 +217,25 @@ void fuelControl(Task *me)
     struct SensorVals sensor = readSensors();
     struct ConfigParam config = readConfig();
 
-    if (sensor.curRPM > config.fuelMaxRPM || millis() < 5000)
+    if ((sensor.curRPM > config.fuelMaxRPM || millis() < 5000) && !fuelPumps)
     {
       analogWrite(fuelPumpCtrl, 255);
 
-      if (debugEnabled && !fuelPumps)
+      if (debugEnabled)
       {
         Serial.print(F("[fuelControl->fuelControl] Fuel Pump RPM limit hit/Prestart init, enabling pumps: "));
         Serial.println(config.fuelMaxRPM);
       }
       fuelPumps = true;
+    }
+    else if (sensor.curRPM < config.fuelMaxRPM && fuelPumps && millis() > 5000)
+    {
+      analogWrite(fuelPumpCtrl, 0);
+      if (debugEnabled)
+      {
+        Serial.print(F("[fuelControl->fuelControl] Fuel Pump RPM disabled due low rpm/timelimit "));
+      }
+      fuelPumps = false;
     }
   }
 }
@@ -284,9 +292,9 @@ void polltrans(Task *me)
     }
     else
     {
-      // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
       analogWrite(y5, 0);
     }
+    // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
     if (ignition)
     {
       analogWrite(y3, 0);
@@ -359,4 +367,39 @@ int adaptSPC(int mapId, int xVal, int yVal)
   }
 
   return current;
+}
+
+void radioReceive()
+{
+  // I'm sorry for radio messages being strings, but it is due not accidentally tripping on some non intended radiotraffic
+  // as it might be little dangerous.
+
+  static String readString;
+
+  if (ignition)
+  {
+    Serial1.begin(9600);
+    if (debugEnabled) { Serial.println("Radio initialized."); }
+  }
+
+  while (Serial1.available())
+  {
+    delay(2);
+    char c = Serial1.read();
+    readString += c;
+  }
+
+  if (!fullAuto)
+  {
+    if (readString == "VolUP")
+    {
+      gearUp();
+      readString="";
+    }
+    else if (readString == "ArrowUP")
+    {
+      gearDown();
+      readString="";
+    }
+  }
 }

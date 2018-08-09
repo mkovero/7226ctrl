@@ -20,7 +20,7 @@ Task pollGear(200, decideGear);       // 200ms for deciding new gear
 Task pollSensors(100, pollsensors);      // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);           // 50ms to check transmission state (this needs to be faster than stick.)
 Task pollFuelControl(1000, fuelControl); // 1000ms for fuel pump control
-Task pollBoostControl(500, boostControl); // 50ms for boost control*/
+Task pollBoostControl(500, boostControl); // 500ms for boost control*/
 
 void setup()
 {
@@ -135,5 +135,5 @@ void setup()
   SoftTimer.add(&pollSensors);
   SoftTimer.add(&pollTrans);
   SoftTimer.add(&pollFuelControl);
- SoftTimer.add(&pollBoostControl);
+  SoftTimer.add(&pollBoostControl);
 }
