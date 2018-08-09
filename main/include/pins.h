@@ -7,7 +7,7 @@
 // Blue = Speedo control voltage
 // Blue-White = NA
 // Green = Fuel pump control ground
-// Green-White = TPS signal
+// Green-White -> blue-white = TPS signal
 
 #define TEENSY // we're running this on arduino mega other option is TEENSY
 
@@ -35,6 +35,7 @@
 #define rpmMeter 30 // FMT2 missing // DOUT10
 #define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8
 #define fuelPumpCtrl 2 // missing // DOUT9
+#define hornPin 12 // Horn
 #endif
 // END OUTPUT PINS
 

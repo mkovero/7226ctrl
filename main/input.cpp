@@ -167,6 +167,25 @@ void pollkeys()
   }
 }
 
+void hornOn()
+{
+  // Simple horn control
+  digitalWrite(hornPin, HIGH);
+  if (debugEnabled)
+  {
+    Serial.println("Horn pressed");
+  }
+}
+
+void hornOff()
+{
+  digitalWrite(hornPin, LOW);
+  if (debugEnabled)
+  {
+    Serial.println("Horn depressed");
+  }
+}
+
 void boostControl(Task *me)
 {
   if (boostLimit)
@@ -379,7 +398,10 @@ void radioReceive()
   if (ignition)
   {
     Serial1.begin(9600);
-    if (debugEnabled) { Serial.println("Radio initialized."); }
+    if (debugEnabled)
+    {
+      Serial.println("Radio initialized.");
+    }
   }
 
   while (Serial1.available())
@@ -394,12 +416,19 @@ void radioReceive()
     if (readString == "VolUP")
     {
       gearUp();
-      readString="";
     }
     else if (readString == "ArrowUP")
     {
       gearDown();
-      readString="";
+    }
+    else if (readString == "TOOT")
+    {
+      hornOn();
+    }
+    else
+    {
+      hornOff();
     }
   }
+  readString = "";
 }
