@@ -388,47 +388,57 @@ int adaptSPC(int mapId, int xVal, int yVal)
   return current;
 }
 
-void radioReceive()
+void radioControl()
 {
-  // I'm sorry for radio messages being strings, but it is due not accidentally tripping on some non intended radiotraffic
-  // as it might be little dangerous.
+  static String readData;
 
-  static String readString;
-
-  if (ignition)
+  if (radioEnabled)
   {
-    Serial1.begin(9600);
-    if (debugEnabled)
+    if (ignition)
     {
-      Serial.println("Radio initialized.");
+      Serial1.begin(9600);
+      if (debugEnabled)
+      {
+        Serial.println("Radio initialized");
+      }
+    }
+    while (Serial1.available())
+    {
+      char c = Serial1.read();
+      readData += c;
+    }
+
+    if (!fullAuto)
+    {
+      if (readData == "VolUP")
+      {
+        gearUp();
+        readData = "";
+      }
+      else if (readData == "ArrowUP")
+      {
+        gearDown();
+        readData = "";
+      }
+      else if (readData == "TOOT")
+      {
+        hornOn();
+        readData = "";
+      }
+      else if (readData == "MenuNext")
+      {
+        page++;
+        readData = "";
+      }
+      else if (readData == "MenuPrev")
+      {
+        page--;
+        readData = "";
+      }
+      else
+      {
+        hornOff();
+      }
     }
   }
-
-  while (Serial1.available())
-  {
-    delay(2);
-    char c = Serial1.read();
-    readString += c;
-  }
-
-  if (!fullAuto)
-  {
-    if (readString == "VolUP")
-    {
-      gearUp();
-    }
-    else if (readString == "ArrowUP")
-    {
-      gearDown();
-    }
-    else if (readString == "TOOT")
-    {
-      hornOn();
-    }
-    else
-    {
-      hornOff();
-    }
-  }
-  readString = "";
 }

@@ -37,7 +37,7 @@ boolean boostLimit = true;
 boolean drive = false;
 
 // Datalogging (enabling this disables debug)
-boolean datalogger = true;
+boolean datalogger = false;
 
 // Old style w124 speed meter controlling
 boolean w124speedo = true;
@@ -46,7 +46,7 @@ boolean w124speedo = true;
 boolean w124rpm = true;
 
 // control fuel pumps (turn off below certain rpm)
-boolean fuelPumpControl = true;
+boolean fuelPumpControl = false;
 
 // calculate vehicleSpeed from engine RPM
 boolean rpmSpeed = true; 
@@ -60,10 +60,15 @@ boolean speedFault = false;
 // gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
 boolean evalGear = false;
 
+// radio control
+boolean radioEnabled = true; 
+
 // everything starts with ignition (do not change.)
 boolean ignition = true;
 // state of fuel pumps
 boolean fuelPumps = false;
+
+byte page = 1; // first page to show in UI
 
 struct ConfigParam readConfig()
 {

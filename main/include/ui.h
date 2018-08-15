@@ -11,7 +11,7 @@ extern boolean fullAuto;
 extern boolean datalogger;
 extern boolean w124speedo;
 extern boolean w124rpm;
-extern byte wantedGear;
+extern byte wantedGear,page;
 extern int lastMapVal;
 
 #ifdef __arm__

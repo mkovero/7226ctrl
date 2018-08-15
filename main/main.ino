@@ -13,13 +13,13 @@
 // Big thanks to Tuomas Kantola regarding maps and related math
 
 // "Protothreading", we have time slots for different functions to be run.
-Task pollDisplay(500, updateDisplay); // 500ms to update display*/
-Task pollData(200, datalog);          // 200ms to update datalogging
-Task pollStick(100, pollstick);       // 100ms for checking stick position*
-Task pollGear(200, decideGear);       // 200ms for deciding new gear
-Task pollSensors(100, pollsensors);      // 100ms to update sensor values*/
-Task pollTrans(50, polltrans);           // 50ms to check transmission state (this needs to be faster than stick.)
-Task pollFuelControl(1000, fuelControl); // 1000ms for fuel pump control
+Task pollDisplay(1000, updateDisplay);    // 500ms to update display*/
+Task pollData(200, datalog);              // 200ms to update datalogging
+Task pollStick(100, pollstick);           // 100ms for checking stick position*
+Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
+Task pollSensors(100, pollsensors);       // 100ms to update sensor values*/
+Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
+Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
 Task pollBoostControl(500, boostControl); // 500ms for boost control*/
 
 void setup()
@@ -42,12 +42,13 @@ void setup()
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
   Serial.begin(115200);
-
-  //U8GLIB_SSD1306_128X64 u8g(9, 11, 10, 6, 5); // DSPLOUT1-5
-  // 9->13 would allow hardware SPI
-  U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 9, 11, 10, 6, 5);
-  u8g2.begin();
-
+  U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 9, 5);
+  u8g2.initDisplay();   // send init sequence to display, but keep display in sleep state
+  u8g2.clearDisplay();  // clear RAM in the display
+  u8g2.setPowerSave(0); // wake up display, all pixel are off now
+  /*u8g2.initDisplay();   // send init sequence to display, but keep display in sleep state
+  u8g2.clearDisplay();  // clear RAM in the display
+  u8g2.setPowerSave(0);  // wake up display, all pixel are off now*/
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
   pinMode(y4, OUTPUT);  // 2-3
@@ -59,6 +60,7 @@ void setup()
   pinMode(boostCtrl, OUTPUT);
   pinMode(speedoCtrl, OUTPUT);
   pinMode(fuelPumpCtrl, OUTPUT);
+  pinMode(SPIcs, OUTPUT);
 
   // Sensor input
   pinMode(boostPin, INPUT); // boost sensor
@@ -111,9 +113,10 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 255);   // Wake up speedometer motor so it wont stick
-  analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
-  digitalWrite(rpmPin, HIGH);     // pull-up
+  analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
+  analogWrite(fuelPumpCtrl, 0); // Wake up fuel pumps
+  digitalWrite(rpmPin, HIGH);   // pull-up
+  digitalWrite(SPIcs, LOW);
 
   // resetEEPROM();
 
@@ -121,7 +124,7 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
-  
+
   if (debugEnabled)
   {
     Serial.println(F("Started."));

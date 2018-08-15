@@ -36,6 +36,7 @@
 #define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8
 #define fuelPumpCtrl 2 // missing // DOUT9
 #define hornPin 12 // Horn
+#define SPIcs 10
 #endif
 // END OUTPUT PINS
 
@@ -49,9 +50,9 @@
 #endif
 #ifdef TEENSY
 #define whitepin 27 // 0.5kohm <-> yellow <-> grey-yellow-grey // DIN2 <-> blue
-#define bluepin 28 // 0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
+#define bluepin 34 // 0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
 #define greenpin 26 // 0.5kohm <-> yellow <-> grey-white-grey // DIN1 <-> whiteblue
-#define yellowpin 34     // 0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
+#define yellowpin 28     // 0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
 #endif
 
 
