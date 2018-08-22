@@ -103,7 +103,7 @@ void gearUp()
 {
   if (wantedGear < 6 && !fullAuto)
   { // Do nothing if we're on N/R/P
-    if (!shiftBlocker && !shiftPending && gear <= 5)
+    if (!shiftBlocker && !shiftPending && gear < 5)
     {
       newGear++;
     }
@@ -122,7 +122,7 @@ void gearDown()
 {
   if (wantedGear < 6 && !fullAuto)
   { // Do nothing if we're on N/R/P
-    if (!shiftBlocker && !shiftPending && gear <= 5)
+    if (!shiftBlocker && !shiftPending && gear > 1)
     {
       newGear--;
     }
