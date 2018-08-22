@@ -26,4 +26,5 @@ extern boolean shiftPending;
 extern boolean ignition;
 extern boolean fuelPumps;
 extern boolean radioEnabled;
+extern boolean stickCtrl;
 extern byte page;
