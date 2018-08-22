@@ -65,8 +65,8 @@
 #endif
 
 #ifdef TEENSY
-#define gdownSwitch 29 // ex. 23 <-> NC // DIN6
-#define gupSwitch 16 // <-> NC // DIN7
+#define gdownSwitch 23 // ex. 23 <-> NC // DIN6
+#define gupSwitch 24 // <-> NC // DIN7
 #endif
 
 #ifdef MEGA
