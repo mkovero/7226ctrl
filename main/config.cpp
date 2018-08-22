@@ -29,7 +29,10 @@ boolean shiftPending = false;
 boolean debugEnabled = true;
 
 // Full automatic mode
-boolean fullAuto = true;
+boolean fullAuto = false;
+
+// Stick control
+boolean stickCtrl = true;
 
 // Boost control
 boolean boostLimit = true;

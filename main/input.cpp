@@ -76,24 +76,24 @@ void pollstick(Task *me)
 
   if (autoState == HIGH)
   {
-    if (!fullAuto)
+    if (!stickCtrl)
     {
       if (debugEnabled)
       {
-        Serial.println(F("pollstick: Automode on "));
+        Serial.println(F("pollstick: Stick control on "));
       }
-      fullAuto = true;
+      stickCtrl = true;
     }
   }
   else
   {
-    if (fullAuto)
+    if (stickCtrl)
     {
       if (debugEnabled)
       {
-        Serial.println(F("pollstick: Automode off "));
+        Serial.println(F("pollstick: Stick control off "));
       }
-      fullAuto = false;
+      stickCtrl = false;
     }
   }
 }
@@ -101,7 +101,7 @@ void pollstick(Task *me)
 // For manual microswitch control, gear up
 void gearUp()
 {
-  if (wantedGear < 6 && !fullAuto)
+  if (wantedGear < 6 && !fullAuto && !stickCtrl)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker && !shiftPending && gear < 5)
     {
@@ -120,7 +120,7 @@ void gearUp()
 // For manual microswitch control, gear down
 void gearDown()
 {
-  if (wantedGear < 6 && !fullAuto)
+  if (wantedGear < 6 && !fullAuto && !stickCtrl)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker && !shiftPending && gear > 1)
     {
