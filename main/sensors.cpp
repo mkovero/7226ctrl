@@ -196,7 +196,7 @@ int rpmRead()
 int oilRead()
 {
   // wip
-  // w124 temp sensor B = 3500 roughly, 2.0kohm at 25c
+  // w124 temp sensor B = 3500 roughly, 2.0kohm at 25c, voltage divider resistor is 2250ohm in 12V (dropped Vmax to 3V respectively)
   /*
   Steinhart-Hart coefficients
 a[0] = 1.689126553357672e-03
@@ -212,7 +212,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
-  oilTemp = 100;
+  // oilTemp = 100;
   return oilTemp;
 }
 
@@ -273,6 +273,19 @@ a[1] = 3.123372804552903e-04
 a[2] = -5.605468817359506e-04
 a[3] = 4.141869911401698e-05
 */
+
+  /* This is implementation using steinhart coefficient where as one below is original "Excel" solution by Tuomas Kantola
+   it is expected to use 220ohm resistor in voltage divider with actual temp sensor in 5V and Vmax brought down to 3V.
+  float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;
+  float tempRead = analogRead(atfPin);
+  avgAtfTemp = (avgAtfTemp * 5 + tempRead) / 10;
+  int R2 = 220 * (1023.0 / (float)avgAtfTemp - 1.0);
+  float logR2 = log(R2);
+  float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
+  float atfTemp = T - 273.15;
+  return atfTemp;
+*/
+
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   int atfTemp = 0;
