@@ -11,7 +11,7 @@ int maxBoostPressure = 700; // Max pressure on boost sensor
 int readTPSVoltage(int voltage)
 {
  
-  int result = map(voltage, 2358, 1150, 0, 100);
+  int result = map(voltage, 1900, 800, 0, 100);
     return result;
   
 }
@@ -20,7 +20,7 @@ int readTPSVoltage(int voltage)
 int readBoostVoltage(int voltage)
 {
  
-  int result = map(voltage, 450, 2400, 0, maxBoostPressure); // NXP MPX5700AP (range 0-700kPa)
+  int result = map(voltage, 0, 2400, 0, maxBoostPressure); // NXP MPX5700AP (range 0-700kPa)
     return result;
 
 }

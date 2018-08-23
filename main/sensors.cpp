@@ -204,6 +204,7 @@ a[1] = 8.951863613981253e-05
 a[2] = 2.411208545519697e-05
 a[3] = -9.456539654701360e-07 <- this can be c4
 */
+/* OLD
   float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   float tempRead = analogRead(oilPin);
   avgTemp = (avgTemp * 5 + tempRead) / 10;
@@ -214,6 +215,18 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float oilTemp = T - 273.15;
   // oilTemp = 100;
   return oilTemp;
+  */
+  float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
+  float tempRead = analogRead(oilPin);
+  int R2 = 4700 / (1024.0 / (float)tempRead - 1.0);
+  float logR2 = log(R2);
+  float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
+  // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
+  float oilTemp = T - 273.15;
+  // oilTemp = 100;
+  int oilMapTemp = map(tempRead, 0, 1024, 120, 12);
+  return oilTemp;
+  
 }
 
 int boostRead()
@@ -288,6 +301,7 @@ a[3] = 4.141869911401698e-05
 
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
+  atfTempRaw = atfTempRaw + 153; // Voltage compensation
   int atfTemp = 0;
 
   if (atfTempRaw > 1015)
@@ -301,19 +315,18 @@ a[3] = 4.141869911401698e-05
     drive = true;
     atfTempCalculated = (0.0309 * atfTempRaw * atfTempRaw) - 44.544 * atfTempRaw + 16629;
     atfTemp = -0.000033059 * atfTempCalculated * atfTempCalculated + 0.2031 * atfTempCalculated - 144.09; //same as above
-    avgAtfTemp = (avgAtfTemp * 9 + atfTemp) / 10;
   }
 
-  if (avgAtfTemp < -40)
+  if (atfTemp < -40)
   {
-    avgAtfTemp = 0;
+    atfTemp = 0;
   }
-  if (avgAtfTemp > 120)
+  if (atfTemp > 120)
   {
-    avgAtfTemp = 120;
+    atfTemp = 9999;
   }
 
-  return avgAtfTemp;
+  return atfTemp;
 }
 
 int freeMemory()

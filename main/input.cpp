@@ -101,9 +101,9 @@ void pollstick(Task *me)
 // For manual microswitch control, gear up
 void gearUp()
 {
-  if (wantedGear < 6 && !fullAuto && !stickCtrl)
+  if (wantedGear < 6 && !fullAuto && !stickCtrl && gear < 5)
   { // Do nothing if we're on N/R/P
-    if (!shiftBlocker && !shiftPending && gear < 5)
+    if (!shiftBlocker && !shiftPending)
     {
       newGear++;
     }
@@ -120,9 +120,9 @@ void gearUp()
 // For manual microswitch control, gear down
 void gearDown()
 {
-  if (wantedGear < 6 && !fullAuto && !stickCtrl)
+  if (wantedGear < 6 && !fullAuto && !stickCtrl && gear > 1)
   { // Do nothing if we're on N/R/P
-    if (!shiftBlocker && !shiftPending && gear > 1)
+    if (!shiftBlocker && !shiftPending)
     {
       newGear--;
     }
@@ -171,6 +171,7 @@ void hornOn()
 {
   // Simple horn control
   digitalWrite(hornPin, HIGH);
+  horn = true;
   if (debugEnabled)
   {
     Serial.println("Horn pressed");
@@ -180,6 +181,7 @@ void hornOn()
 void hornOff()
 {
   digitalWrite(hornPin, LOW);
+  horn = false;
   if (debugEnabled)
   {
     Serial.println("Horn depressed");
@@ -320,6 +322,11 @@ void polltrans(Task *me)
       ignition = false;
     }
   }
+
+  if (radioEnabled)
+  {
+    radioControl();
+  }
 }
 
 int adaptSPC(int mapId, int xVal, int yVal)
@@ -392,53 +399,35 @@ void radioControl()
 {
   static String readData;
 
-  if (radioEnabled)
+  while (Serial1.available())
   {
-    if (ignition)
-    {
-      Serial1.begin(9600);
-      if (debugEnabled)
-      {
-        Serial.println("Radio initialized");
-      }
-    }
-    while (Serial1.available())
-    {
-      char c = Serial1.read();
-      readData += c;
-    }
+    char c = Serial1.read();
+    readData += c;
 
-    if (!fullAuto)
+    if (readData == "VolUP")
     {
-      if (readData == "VolUP")
-      {
-        gearUp();
-        readData = "";
-      }
-      else if (readData == "ArrowUP")
-      {
-        gearDown();
-        readData = "";
-      }
-      else if (readData == "TOOT")
-      {
-        hornOn();
-        readData = "";
-      }
-      else if (readData == "MenuNext")
-      {
-        page++;
-        readData = "";
-      }
-      else if (readData == "MenuPrev")
-      {
-        page--;
-        readData = "";
-      }
-      else
-      {
-        hornOff();
-      }
+      gearUp();
+    }
+    else if (readData == "ArrowUP")
+    {
+      gearDown();
+    }
+    else if (readData == "TOOT")
+    {
+      hornOn();
+    }
+    else if (readData == "MenuNext")
+    {
+      page++;
+    }
+    else if (readData == "MenuPrev")
+    {
+      page--;
+    }
+    else if (horn)
+    {
+      hornOff();
     }
   }
+  readData = "";
 }

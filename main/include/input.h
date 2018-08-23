@@ -8,6 +8,7 @@ void fuelControl(Task* me);
 int adaptSPC(int mapId, int xVal, int yVal);
 void adaptSPCup();
 void adaptSPCdown();
+void radioControl();
 void onReleased(unsigned long pressTimespanMs);
 
 extern int spcPercentVal;       
@@ -27,4 +28,5 @@ extern boolean ignition;
 extern boolean fuelPumps;
 extern boolean radioEnabled;
 extern boolean stickCtrl;
+extern boolean horn;
 extern byte page;

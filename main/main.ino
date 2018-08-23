@@ -31,6 +31,10 @@ void setup()
   TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46
 #endif
 
+  // MPC and SPC should have frequency of 1000hz
+  // TCC should have frequency of 100hz
+  // Lower the duty cycle, higher the pressures.
+
 #ifdef TEENSY
   analogWriteFrequency(spc, 1000);     // 1khz for spc
   analogWriteFrequency(mpc, 1000);     // and mpc
@@ -38,17 +42,19 @@ void setup()
   analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
 #endif
 
-  // MPC and SPC should have frequency of 1000hz
-  // TCC should have frequency of 100hz
-  // Lower the duty cycle, higher the pressures.
   Serial.begin(115200);
-  U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 9, 5);
-  u8g2.initDisplay();   // send init sequence to display, but keep display in sleep state
-  u8g2.clearDisplay();  // clear RAM in the display
-  u8g2.setPowerSave(0); // wake up display, all pixel are off now
-  /*u8g2.initDisplay();   // send init sequence to display, but keep display in sleep state
-  u8g2.clearDisplay();  // clear RAM in the display
-  u8g2.setPowerSave(0);  // wake up display, all pixel are off now*/
+
+  if (radioEnabled)
+  {
+    Serial1.begin(9600);
+    if (debugEnabled)
+    {
+      Serial.println("Radio initialized.");
+    }
+  }
+  U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 9, 5);
+  u8g2.begin(); 
+
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
   pinMode(y4, OUTPUT);  // 2-3
@@ -75,7 +81,7 @@ void setup()
 #ifdef TEENSY
   *portConfigRegister(boostPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
@@ -113,7 +119,7 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
+  analogWrite(speedoCtrl, 0);   // Wake up speedometer motor so it wont stick
   analogWrite(fuelPumpCtrl, 0); // Wake up fuel pumps
   digitalWrite(rpmPin, HIGH);   // pull-up
   digitalWrite(SPIcs, LOW);

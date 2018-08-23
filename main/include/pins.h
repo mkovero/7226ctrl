@@ -85,10 +85,10 @@
 #endif
 
 // Car sensor input pins, black
-#define tpsPin A0 // voltage div 5/3 <-> black <-> blue-black-blue = 1kohm/1.8kohm div // ANAIN3
+#define tpsPin A3 // voltage div 5/3 <-> black <-> blue-black-blue = 1kohm/1.8kohm div // ANAIN3
 #define atfPin A1 // voltage div 5/3 <-> black <-> pink = 1kohm/1.8kohm div // ANAIN2
 #define boostPin A2 // voltage div 5/3 <-> black <-> blue-brown-blue = 1kohm/1.8kohm div // ANAIN4
-#define oilPin A3 // voltage div 12/3 <-> black <-> white-pink-white = 1kohm/380ohm div // ANAIN1
+#define oilPin A0 // voltage div 12/3 <-> black <-> white-pink-white = 1kohm/380ohm div // ANAIN1
 #define n2pin 19 // voltage div 5/3 <-> black <-> whiteredwhite = 1kohm/1.8kohm div // DIN14
 #define n3pin 18 // voltage div 5/3 <-> black <-> brownredwhite = 1kohm/1.8kohm div // DIN15
 #define speedPin 21 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10

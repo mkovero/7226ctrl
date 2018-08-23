@@ -70,6 +70,8 @@ boolean radioEnabled = true;
 boolean ignition = true;
 // state of fuel pumps
 boolean fuelPumps = false;
+// state of horn
+boolean horn = false;
 
 byte page = 1; // first page to show in UI
 

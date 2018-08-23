@@ -1,5 +1,18 @@
 # 7226ctrl
-controller for 722.6 automatic transmission
+"controller for 722.6 automatic transmission"
+
+In a nutshell this was supposed to be reverse engineered transmission controller for 722.6 gearboxes found in many mercedes and chrysler vehicles, design is similar with more recent (7gtronic++) gear boxes, so this could be applied with gentle care to work with those as well.
+
+As with most things of life, this got bit out of hand and currently also controls boost, speedometer, rpm meter, fuelpumps and even horn, its also able to communicate with electrical steering wheel for menus and manual button shifts.
+Canbus interface is also supported on pcb but I have not yet utilized in any meaningful fashion.
+
+First revision of working pcb is done:
+
+<http://www.mui.fi/pcb-valmis.jpg> 
+
+and gerber files are available under pcb/ with bom.
+
+Assembly instructions are not included, but I would be happy if someone would wish to write those.
 
 - Not yet fully functional
 - Use at your own risk!
@@ -17,6 +30,7 @@ Currently should work:
 - Fuel pump control on idle (tested and works)
 - vehicle speed reading based on tire size and diff ratio with and without engine rpm (tested and works)
 - rpm reading (tested and works)
+- Electric steering wheel support (manual shifts, menu control)
 
 Implemented but needs real life testing:
 - adaptative shift pressure (works in lab)
@@ -32,7 +46,6 @@ Work in progress:
 Not started/pending:
 - PID controlled PWM for temperature stability
 - percentual map reads preferably without floats (eg. value between point x and y).
-- Electric steering wheel support
 
 
 
