@@ -327,6 +327,9 @@ void polltrans(Task *me)
   {
     radioControl();
   }
+  if (manual) {
+    pollkeys();
+  }
 }
 
 int adaptSPC(int mapId, int xVal, int yVal)

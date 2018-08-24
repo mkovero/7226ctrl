@@ -216,7 +216,8 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   // oilTemp = 100;
   return oilTemp;
   */
-  float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
+  //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
+  float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
   float tempRead = analogRead(oilPin);
   int R2 = 4700 / (1024.0 / (float)tempRead - 1.0);
   float logR2 = log(R2);
@@ -289,10 +290,11 @@ a[3] = 4.141869911401698e-05
 
   /* This is implementation using steinhart coefficient where as one below is original "Excel" solution by Tuomas Kantola
    it is expected to use 220ohm resistor in voltage divider with actual temp sensor in 5V and Vmax brought down to 3V.
-  float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;
+  //float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;
+  float c1 = 23.41010624e-03, c2 = -36.10923945e-04, c3 = 147.9990798e-07
   float tempRead = analogRead(atfPin);
   avgAtfTemp = (avgAtfTemp * 5 + tempRead) / 10;
-  int R2 = 220 * (1023.0 / (float)avgAtfTemp - 1.0);
+  int R2 = 220 / (1024.0 / (float)avgAtfTemp - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   float atfTemp = T - 273.15;

@@ -7,7 +7,7 @@
 boolean stick = true; // yes.
 
 // Manual microswitch control?
-boolean manual = false;
+boolean manual = true;
 
 // Actual transmission there?
 boolean trans = true;
