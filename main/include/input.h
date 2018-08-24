@@ -29,4 +29,5 @@ extern boolean fuelPumps;
 extern boolean radioEnabled;
 extern boolean stickCtrl;
 extern boolean horn;
+extern boolean manual;
 extern byte page;
