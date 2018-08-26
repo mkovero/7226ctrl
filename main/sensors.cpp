@@ -219,13 +219,11 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
   float tempRead = analogRead(oilPin);
-  int R2 = 4700 / (1024.0 / (float)tempRead - 1.0);
+  int R2 = 40000 / (1024.0 / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
-  // oilTemp = 100;
-  int oilMapTemp = map(tempRead, 0, 1024, 120, 12);
   return oilTemp;
   
 }

@@ -80,6 +80,7 @@ struct ConfigParam readConfig()
   struct ConfigParam config;
   config.boostMax = 700; // boost sensor max kpa
   config.boostDrop = 50; // kpa to drop on shifts
+  config.boostSpring = 120; // kpa for wastegate spring pressure
   config.fuelMaxRPM = 2000; // RPM limit to turn on fuel pumps
   config.maxRPM = 7000; // Max engine RPM
   config.tireWidth = 225;

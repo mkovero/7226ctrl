@@ -47,7 +47,7 @@ void setup()
   if (radioEnabled)
   {
     Serial1.begin(9600);
-    if (debugEnabled)
+    if (debugEnabled && !datalogger)
     {
       Serial.println("Radio initialized.");
     }
@@ -131,7 +131,7 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
 
-  if (debugEnabled)
+  if (debugEnabled && !datalogger)
   {
     Serial.println(F("Started."));
   }

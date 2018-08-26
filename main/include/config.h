@@ -1,6 +1,6 @@
 struct ConfigParam
 {
-    int boostMax, boostDrop, fuelMaxRPM, tireWidth, tireProfile, tireInches, maxRPM;
+    int boostMax, boostDrop, boostSpring, fuelMaxRPM, tireWidth, tireProfile, tireInches, maxRPM;
     float diffRatio;
 };
 

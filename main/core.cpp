@@ -136,7 +136,7 @@ void gearchangeUp(int newGear)
       Serial.println(newGear);
     }
   }
-  else
+  else if (debugEnabled)
   {
     Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
   }

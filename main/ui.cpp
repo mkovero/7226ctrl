@@ -45,6 +45,8 @@ typedef u8g2_uint_t u8g_uint_t;
 void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
+  struct ConfigParam config = readConfig();
+
   if (page == 1)
   {
     u8g2.setFont(u8g2_font_logisoso16_tr);
@@ -61,13 +63,13 @@ void draw(int wantedGear)
     {
       u8g2.print(F("P"));
     }
-    if (wantedGear == 5)
+    if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && !shiftPending)
     {
-      u8g2.print(F("D"));
+      u8g2.print(gear);
     }
-    if (wantedGear < 5 || (!fullAuto && wantedGear == 5))
+    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending)
     {
-      u8g2.print(wantedGear);
+      u8g2.print(F("SHIFT"));
     }
     if (fullAuto && wantedGear < 6)
     {
@@ -106,11 +108,30 @@ void draw(int wantedGear)
   }
   else if (page == 2)
   {
-    u8g2.setFont(u8g2_font_ncenB14_tr);
-    u8g2.setCursor(0, 15);
+    float boostBar;
+    u8g2.drawFrame(5, 8, 115, 24);
+    if (sensor.curBoostLim > 0)
+    {
+      boostBar = sensor.curBoost / sensor.curBoostLim;
+    }
+    else
+    {
+      boostBar = sensor.curBoost / config.boostSpring;
+    }
+    float boostBox = boostBar * 115;
+    u8g2.drawBox(5, 8, boostBox, 24);
+    u8g2.setFont(u8g2_font_fub14_tf);
+    u8g2.setCursor(40, 40);
     u8g2.print(sensor.curBoost);
-    u8g2.setCursor(0, 30);
+    u8g2.setCursor(40, 50);
+    u8g2.print(F(" / "));
+    u8g2.setCursor(40, 60);
     u8g2.print(sensor.curBoostLim);
+    if (sensor.curBoostLim < 1)
+    {
+      u8g2.setCursor(55, 40);
+      u8g2.print(F("No Boost Allowed"));
+    }
   }
 }
 

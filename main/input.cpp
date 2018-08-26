@@ -44,10 +44,12 @@ void pollstick(Task *me)
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
   {
     wantedGear = 8;
+    gear = 2; // force reset gear to 2
   } // P
   if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
   {
     wantedGear = 7;
+    gear = 2; // force reset gear to 2
   } // R
   if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
   {
@@ -402,7 +404,7 @@ void radioControl()
 {
   static String readData;
 
-  while (Serial1.available())
+  if (Serial1.available())
   {
     char c = Serial1.read();
     readData += c;
@@ -419,13 +421,17 @@ void radioControl()
     {
       hornOn();
     }
-    else if (readData == "MenuNext")
+    else if (readData == "PickupPhone")
     {
-      page++;
+      if ( page == 1 ) {
+       page++;
+      }
     }
-    else if (readData == "MenuPrev")
+    else if (readData == "HangPhone")
     {
+      if ( page == 2 ) {
       page--;
+      }
     }
     else if (horn)
     {
