@@ -27,6 +27,7 @@
 #include "include/core.h"
 #include "include/input.h"
 #include "include/ui.h"
+#include <EEPROM.h>
 #include <SoftTimer.h>
 #include <SPI.h>
 #include <U8g2lib.h>
@@ -146,9 +147,9 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
+  analogWrite(speedoCtrl, 255); // Wake up speedometer motor so it wont stick
 
-  if (rpmSpeed)
+  if (rpmSpeed && fuelPumpControl)
   {
     analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
   }
@@ -156,13 +157,17 @@ void setup()
   digitalWrite(rpmPin, HIGH); // pull-up
   digitalWrite(SPIcs, LOW);
 
-  //resetEEPROM();
-
   attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
 
+/* This is for erasing EEPROM on start.
+  for (int i = 0; i < EEPROM.length(); i++) {
+     EEPROM.write(i, 0);
+  }
+*/
+       
   if (debugEnabled && !datalogger)
   {
     Serial.println(F("Started."));
