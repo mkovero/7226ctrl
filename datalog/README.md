@@ -1,55 +1,26 @@
 # Datalog
 This document describes datalogging format and method.
 
+<http://www.mui.fi/7226ui.png>
+
+Idea is to push sensor data to local time series database, replicate it remotely and process accordingly
+for local visualization and remote historical data evaluation purposes.
+
 ## Hardware
-arduino/teensy vs pi with $SOME_NICE_DISPLAY (maybe official 7" touchscreen?)
+Teensy outputs serial data to Surface Pro 2 running linux for data gathering.
+GPS location data is gathered using NMEA/gpsd from Samsung J1 mobile phone also providing network capabilities.
 
 ## Method
-Going to start with usb option and then proceed using I2C for now.
-
-One option could be just use usb;
-
-https://oscarliang.com/connect-raspberry-pi-and-arduino-usb-cable
-
-pros:
-- easy
-- works
-- allows fw updates from pi
-
-cons: 
-- usb cable & connectors are big and bulky in car environment
-- need to remove every time doing modifications from laptop
-
-Other option would be do I2C
-
-https://oscarliang.com/raspberry-pi-arduino-connected-i2c/
-
-pros:
-- just two wires
-- works
-
-cons:
-- useless master/slave configuration
-
-Epic option would be to use CANBUS (we're in the car anyway)
-
-https://www.cooking-hacks.com/documentation/tutorials/can-bus-module-shield-tutorial-for-arduino-raspberry-pi-intel-galileo/
-
-pros:
-- leetpoints
-- works?
-
-cons:
-- complexity
-
+All the data is brought together in nodeJS backend "BufferReader" also handling input to influxDB, which is internally replicated for remote influxDB instance.
+Local and remote frontend connect backend using websocket for data visualization.
 
 ## Message format
 datalog-testing has currently working code outputting this at 115200 baud on usb serial.
 
-`vehicleSpeed(kmh);rpmSensor(rpm);tpsSensor(%);gear(1-5);oilTemp(celcius);atfTemp(celcius);load(%);boostSensor(kPa);boostLimit(kPa);lastSPC(int);modVal(int);looptime(usec)`
+`vehicleSpeed(kmh);rpmSensor(rpm);tpsSensor(%);gear(1-5);oilTemp(celcius);atfTemp(celcius);load(%);boostSensor(kPa);boostLimit(kPa);lastSPC(int);modVal(int)`
 
 For example:
 
-`120;4300;30;4;80;90;50;200;250;110;5;2`
+`120;4300;30;4;80;90;50;200;250;110;5`
 
 
