@@ -20,7 +20,7 @@ int readTPSVoltage(int voltage)
 int readBoostVoltage(int voltage)
 {
  
-  int result = map(voltage, 450, 2400, 0, maxBoostPressure); // NXP MPX5700AP (range 0-700kPa)
+  int result = map(voltage, 430, 2400, 0, maxBoostPressure); // NXP MPX5700AP (range 0-700kPa)
     return result;
 
 }

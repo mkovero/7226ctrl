@@ -1,3 +1,26 @@
+/*
+    722.6 transmission controller
+    Copyright (C) 2018 Markus Kovero <mui@mui.fi>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+    Big thanks to 
+    Tuomas Kantola for maps and related math
+    Joosep Vahar for testing
+    Toni Lassila for ideas
+*/
+
 #include <Arduino.h>
 #include "include/pins.h"
 #include "include/sensors.h"
@@ -8,9 +31,6 @@
 #include <SPI.h>
 #include <U8g2lib.h>
 #include <AutoPID.h>
-
-// Work by Markus Kovero <mui@mui.fi>
-// Big thanks to Tuomas Kantola regarding maps and related math
 
 // "Protothreading", we have time slots for different functions to be run.
 Task pollDisplay(1000, updateDisplay);    // 500ms to update display*/
@@ -53,7 +73,7 @@ void setup()
     }
   }
   U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 9, 5);
-  u8g2.begin(); 
+  u8g2.begin();
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -112,6 +132,13 @@ void setup()
   *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 #endif
 
+  pinMode(aSpcUpSwitch, INPUT);
+  pinMode(aSpcDownSwitch, INPUT);
+#ifdef TEENSY
+  *portConfigRegister(aSpcUpSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(aSpcDownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+#endif
+
   // Make sure solenoids are all off.
   analogWrite(y3, 255); // 1-2/4-5 Solenoid is pulsed during ignition crank.
   analogWrite(y4, 0);
@@ -119,12 +146,17 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 0);   // Wake up speedometer motor so it wont stick
-  analogWrite(fuelPumpCtrl, 0); // Wake up fuel pumps
-  digitalWrite(rpmPin, HIGH);   // pull-up
+  analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
+
+  if (rpmSpeed)
+  {
+    analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
+  }
+
+  digitalWrite(rpmPin, HIGH); // pull-up
   digitalWrite(SPIcs, LOW);
 
-  // resetEEPROM();
+  //resetEEPROM();
 
   attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);

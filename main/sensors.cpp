@@ -52,7 +52,7 @@ void pollsensors(Task *me)
     detachInterrupt(4);
     float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
 
-    if (n2SpeedPulses >= 60)
+    if (n2SpeedPulses >= n2PulsesPerRev)
     {
       n2Speed = n2SpeedPulses / n2PulsesPerRev / elapsedTime * 1000 * 60; // there are 60 pulses in one rev and 60 seconds in minute, so this is quite simple
       n2SpeedPulses = 0;
@@ -62,7 +62,7 @@ void pollsensors(Task *me)
       n2Speed = 0;
     }
 
-    if (n3SpeedPulses >= 60)
+    if (n3SpeedPulses >= n3PulsesPerRev)
     {
       n3Speed = n3SpeedPulses / n3PulsesPerRev / elapsedTime * 1000 * 60;
       n3SpeedPulses = 0;

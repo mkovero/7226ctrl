@@ -52,7 +52,7 @@ boolean w124rpm = true;
 boolean fuelPumpControl = false;
 
 // calculate vehicleSpeed from engine RPM
-boolean rpmSpeed = true; 
+boolean rpmSpeed = false; 
 
 // calculate vehicleSpeed from diff abs sensor
 boolean diffSpeed = false; 

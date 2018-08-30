@@ -412,31 +412,39 @@ void radioControl()
     if (readData == "VolUP")
     {
       gearUp();
+      readData = "";
     }
     else if (readData == "ArrowUP")
     {
       gearDown();
+      readData = "";
     }
     else if (readData == "TOOT")
     {
       hornOn();
+      readData = "";
     }
     else if (readData == "PickupPhone")
     {
       if ( page == 1 ) {
        page++;
+      } else if ( page == 2 ) {
+        page--;
       }
+      readData = "";
     }
     else if (readData == "HangPhone")
     {
       if ( page == 2 ) {
       page--;
+      } else if ( page == 1 ) {
+        page++;
       }
+      readData = "";
     }
     else if (horn)
     {
       hornOff();
     }
   }
-  readData = "";
 }

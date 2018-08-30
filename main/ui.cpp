@@ -69,6 +69,7 @@ void draw(int wantedGear)
     }
     else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending)
     {
+      u8g2.setCursor(40, 20);
       u8g2.print(F("SHIFT"));
     }
     if (fullAuto && wantedGear < 6)
@@ -121,16 +122,16 @@ void draw(int wantedGear)
     float boostBox = boostBar * 115;
     u8g2.drawBox(5, 8, boostBox, 24);
     u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(40, 40);
+    u8g2.setCursor(40, 28);
     u8g2.print(sensor.curBoost);
-    u8g2.setCursor(40, 50);
+    u8g2.setCursor(60, 28);
     u8g2.print(F(" / "));
-    u8g2.setCursor(40, 60);
+    u8g2.setCursor(80, 28);
     u8g2.print(sensor.curBoostLim);
     if (sensor.curBoostLim < 1)
     {
-      u8g2.setCursor(55, 40);
-      u8g2.print(F("No Boost Allowed"));
+      u8g2.setCursor(10, 56);
+      u8g2.print(F("LOW TEMP"));
     }
   }
 }

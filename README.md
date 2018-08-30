@@ -1,7 +1,7 @@
 # 7226ctrl
 "controller for 722.6 automatic transmission"
 
-In a nutshell this was supposed to be reverse engineered transmission controller for 722.6 gearboxes found in many mercedes and chrysler vehicles, design is similar with more recent (7gtronic++) gear boxes, so this could be applied with gentle care to work with those as well.
+In a nutshell this was supposed to be reverse engineered transmission controller for 722.6 gearboxes found in many mercedes and chrysler vehicles, design is similar with more recent (7gtronic++) gear boxes, so in theory this could be applied with gentle care to work with those as well.
 
 As with most things of life, this got bit out of hand and currently also controls boost, speedometer, rpm meter, fuelpumps and even horn, its also able to communicate with electrical steering wheel for menus and manual button shifts.
 Canbus interface is also supported on pcb but I have not yet utilized in any meaningful fashion.
@@ -31,6 +31,7 @@ Currently should work:
 - vehicle speed reading based on tire size and diff ratio with and without engine rpm (tested and works)
 - rpm reading (tested and works)
 - Electric steering wheel support (manual shifts, menu control)
+- oil temperature (tested and works)
 
 Implemented but needs real life testing:
 - adaptative shift pressure (works in lab)
@@ -38,7 +39,6 @@ Implemented but needs real life testing:
 - evaluateGear, make sure which gear is in (works in lab)
 - n2/n3 speed sensors (works in lab)
 - w124 rpm meter (works in theory)
-- oil temperature (works in lab)
 
 Work in progress:
 - External datalogging (hardware implementation, visualization)
