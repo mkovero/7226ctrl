@@ -35,7 +35,7 @@ int lastMapVal;
 // Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
-  int spcSetVal = 255;
+  int spcSetVal = 0;
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   shiftBlocker = true;       // Blocking any other shift operations during the shift
 
@@ -80,8 +80,8 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     }
     spcSetVal = (100 - spcPercentVal) * 2.55;
     mpcVal = (100 - mpcVal) * 2.55;
-    analogWrite(spc, spcSetVal);
-    analogWrite(mpc, mpcVal);
+    analogWrite(spc, 20);
+    analogWrite(mpc, 40);
     analogWrite(cSolenoid, 255); // Beginning of gear change
 
     if (debugEnabled)

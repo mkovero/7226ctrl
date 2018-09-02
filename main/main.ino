@@ -147,7 +147,7 @@ void setup()
   analogWrite(spc, 0);
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 255); // Wake up speedometer motor so it wont stick
+  analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
 
   if (rpmSpeed && fuelPumpControl)
   {

@@ -18,6 +18,8 @@ byte wantedGear = 100;
 const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
 double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double Kd = 0; //100, 1 Pid Derivative Gain.
+boolean garageShift = false;
+double garageTime;
 
 /*
 const double Kp = 200; 
@@ -105,7 +107,7 @@ void gearUp()
 {
   if (wantedGear < 6 && !fullAuto && !stickCtrl && gear < 5)
   { // Do nothing if we're on N/R/P
-    if (!shiftBlocker && !shiftPending)
+    if (!shiftBlocker)
     {
       newGear++;
     }
@@ -124,7 +126,7 @@ void gearDown()
 {
   if (wantedGear < 6 && !fullAuto && !stickCtrl && gear > 1)
   { // Do nothing if we're on N/R/P
-    if (!shiftBlocker && !shiftPending)
+    if (!shiftBlocker)
     {
       newGear--;
     }
@@ -270,7 +272,7 @@ void fuelControl(Task *me)
 void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
-
+ // spcPercentVal = 50;
   unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
   if (shiftBlocker)
   {
@@ -300,7 +302,9 @@ void polltrans(Task *me)
     // Pulsed constantly while idling in Park or Neutral at approximately 33% Duty cycle.
     if (wantedGear == 6 || wantedGear == 8)
     {
-      analogWrite(spc, 85);
+      analogWrite(spc, 102);
+      garageShift = true;
+      garageTime = millis();
     }
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
     if (wantedGear <= 6 || wantedGear == 8)
@@ -308,6 +312,12 @@ void polltrans(Task *me)
       int mpcSetVal = (100 - mpcVal) * 2.55;
       analogWrite(mpc, mpcSetVal);
     }
+    
+    if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 1000)) {
+      analogWrite(spc, 0);
+      garageShift = false;
+    }
+    
     // 3-4 Shift solenoid is pulsed continuously while in Park and during selector lever movement (Garage Shifts).
     if (wantedGear > 5)
     {
@@ -411,11 +421,13 @@ void radioControl()
 
     if (readData == "VolUP")
     {
+      shiftPending = true;
       gearUp();
       readData = "";
     }
     else if (readData == "ArrowUP")
     {
+      shiftPending = true;
       gearDown();
       readData = "";
     }
