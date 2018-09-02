@@ -265,7 +265,7 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   else if (tpsSensor && !boostSensor)
   {
     trueLoad = curTps;
-  /
+  }
   else if (!tpsSensor || trueLoad >= 100)
   {
     trueLoad = 100;
@@ -325,7 +325,7 @@ a[3] = 4.141869911401698e-05
   {
     atfTemp = 9999;
   }
-  atfTemp = atfTemp + 60;
+ // atfTemp = atfTemp + 60;
   return atfTemp;
 }
 

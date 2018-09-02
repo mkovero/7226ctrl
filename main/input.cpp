@@ -323,7 +323,7 @@ void polltrans(Task *me)
     {
       analogWrite(y5, 255);
     }
-    else
+    else if (!shiftBlocker)
     {
       analogWrite(y5, 0);
     }
