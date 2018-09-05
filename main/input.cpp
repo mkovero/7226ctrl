@@ -19,7 +19,7 @@ const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lo
 double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double Kd = 0; //100, 1 Pid Derivative Gain.
 boolean garageShift = false;
-double garageTime;
+double garageTime, lastShift;
 
 /*
 const double Kp = 200; 
@@ -302,7 +302,7 @@ void polltrans(Task *me)
     // Pulsed constantly while idling in Park or Neutral at approximately 33% Duty cycle.
     if (wantedGear == 6 || wantedGear == 8)
     {
-      analogWrite(spc, 102);
+      analogWrite(spc, 85);
       garageShift = true;
       garageTime = millis();
     }
@@ -313,7 +313,7 @@ void polltrans(Task *me)
       analogWrite(mpc, mpcSetVal);
     }
     
-    if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 1000)) {
+    if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 3000)) {
       analogWrite(spc, 0);
       garageShift = false;
     }
@@ -419,17 +419,25 @@ void radioControl()
     char c = Serial1.read();
     readData += c;
 
-    if (readData == "VolUP")
+    if (readData == "VolUP" && !shiftPending && gear < 5 && (millis() - lastShift > 2000))
     {
+      lastShift = millis();
       shiftPending = true;
       gearUp();
       readData = "";
+    } else if (readData == "VolUP" && shiftPending) {
+      readData = "";
+      Serial.println("Steering: shift pending");
     }
-    else if (readData == "ArrowUP")
+    else if (readData == "ArrowUP" && !shiftPending && gear > 1 && (millis() - lastShift > 2000))
     {
+      lastShift = millis();
       shiftPending = true;
       gearDown();
       readData = "";
+    } else if (readData == "ArrowUP" && shiftPending) {
+      readData = "";
+      Serial.println("Steering: shift pending");
     }
     else if (readData == "TOOT")
     {
@@ -458,5 +466,6 @@ void radioControl()
     {
       hornOff();
     }
+  readData = "";
   }
 }
