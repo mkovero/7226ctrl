@@ -49,6 +49,7 @@ void loop()
     if (leftSide < 400 || rightSide < 400) {
       Serial.print("TOOT");
     }
+    Serial1.flush();
     //if (debugEnabled) { Serial.print(rightSide); Serial.print("-"); Serial.println(leftSide); }
     delay(50);
 }
