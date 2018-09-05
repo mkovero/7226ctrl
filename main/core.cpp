@@ -35,7 +35,7 @@ int lastMapVal;
 // Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
-  // int spcSetVal = 0;
+  int spcSetVal = 0;
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   shiftBlocker = true;       // Blocking any other shift operations during the shift
 
