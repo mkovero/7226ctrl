@@ -466,6 +466,6 @@ void radioControl()
     {
       hornOff();
     }
-  readData = "";
+ // readData = "";
   }
 }
