@@ -47,12 +47,12 @@ void pollstick(Task *me)
   {
     wantedGear = 8;
     gear = 2; // force reset gear to 2
-  } // P
+  }           // P
   if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
   {
     wantedGear = 7;
     gear = 2; // force reset gear to 2
-  } // R
+  }           // R
   if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
   {
     wantedGear = 6;
@@ -272,7 +272,7 @@ void fuelControl(Task *me)
 void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
- // spcPercentVal = 50;
+  // spcPercentVal = 50;
   unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
   if (shiftBlocker)
   {
@@ -312,12 +312,13 @@ void polltrans(Task *me)
       int mpcSetVal = (100 - mpcVal) * 2.55;
       analogWrite(mpc, mpcSetVal);
     }
-    
-    if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 3000)) {
+
+    if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 3000))
+    {
       analogWrite(spc, 0);
       garageShift = false;
     }
-    
+
     // 3-4 Shift solenoid is pulsed continuously while in Park and during selector lever movement (Garage Shifts).
     if (wantedGear > 5)
     {
@@ -339,7 +340,8 @@ void polltrans(Task *me)
   {
     radioControl();
   }
-  if (manual) {
+  if (manual)
+  {
     pollkeys();
   }
 }
@@ -412,60 +414,68 @@ int adaptSPC(int mapId, int xVal, int yVal)
 
 void radioControl()
 {
-  static String readData;
+  static byte readData;
 
-  if (Serial1.available())
+  if (Serial1.available() > 0)
   {
-    char c = Serial1.read();
-    readData += c;
+    readData = Serial1.read();
 
-    if (readData == "VolUP" && !shiftPending && gear < 5 && (millis() - lastShift > 2000))
+    if (readData == 100 && !shiftPending && gear < 5)
     {
       lastShift = millis();
       shiftPending = true;
       gearUp();
-      readData = "";
-    } else if (readData == "VolUP" && shiftPending) {
-      readData = "";
+      readData = 0;
+    }
+    else if (readData == 100 && shiftPending)
+    {
+      readData = 0;
       Serial.println("Steering: shift pending");
     }
-    else if (readData == "ArrowUP" && !shiftPending && gear > 1 && (millis() - lastShift > 2000))
+    else if (readData == 200 && !shiftPending && gear > 1)
     {
       lastShift = millis();
       shiftPending = true;
       gearDown();
-      readData = "";
-    } else if (readData == "ArrowUP" && shiftPending) {
-      readData = "";
+      readData = 0;
+    }
+    else if (readData == 200 && shiftPending)
+    {
+      readData = 0;
       Serial.println("Steering: shift pending");
     }
-    else if (readData == "TOOT")
+    else if (readData == 55)
     {
       hornOn();
-      readData = "";
+      readData = 0;
     }
-    else if (readData == "PickupPhone")
+    else if (readData == 150)
     {
-      if ( page == 1 ) {
-       page++;
-      } else if ( page == 2 ) {
-        page--;
-      }
-      readData = "";
-    }
-    else if (readData == "HangPhone")
-    {
-      if ( page == 2 ) {
-      page--;
-      } else if ( page == 1 ) {
+      if (page == 1)
+      {
         page++;
       }
-      readData = "";
+      else if (page == 2)
+      {
+        page--;
+      }
+      readData = 0;
+    }
+    else if (readData == 151)
+    {
+      if (page == 2)
+      {
+        page--;
+      }
+      else if (page == 1)
+      {
+        page++;
+      }
+      readData = 0;
     }
     else if (horn)
     {
       hornOff();
     }
- // readData = "";
   }
 }
