@@ -83,9 +83,9 @@ struct ConfigParam readConfig()
   config.boostSpring = 120; // kpa for wastegate spring pressure
   config.fuelMaxRPM = 2000; // RPM limit to turn on fuel pumps
   config.maxRPM = 7000; // Max engine RPM
-  config.tireWidth = 225;
-  config.tireProfile = 45;
-  config.tireInches = 17;
+  config.tireWidth = 195;
+  config.tireProfile = 65;
+  config.tireInches = 15;
   config.diffRatio = 3.27;
   return config;
 }
