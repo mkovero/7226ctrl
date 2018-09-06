@@ -2,6 +2,7 @@
 // Basically its just resistor ladder we're reading here and sending values over HC-11 radio transmitter
 // Unfortunately it is best to use strings for messaging as they are not so easily mixed with interfering radio traffic.
 double lastPress;
+boolean debugEnabled = true;
 
 void setup()
 {
@@ -20,48 +21,48 @@ void loop()
         if (rightSide > 860 && rightSide < 890)
         {
             lastPress = millis();
-            Serial1.print("VolUP");
+            Serial1.write(100);
         }
         if (rightSide > 730 && rightSide < 790)
         {
             lastPress = millis();
-            Serial1.print("VolDOWN");
+            Serial1.write(101);
         }
         if (leftSide > 860 && leftSide < 890)
         {
             lastPress = millis();
-            Serial1.print("ArrowUP");
+            Serial1.write(200);
         }
         if (leftSide > 730 && leftSide < 790)
         {
             lastPress = millis();
-            Serial1.print("ArrowDOWN");
+            Serial1.write(201);
         }
         if (rightSide > 600 && rightSide < 670)
         {
             lastPress = millis();
-            Serial1.print("PickupPhone");
+            Serial1.write(150);
         }
         if (rightSide > 430 && rightSide < 490)
         {
             lastPress = millis();
-            Serial1.print("HangPhone");
+            Serial1.write(151);
         }
         if (leftSide > 600 && leftSide < 670)
         {
             lastPress = millis();
-            Serial1.print("MenuNext");
+            Serial1.write(160);
         }
         if (leftSide > 430 && leftSide < 490)
         {
             lastPress = millis();
-            Serial1.print("MenuPrev");
+            Serial1.write(161);
         }
         if (leftSide < 400 || rightSide < 400)
         {
-            Serial.print("TOOT");
+            Serial.print(55);
         }
         Serial1.flush();
-        //if (debugEnabled) { Serial.print(rightSide); Serial.print("-"); Serial.println(leftSide); }
+      // if (debugEnabled) { Serial.print(rightSide); Serial.print("-"); Serial.println(leftSide); }
     }
 }
