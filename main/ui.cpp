@@ -106,6 +106,10 @@ void draw(int wantedGear)
     u8g2.print(F("RPM:"));
     u8g2.setCursor(100, 40);
     u8g2.print(sensor.curRPM);
+    u8g2.setCursor(100, 50);
+    u8g2.print(F("Load:"));    
+    u8g2.setCursor(100, 60);
+    u8g2.print(sensor.curLoad);
   }
   else if (page == 2)
   {
