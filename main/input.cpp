@@ -222,8 +222,16 @@ void boostControl(Task *me)
       Ki = 20; // New integral gain value; we want change of pressure to be more modest.
     }
 
-    myPID.run();
-    analogWrite(boostCtrl, boostPWM);
+    // Just a sanity check to make sure PID library is not doing anything stupid.
+    if (sensor.curBoostLim > 0)
+    {
+      myPID.run();
+      analogWrite(boostCtrl, boostPWM);
+    }
+    else
+    {
+      analogWrite(boostCtrl, 0);
+    }
 
     /*if (debugEnabled)
     {
