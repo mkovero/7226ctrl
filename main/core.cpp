@@ -47,21 +47,29 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.println(newGear);
   }
 
-  int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
-  if (spcModVal < 10)
-  {
-    spcModVal = 10;
-  };
-  if (spcModVal > 190)
-  {
-    spcModVal = 200;
-  };
-
   if (trans)
   {
+
+    if (adaptive)
+    {
+      int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
+      if (spcModVal < 10)
+      {
+        spcModVal = 10;
+      };
+      if (spcModVal > 190)
+      {
+        spcModVal = 200;
+      };
+      spcPercentVal = spcModVal / 100 * spcVal;
+    }
+    else
+    {
+      spcPercentVal = spcVal;
+    }
+
     // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
 
-    spcPercentVal = spcModVal / 100 * spcVal;
     if (spcPercentVal > 100)
     {
       spcPercentVal = 100; // to make sure we're on the bounds.
@@ -80,8 +88,6 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     }
     spcSetVal = (100 - spcPercentVal) * 2.55;
     mpcVal = (100 - mpcVal) * 2.55;
-    // analogWrite(spc, 20);
-    // analogWrite(mpc, 40);
     analogWrite(spc, spcSetVal);
     analogWrite(mpc, mpcVal);
     analogWrite(cSolenoid, 255); // Beginning of gear change
