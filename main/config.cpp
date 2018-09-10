@@ -55,7 +55,7 @@ boolean fuelPumpControl = false;
 boolean rpmSpeed = false; 
 
 // calculate vehicleSpeed from diff abs sensor
-boolean diffSpeed = false; 
+boolean diffSpeed = true; 
 
 // fault mode for speed sensors
 boolean speedFault = false; 
@@ -72,6 +72,8 @@ boolean ignition = true;
 boolean fuelPumps = false;
 // state of horn
 boolean horn = false;
+// Adaptive pressure
+boolean adaptive = false;
 
 byte page = 1; // first page to show in UI
 
