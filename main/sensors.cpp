@@ -309,7 +309,7 @@ a[3] = 4.141869911401698e-05
   avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
   return avgAtfTemp;
 */
-
+/*
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   atfTempRaw = atfTempRaw + 153; // Voltage compensation
@@ -337,7 +337,19 @@ a[3] = 4.141869911401698e-05
     atfTemp = 9999;
   }
   atfTemp = atfTemp + 15;
-  return atfTemp;
+  return atfTemp;*/
+  // Beta coefficient version
+  float tempRead = analogRead(atfPin);
+  tempRead = 1023 / tempRead - 1;
+  tempRead = 220 / tempRead;
+  float atfTemp;
+  atfTemp = tempRead / 1000;     // (R/Ro)
+  atfTemp = log(atfTemp);                  // ln(R/Ro)
+  atfTemp /= -652.76;                   // 1/B * ln(R/Ro)
+  atfTemp += 1.0 / (1000 + 273.15); // + (1/To)
+  atfTemp = 1.0 / atfTemp;                 // Invert
+  atfTemp -= 273.15;    
+  return atfTemp;              
 }
 
 int freeMemory()
