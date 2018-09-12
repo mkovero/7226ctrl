@@ -88,7 +88,7 @@ struct ConfigParam readConfig()
   config.tireWidth = 195;
   config.tireProfile = 65;
   config.tireInches = 15;
-  config.diffRatio = 3.27;
+  config.diffRatio = 3.07;
   return config;
 }
 
