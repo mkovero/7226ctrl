@@ -72,6 +72,8 @@ boolean ignition = true;
 boolean fuelPumps = false;
 // state of horn
 boolean horn = false;
+// Adaptive pressure
+boolean adaptive = false;
 
 byte page = 1; // first page to show in UI
 
@@ -86,7 +88,7 @@ struct ConfigParam readConfig()
   config.tireWidth = 195;
   config.tireProfile = 65;
   config.tireInches = 15;
-  config.diffRatio = 3.27;
+  config.diffRatio = 3.07;
   return config;
 }
 

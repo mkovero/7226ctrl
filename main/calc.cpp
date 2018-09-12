@@ -31,10 +31,10 @@ int readMap(const int theMap[14][12], int x, int y)
   int xidx = 0; // by default near first element
   int xelements = LEN(theMap[0]);
 
-  int distance = abs(pgm_read_byte_near(&theMap[0][xidx]) - x); // distance comparison
+  int distance = abs(pgm_read_word_near(&theMap[0][xidx]) - x); // distance comparison
   for (int i = 1; i < xelements; i++)
   {
-    int d = abs(pgm_read_byte_near(&theMap[0][i]) - x);
+    int d = abs(pgm_read_word_near(&theMap[0][i]) - x);
     if (d < distance)
     {
       xidx = i;
@@ -44,10 +44,10 @@ int readMap(const int theMap[14][12], int x, int y)
   int yidx = 0; // by default near first element
   int yelements = LEN(*theMap);
 
-  distance = abs(pgm_read_byte_near(&theMap[yidx][0]) - y);
+  distance = abs(pgm_read_word_near(&theMap[yidx][0]) - y);
   for (int i = 1; i < yelements; i++)
   {
-    int d = abs(pgm_read_byte_near(&theMap[i][0]) - y);
+    int d = abs(pgm_read_word_near(&theMap[i][0]) - y);
     if (d < distance)
     {
       yidx = i;
@@ -67,10 +67,10 @@ int readBoostMap(const int theMap[14][6], int x, int y)
   int xidx = 0; // by default near first element
   int xelements = LEN(theMap[0]);
 
-  int distance = abs(pgm_read_byte_near(&theMap[0][xidx]) - x); // distance comparison
+  int distance = abs(pgm_read_word_near(&theMap[0][xidx]) - x); // distance comparison
   for (int i = 1; i < xelements; i++)
   {
-    int d = abs(pgm_read_byte_near(&theMap[0][i]) - x);
+    int d = abs(pgm_read_word_near(&theMap[0][i]) - x);
     if (d < distance)
     {
       xidx = i;
@@ -80,10 +80,10 @@ int readBoostMap(const int theMap[14][6], int x, int y)
   int yidx = 0; // by default near first element
   int yelements = LEN(*theMap);
 
-  distance = abs(pgm_read_byte_near(&theMap[yidx][0]) - y);
+  distance = abs(pgm_read_word_near(&theMap[yidx][0]) - y);
   for (int i = 1; i < yelements; i++)
   {
-    int d = abs(pgm_read_byte_near(&theMap[i][0]) - y);
+    int d = abs(pgm_read_word_near(&theMap[i][0]) - y);
     if (d < distance)
     {
       yidx = i;

@@ -304,7 +304,7 @@ a[3] = 4.141869911401698e-05
   /* This is implementation using steinhart coefficient where as one below is original "Excel" solution by Tuomas Kantola
    it is expected to use 220ohm resistor in voltage divider with actual temp sensor in 5V and Vmax brought down to 3V.
   //float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;*/
-
+/*
   float c1 = 23.99266925e-03, c2 = -37.31821417e-04, c3 = 155.6950843e-07;
   float tempRead = analogRead(atfPin);
   tempRead = tempRead + 220; // Voltage compensation
@@ -319,7 +319,7 @@ a[3] = 4.141869911401698e-05
   }
   avgAtfTemp = avgAtfTemp + 40;
   return avgAtfTemp;
-
+*/
 /*
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
@@ -349,6 +349,18 @@ a[3] = 4.141869911401698e-05
   }
   atfTemp = atfTemp + 15;
   return atfTemp;*/
+  // Beta coefficient version
+  float tempRead = analogRead(atfPin);
+  tempRead = 1023 / tempRead - 1;
+  tempRead = 220 / tempRead;
+  float atfTemp;
+  atfTemp = tempRead / 1000;     // (R/Ro)
+  atfTemp = log(atfTemp);                  // ln(R/Ro)
+  atfTemp /= -652.76;                   // 1/B * ln(R/Ro)
+  atfTemp += 1.0 / (1000 + 273.15); // + (1/To)
+  atfTemp = 1.0 / atfTemp;                 // Invert
+  atfTemp -= 273.15;    
+  return atfTemp;              
 }
 
 int freeMemory()
