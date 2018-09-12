@@ -55,7 +55,7 @@ boolean fuelPumpControl = false;
 boolean rpmSpeed = false; 
 
 // calculate vehicleSpeed from diff abs sensor
-boolean diffSpeed = false; 
+boolean diffSpeed = true; 
 
 // fault mode for speed sensors
 boolean speedFault = false; 

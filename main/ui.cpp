@@ -5,6 +5,7 @@
 #include "include/pins.h"
 #include "include/sensors.h"
 #include "include/eeprom.h"
+#include "include/core.h"
 #include "include/config.h"
 #include <SoftTimer.h>
 
@@ -46,7 +47,8 @@ void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
   struct ConfigParam config = readConfig();
-
+  int evalGear = evaluateGear();
+  
   if (page == 1)
   {
     u8g2.setFont(u8g2_font_logisoso16_tr);
@@ -105,7 +107,7 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 30);
     u8g2.print(F("RPM:"));
     u8g2.setCursor(100, 40);
-    u8g2.print(sensor.curRPM);
+    u8g2.print(evalGear);
     u8g2.setCursor(100, 50);
     u8g2.print(F("Load:"));    
     u8g2.setCursor(100, 60);
