@@ -1,3 +1,4 @@
+#include <Arduino.h>
 // Electric steering wheel control
 // Basically its just resistor ladder we're reading here and sending values over HC-11 radio transmitter
 // Unfortunately it is best to use strings for messaging as they are not so easily mixed with interfering radio traffic.
