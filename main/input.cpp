@@ -280,7 +280,6 @@ void fuelControl(Task *me)
 void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
-  // spcPercentVal = 50;
   unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
   if (shiftBlocker)
   {
