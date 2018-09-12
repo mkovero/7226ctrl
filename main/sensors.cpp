@@ -237,7 +237,11 @@ int boostRead()
     float boostVoltage = analogRead(boostPin) * 3.30;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
+    if (avgBoostValue < 0) {
+      avgBoostValue = 0;
+    }
   }
+  
   return avgBoostValue;
 }
 
@@ -281,7 +285,8 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
     trueLoad = 100;
   }
 
-  //trueLoad = 100;
+  trueLoad = trueLoad + 30;
+  if (trueLoad > 100 ) { trueload = 100;  }
   return trueLoad;
 }
 
@@ -299,17 +304,23 @@ a[3] = 4.141869911401698e-05
   /* This is implementation using steinhart coefficient where as one below is original "Excel" solution by Tuomas Kantola
    it is expected to use 220ohm resistor in voltage divider with actual temp sensor in 5V and Vmax brought down to 3V.
   //float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;*/
-/*
+
   float c1 = 23.99266925e-03, c2 = -37.31821417e-04, c3 = 155.6950843e-07;
   float tempRead = analogRead(atfPin);
-  int R2 = 220 / (1024.0 / (float)tempRead - 1.0);
+  tempRead = tempRead + 220; // Voltage compensation
+  int R2 = 240 / (1024.0 / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   float atfTemp = T - 273.15;
   avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
+  if (tempRead > 1015)
+  {
+    avgAtfTemp = oilRead();
+  }
+  avgAtfTemp = avgAtfTemp + 40;
   return avgAtfTemp;
-*/
 
+/*
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   atfTempRaw = atfTempRaw + 153; // Voltage compensation
@@ -337,7 +348,7 @@ a[3] = 4.141869911401698e-05
     atfTemp = 9999;
   }
   atfTemp = atfTemp + 15;
-  return atfTemp;
+  return atfTemp;*/
 }
 
 int freeMemory()
