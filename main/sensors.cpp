@@ -60,6 +60,7 @@ void pollsensors(Task *me)
     }
     else
     {
+      n2SpeedPulses = 0;
       n2Speed = 0;
     }
 
@@ -70,6 +71,7 @@ void pollsensors(Task *me)
     }
     else
     {
+      n3SpeedPulses = 0;
       n3Speed = 0;
     }
 
@@ -95,8 +97,8 @@ void pollsensors(Task *me)
     Serial.println(evalgear);*/
     lastSensorTime = millis();
 
-    attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, FALLING); // Attach again
-    attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
+    attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING); // Attach again
+    attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
   }
@@ -258,14 +260,14 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   unsigned int trueLoad = 0;
   int boostPercent = 0;
   
-  /*if (curBoostLim == 0)
+ /* if (curBoostLim == 0)
   {
     boostPercent = 100;
   }
   else
   {
     boostPercent = 100 * curBoost / curBoostLim;
-  }
+  }*/
 
   int vehicleRPM = 100 * curRPM / config.maxRPM;
 
@@ -278,15 +280,15 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
     trueLoad = (curTps * 0.48) + (boostPercent * 0.20) + (vehicleRPM * 0.32);
   }
   else if (tpsSensor && !boostSensor)
-  {*/
+  {
     trueLoad = curTps;
- /* }
+  }
   else if (!tpsSensor || trueLoad >= 100)
   {
     trueLoad = 100;
-  }*/
+  }
 
-  trueLoad = trueLoad + 50;
+ // trueLoad = trueLoad + 50;
   if (trueLoad > 100 ) { trueLoad = 100;  }
   return trueLoad;
 }
