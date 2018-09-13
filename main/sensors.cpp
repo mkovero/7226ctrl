@@ -47,9 +47,10 @@ void pollsensors(Task *me)
 
   if (millis() - lastSensorTime >= 1000)
   {
-    detachInterrupt(2); // Detach interrupts for calculation
-    detachInterrupt(3);
-    detachInterrupt(4);
+    detachInterrupt(n2pin); // Detach interrupts for calculation
+    detachInterrupt(n3pin);
+    detachInterrupt(rpmPin);
+    detachInterrupt(speedPin);
     float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
 
     if (n2SpeedPulses >= n2PulsesPerRev)
@@ -94,8 +95,8 @@ void pollsensors(Task *me)
     Serial.println(evalgear);*/
     lastSensorTime = millis();
 
-    attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING); // Attach again
-    attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
+    attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, FALLING); // Attach again
+    attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
   }
@@ -223,7 +224,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
-  float oilTemp = T - 273.15 - 50;
+  float oilTemp = T - 273.15;
   avgTemp = (avgTemp * 5 + oilTemp) / 10;
   return avgTemp;
 }
@@ -257,7 +258,7 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   unsigned int trueLoad = 0;
   int boostPercent = 0;
   
-  if (curBoostLim == 0)
+  /*if (curBoostLim == 0)
   {
     boostPercent = 100;
   }
@@ -277,16 +278,16 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
     trueLoad = (curTps * 0.48) + (boostPercent * 0.20) + (vehicleRPM * 0.32);
   }
   else if (tpsSensor && !boostSensor)
-  {
+  {*/
     trueLoad = curTps;
-  }
+ /* }
   else if (!tpsSensor || trueLoad >= 100)
   {
     trueLoad = 100;
-  }
+  }*/
 
-  trueLoad = trueLoad + 30;
-  if (trueLoad > 100 ) { trueload = 100;  }
+  trueLoad = trueLoad + 50;
+  if (trueLoad > 100 ) { trueLoad = 100;  }
   return trueLoad;
 }
 
@@ -351,6 +352,7 @@ a[3] = 4.141869911401698e-05
   return atfTemp;*/
   // Beta coefficient version
   float tempRead = analogRead(atfPin);
+  tempRead = tempRead - 200; // Voltage compensation
   tempRead = 1023 / tempRead - 1;
   tempRead = 220 / tempRead;
   float atfTemp;
@@ -359,7 +361,12 @@ a[3] = 4.141869911401698e-05
   atfTemp /= -652.76;                   // 1/B * ln(R/Ro)
   atfTemp += 1.0 / (1000 + 273.15); // + (1/To)
   atfTemp = 1.0 / atfTemp;                 // Invert
-  atfTemp -= 273.15;    
+  atfTemp -= 273.15; 
+  if (wantedGear == 6 || wantedGear == 8)
+  {
+    atfTemp = oilRead();
+  }   
+  atfTemp = atfTemp + 25;
   return atfTemp;              
 }
 

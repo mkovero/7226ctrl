@@ -17,6 +17,7 @@
 byte gear = 2; // Start on gear 2
 byte newGear = 2;
 byte pendingGear = 2;
+float ratio;
 
 // Shift pressure defaults
 int spcPercentVal = 100;
@@ -88,6 +89,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     }
     spcSetVal = (100 - spcPercentVal) * 2.55;
     mpcVal = (100 - mpcVal) * 2.55;
+    analogWrite(tcc, 0);
     analogWrite(spc, spcSetVal);
     analogWrite(mpc, mpcVal);
     analogWrite(cSolenoid, 255); // Beginning of gear change
@@ -99,9 +101,9 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
       Serial.print(F("-"));
       Serial.print(spcPercentVal);
       Serial.print(F("-"));
-      Serial.print(mpcVal);
-      Serial.print(F("-"));
-      Serial.println(spcModVal);
+      Serial.println(mpcVal);
+    //  Serial.print(F("-"));
+   //   Serial.println(spcModVal);
     }
   }
   cSolenoidEnabled = cSolenoid;
@@ -451,7 +453,7 @@ int evaluateGear()
     incomingShaftSpeed = n2Speed;
     //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
   }
-  float ratio = incomingShaftSpeed / vehicleSpeedRevs;
+  ratio = incomingShaftSpeed / vehicleSpeedRevs;
 
   measuredGear = gearFromRatio(ratio);
   return measuredGear;
