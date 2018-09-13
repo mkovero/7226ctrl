@@ -21,6 +21,7 @@ float ratio;
 
 // Shift pressure defaults
 int spcPercentVal = 100;
+int mpcPercentVal = 100;
 
 // for timers
 unsigned long int shiftStartTime = 0;
@@ -67,6 +68,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     else
     {
       spcPercentVal = spcVal;
+      mpcPercentVal = mpcVal;
     }
 
     // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
@@ -88,7 +90,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
       }
     }
     spcSetVal = (100 - spcPercentVal) * 2.55;
-    mpcVal = (100 - mpcVal) * 2.55;
+    mpcVal = (100 - mpcPercentVal) * 2.55;
     analogWrite(tcc, 0);
     analogWrite(spc, spcSetVal);
     analogWrite(mpc, mpcVal);
@@ -113,7 +115,8 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 void switchGearStop()
 {
   analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
-  analogWrite(spc, 0);              // let go of SPC-pressure
+  analogWrite(spc, 0);              // spc off
+  analogWrite(mpc, 0);              // mpc off
   gear = pendingGear;               // we can happily say we're on new gear
   shiftBlocker = false;
   shiftPending = false;
@@ -453,7 +456,7 @@ int evaluateGear()
     incomingShaftSpeed = n2Speed;
     //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
   }
-  ratio = incomingShaftSpeed / vehicleSpeedRevs;
+  ratio = (float)incomingShaftSpeed / vehicleSpeedRevs;
 
   measuredGear = gearFromRatio(ratio);
   return measuredGear;
