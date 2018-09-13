@@ -47,6 +47,8 @@ void pollstick(Task *me)
   {
     wantedGear = 8;
     gear = 2; // force reset gear to 2
+    shiftPending = false;
+    shiftBlocker = false;
   }           // P
   if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
   {
@@ -226,7 +228,8 @@ void boostControl(Task *me)
     if (sensor.curBoostLim > 0)
     {
       myPID.run();
-      analogWrite(boostCtrl, boostPWM);
+   //   analogWrite(boostCtrl, boostPWM);
+ //  if (debugEnabled) { Serial.print("BoostPWM = "); Serial.println(boostPWM); }
     }
     else
     {
@@ -317,7 +320,7 @@ void polltrans(Task *me)
     if (wantedGear <= 6 || wantedGear == 8)
     {
       int mpcSetVal = (100 - mpcVal) * 2.55;
-      analogWrite(mpc, mpcSetVal);
+     // analogWrite(mpc, mpcSetVal);
     }
 
     if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 3000))
@@ -334,6 +337,11 @@ void polltrans(Task *me)
     else if (!shiftBlocker)
     {
       analogWrite(y5, 0);
+    }
+    if (sensor.curTps < 30 && sensor.curSpeed > 80 && gear == 5) {
+      analogWrite(tcc, 255);
+    } else {
+      analogWrite(tcc, 0);
     }
     // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
     if (ignition)
