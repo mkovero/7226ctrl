@@ -48,7 +48,12 @@ void draw(int wantedGear)
   struct SensorVals sensor = readSensors();
   struct ConfigParam config = readConfig();
   int evalGear = evaluateGear();
-  
+  static int maxSpeed, maxBoost, maxOilTemp, maxAtfTemp;
+  if ( sensor.curOilTemp > maxOilTemp ) { maxOilTemp = sensor.curOilTemp; }
+  if ( sensor.curSpeed > maxSpeed ) { maxSpeed = sensor.curSpeed; }
+  if ( sensor.curBoost > maxBoost ) { maxBoost = sensor.curBoost; }
+  if ( sensor.curAtfTemp > maxAtfTemp ) { maxAtfTemp = sensor.curAtfTemp; }
+
   if (page == 1)
   {
     u8g2.setFont(u8g2_font_logisoso16_tr);
@@ -92,20 +97,26 @@ void draw(int wantedGear)
     u8g2.print("atfTemp:");
     u8g2.setCursor(0, 20);
     u8g2.print(sensor.curAtfTemp);
+    u8g2.setCursor(25, 20);
+    u8g2.print(maxAtfTemp);
     u8g2.setCursor(0, 30);
     u8g2.print(F("oilTemp:"));
     u8g2.setCursor(0, 40);
     u8g2.print(sensor.curOilTemp);
+    u8g2.setCursor(25, 40);
+    u8g2.print(maxOilTemp);
     u8g2.setCursor(0, 50);
     u8g2.print(F("Boost:"));
     u8g2.setCursor(0, 60);
     u8g2.print(sensor.curBoost);
+    u8g2.setCursor(25, 60);
+    u8g2.print(maxBoost);
     u8g2.setCursor(100, 10);
-    u8g2.print(F("TPS:"));
+    u8g2.print(F("Ratio:"));
     u8g2.setCursor(100, 20);
-    u8g2.print(sensor.curTps);
+    u8g2.print(ratio);
     u8g2.setCursor(100, 30);
-    u8g2.print(F("RPM:"));
+    u8g2.print(F("RGear:"));
     u8g2.setCursor(100, 40);
     u8g2.print(evalGear);
     u8g2.setCursor(100, 50);
@@ -129,11 +140,11 @@ void draw(int wantedGear)
     u8g2.drawBox(5, 8, boostBox, 24);
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(40, 28);
-    u8g2.print(sensor.curBoost);
+    u8g2.print(n2Speed);
     u8g2.setCursor(60, 28);
     u8g2.print(F(" / "));
     u8g2.setCursor(80, 28);
-    u8g2.print(sensor.curBoostLim);
+    u8g2.print(n3Speed);
     if (sensor.curBoostLim < 1)
     {
       u8g2.setCursor(10, 56);

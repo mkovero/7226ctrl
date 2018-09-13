@@ -14,7 +14,8 @@ extern boolean w124rpm;
 extern byte wantedGear,page;
 extern int lastMapVal;
 extern boolean shiftPending;
-
+extern float ratio;
+extern int n2Speed, n3Speed;
 #ifdef __arm__
 extern "C" char* sbrk(int incr);
 #else  // __ARM__
