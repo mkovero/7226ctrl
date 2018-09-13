@@ -12,7 +12,7 @@ int gearFromRatio(float inputRatio);
 extern byte gear;         
 extern int cSolenoid;  
 extern int spcSetVal;
-extern int spcPercentVal;
+extern int spcPercentVal,mpcPercentVal;
 extern unsigned long int shiftStartTime;
 extern unsigned long int shiftDuration;
 extern int cSolenoidEnabled;
