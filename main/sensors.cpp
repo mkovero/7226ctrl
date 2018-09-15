@@ -43,6 +43,7 @@ void pollsensors(Task *me)
 
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
+  const int rpmPulsesPerRev = 6;
   const int vehicleSpeedPulsesPerRev = 29; // number of teeths in w124 rear diff
 
   if (millis() - lastSensorTime >= 1000)
@@ -87,8 +88,16 @@ void pollsensors(Task *me)
     }
 
     // RPM as per elapsedTime
-    rpmRevs = rpmPulse / elapsedTime * 1000 * 60;
+    if (rpmPulse >= rpmPulsesPerRev) {
+    rpmRevs = rpmPulse / rpmPulsesPerRev / elapsedTime * 1000 * 60;
     rpmPulse = 0;
+     }
+    else
+    {
+    rpmRevs = 0;
+    rpmPulse = 0;
+    }
+    
     /*  Serial.print(n2Speed);
     Serial.print("-");
     Serial.print(n3Speed);
@@ -96,7 +105,6 @@ void pollsensors(Task *me)
     Serial.print("-");
     Serial.println(evalgear);*/
     lastSensorTime = millis();
-
     attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING); // Attach again
     attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
@@ -222,7 +230,8 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
   float tempRead = analogRead(oilPin);
-  int R2 = 470 / (1024.0 / (float)tempRead - 1.0);
+  tempRead = tempRead;
+  int R2 = 470 / (1023.0 / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
@@ -307,11 +316,11 @@ a[3] = 4.141869911401698e-05
   /* This is implementation using steinhart coefficient where as one below is original "Excel" solution by Tuomas Kantola
    it is expected to use 220ohm resistor in voltage divider with actual temp sensor in 5V and Vmax brought down to 3V.
   //float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;*/
-/*
+
   float c1 = 23.99266925e-03, c2 = -37.31821417e-04, c3 = 155.6950843e-07;
   float tempRead = analogRead(atfPin);
-  tempRead = tempRead + 220; // Voltage compensation
-  int R2 = 240 / (1024.0 / (float)tempRead - 1.0);
+  tempRead = tempRead; // Voltage compensation
+  int R2 = 216 / (1023.0 / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   float atfTemp = T - 273.15;
@@ -320,9 +329,9 @@ a[3] = 4.141869911401698e-05
   {
     avgAtfTemp = oilRead();
   }
-  avgAtfTemp = avgAtfTemp + 40;
+  avgAtfTemp = avgAtfTemp;
   return avgAtfTemp;
-*/
+
 /*
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
@@ -351,12 +360,12 @@ a[3] = 4.141869911401698e-05
     atfTemp = 9999;
   }
   atfTemp = atfTemp + 15;
-  return atfTemp;*/
+  return atfTemp;
   // Beta coefficient version
-  float tempRead = analogRead(atfPin);
+ /* float tempRead = analogRead(atfPin);
   tempRead = tempRead - 200; // Voltage compensation
   tempRead = 1023 / tempRead - 1;
-  tempRead = 220 / tempRead;
+  tempRead = 216 / tempRead;
   float atfTemp;
   atfTemp = tempRead / 1000;     // (R/Ro)
   atfTemp = log(atfTemp);                  // ln(R/Ro)
@@ -369,7 +378,7 @@ a[3] = 4.141869911401698e-05
     atfTemp = oilRead();
   }   
   atfTemp = atfTemp + 25;
-  return atfTemp;              
+  return atfTemp; */             
 }
 
 int freeMemory()

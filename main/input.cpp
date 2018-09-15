@@ -356,6 +356,7 @@ void polltrans(Task *me)
     }
   }
 
+  // gear = evaluateGear();
   if (radioEnabled)
   {
     radioControl();
@@ -475,9 +476,9 @@ void radioControl()
       {
         page++;
       }
-      else if (page == 3)
+      else if (page > 3)
       {
-        page == 1;
+        page = 1;
       }
       readData = 0;
     }
@@ -487,9 +488,9 @@ void radioControl()
       {
         page--;
       }
-      else if (page == 1)
+      else if (page < 1)
       {
-        page == 3;
+        page = 3;
       }
       readData = 0;
     }

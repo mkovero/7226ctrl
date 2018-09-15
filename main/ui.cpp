@@ -140,17 +140,17 @@ void draw(int wantedGear)
     u8g2.drawBox(5, 8, boostBox, 24);
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(40, 28);
-    u8g2.print(sensor.curBoost);
+    u8g2.print(n2Speed);
     u8g2.setCursor(60, 28);
     u8g2.print(F(" / "));
     u8g2.setCursor(80, 28);
-    u8g2.print(sensor.curBoostLim);
+    u8g2.print(n3Speed);
     if (sensor.curBoostLim < 1)
     {
       u8g2.setCursor(10, 56);
       u8g2.print(F("LOW TEMP"));
     }
-  } else if ( page == 3) {
+  } else if ( page == 3 ) {
        u8g2.setFont(u8g2_font_logisoso16_tr);
     u8g2.setCursor(50, 20);
     if (wantedGear == 6)
@@ -189,17 +189,13 @@ void draw(int wantedGear)
     u8g2.print(F("km/h"));
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.setCursor(0, 10);
-    u8g2.print("atfTemp:");
+    u8g2.print("shiftTemp:");
     u8g2.setCursor(0, 20);
-    u8g2.print(sensor.curAtfTemp);
-    u8g2.setCursor(25, 20);
-    u8g2.print(maxAtfTemp);
+    u8g2.print(shiftAtfTemp);
     u8g2.setCursor(0, 30);
-    u8g2.print(F("oilTemp:"));
+    u8g2.print(F("shiftLoad:"));
     u8g2.setCursor(0, 40);
-    u8g2.print(sensor.curOilTemp);
-    u8g2.setCursor(25, 40);
-    u8g2.print(maxOilTemp);
+    u8g2.print(shiftLoad);
     u8g2.setCursor(0, 50);
     u8g2.print(F("SPC:"));
     u8g2.setCursor(0, 60);
