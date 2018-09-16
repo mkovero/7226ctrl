@@ -14,8 +14,8 @@ unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, 
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
-int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgTemp;
-float alpha = 0.7;
+int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgTemp, evalGear;
+float alpha = 0.7, gearSlip;
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -88,16 +88,20 @@ void pollsensors(Task *me)
     }
 
     // RPM as per elapsedTime
-    if (rpmPulse >= rpmPulsesPerRev) {
-    rpmRevs = rpmPulse / rpmPulsesPerRev / elapsedTime * 1000 * 60;
-    rpmPulse = 0;
-     }
+    if (rpmPulse >= rpmPulsesPerRev)
+    {
+      rpmRevs = rpmPulse / rpmPulsesPerRev / elapsedTime * 1000 * 60;
+      rpmPulse = 0;
+    }
     else
     {
-    rpmRevs = 0;
-    rpmPulse = 0;
+      rpmRevs = 0;
+      rpmPulse = 0;
     }
-    
+
+    gearSlip = getGearSlip();
+    evalGear = evaluateGear();
+
     /*  Serial.print(n2Speed);
     Serial.print("-");
     Serial.print(n3Speed);
@@ -249,11 +253,12 @@ int boostRead()
     float boostVoltage = analogRead(boostPin) * 3.30;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
-    if (avgBoostValue < 0) {
+    if (avgBoostValue < 0)
+    {
       avgBoostValue = 0;
     }
   }
-  
+
   return avgBoostValue;
 }
 
@@ -268,15 +273,15 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   struct ConfigParam config = readConfig();
   unsigned int trueLoad = 0;
   int boostPercent = 0;
-  
- /* if (curBoostLim == 0)
+
+  if (curBoostLim == 0)
   {
     boostPercent = 100;
   }
   else
   {
     boostPercent = 100 * curBoost / curBoostLim;
-  }*/
+  }
 
   int vehicleRPM = 100 * curRPM / config.maxRPM;
 
@@ -297,8 +302,11 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
     trueLoad = 100;
   }
 
- // trueLoad = trueLoad + 50;
-  if (trueLoad > 100 ) { trueLoad = 100;  }
+  // trueLoad = trueLoad + 50;
+  if (trueLoad > 100)
+  {
+    trueLoad = 100;
+  }
   return trueLoad;
 }
 
@@ -332,7 +340,7 @@ a[3] = 4.141869911401698e-05
   avgAtfTemp = avgAtfTemp;
   return avgAtfTemp;
 
-/*
+  /*
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
   atfTempRaw = atfTempRaw + 153; // Voltage compensation
@@ -378,7 +386,7 @@ a[3] = 4.141869911401698e-05
     atfTemp = oilRead();
   }   
   atfTemp = atfTemp + 25;
-  return atfTemp; */             
+  return atfTemp; */
 }
 
 int freeMemory()
@@ -404,5 +412,9 @@ struct SensorVals readSensors()
   sensor.curRPM = rpmRead();
   sensor.curSpeed = speedRead();
   sensor.curLoad = loadRead(sensor.curTps, sensor.curBoost, sensor.curBoostLim, sensor.curRPM);
+  // we need to calculate these in precise moment to get accurate reading, so this acts just an interface for global vars.
+  sensor.curSlip = gearSlip;
+  sensor.curRatio = ratio;
+  sensor.curEvalGear = evalGear;
   return sensor;
 }

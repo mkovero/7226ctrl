@@ -503,7 +503,7 @@ float ratioFromGear(int inputGear)
 
 int gearFromRatio(float inputRatio)
 {
-  if (inputRatio < 3.62 && inputRatio > 3.56)
+  if (inputRatio < 3.82 && inputRatio > 3.46)
   {
     int returnGear = 1;
     return returnGear;
@@ -518,12 +518,12 @@ int gearFromRatio(float inputRatio)
     int returnGear = 3;
     return returnGear;
   }
-  else if (inputRatio < 1.03 && inputRatio > 0.97)
+  else if (inputRatio < 1.10 && inputRatio > 0.94)
   {
     int returnGear = 4;
     return returnGear;
   }
-  else if (inputRatio < 0.90)
+  else if (inputRatio < 0.90 && inputRatio > 0.60)
   {
     int returnGear = 5;
     return returnGear;
@@ -535,15 +535,16 @@ int gearFromRatio(float inputRatio)
   }
 }
 
-float gearSlip() {
-  float maxRatio, minRatio, slip;
+float getGearSlip() {
+  static float maxRatio[5], minRatio[5];
+  float slip;
 
-  if ( ratio > maxRatio ) {
+  if ( ratio > maxRatio[gear] ) {
     maxRatio = ratio;
-  } else if ( ratio < minRatio ) {
+  } else if ( ratio < minRatio[gear] ) {
     minRatio = ratio;
   }
-  slip = maxRatio - minRatio;
+  slip = maxRatio[gear] - minRatio[gear];
 
   return slip;
 }

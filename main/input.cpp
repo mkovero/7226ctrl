@@ -354,9 +354,13 @@ void polltrans(Task *me)
       analogWrite(y3, 0);
       ignition = false;
     }
+    
+    if (evaluateGear() < 6 && wantedGear < 6)
+    {
+      gear = evaluateGear();
+    }
   }
 
-  // gear = evaluateGear();
   if (radioEnabled)
   {
     radioControl();

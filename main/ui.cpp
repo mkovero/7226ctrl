@@ -47,13 +47,51 @@ void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
   struct ConfigParam config = readConfig();
-  int evalGear = evaluateGear();
-  static int maxSpeed, maxBoost, maxOilTemp, maxAtfTemp, maxRPM;
-  if ( sensor.curOilTemp > maxOilTemp ) { maxOilTemp = sensor.curOilTemp; }
-  if ( sensor.curSpeed > maxSpeed ) { maxSpeed = sensor.curSpeed; }
-  if ( sensor.curBoost > maxBoost ) { maxBoost = sensor.curBoost; }
-  if ( sensor.curAtfTemp > maxAtfTemp ) { maxAtfTemp = sensor.curAtfTemp; }
-  if ( sensor.curRPM > maxRPM ) { maxRPM = sensor.curRPM; }
+  static int maxSpeed, maxBoost, maxOilTemp, maxAtfTemp, maxRPM, infoDisplay;
+  static double infoDisplayTime;
+
+  if (sensor.curOilTemp > maxOilTemp)
+  {
+    maxOilTemp = sensor.curOilTemp;
+  }
+  if (sensor.curSpeed > maxSpeed)
+  {
+    maxSpeed = sensor.curSpeed;
+  }
+  if (sensor.curBoost > maxBoost)
+  {
+    maxBoost = sensor.curBoost;
+  }
+  if (sensor.curAtfTemp > maxAtfTemp)
+  {
+    maxAtfTemp = sensor.curAtfTemp;
+  }
+  if (sensor.curRPM > maxRPM)
+  {
+    maxRPM = sensor.curRPM;
+  }
+
+  if (infoDisplay > 0)
+  {
+    if (infoDisplay == 1) {
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(60, 40);
+      u8g2.print(F("LAMP DEFECTIVE"));
+    }
+    else if (infoDisplay == 2)
+    {
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(60, 40);
+      u8g2.print(F("boostLimit checkpoint"));
+      u8g2.setCursor(60, 50);
+      u8g2.print(sensor.curBoostLim);
+    } else if ( infoDisplay == 3 ) {
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(60, 40);
+      u8g2.print(("Speed fault"));
+    }
+  }
+
   if (page == 1)
   {
     u8g2.setFont(u8g2_font_logisoso16_tr);
@@ -120,7 +158,7 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 40);
     u8g2.print(sensor.curTps);
     u8g2.setCursor(100, 50);
-    u8g2.print(F("Load:"));    
+    u8g2.print(F("Load:"));
     u8g2.setCursor(100, 60);
     u8g2.print(sensor.curLoad);
   }
@@ -150,8 +188,10 @@ void draw(int wantedGear)
       u8g2.setCursor(10, 56);
       u8g2.print(F("LOW TEMP"));
     }
-  } else if ( page == 3 ) {
-       u8g2.setFont(u8g2_font_logisoso16_tr);
+  }
+  else if (page == 3)
+  {
+    u8g2.setFont(u8g2_font_logisoso16_tr);
     u8g2.setCursor(50, 20);
     if (wantedGear == 6)
     {
@@ -184,9 +224,7 @@ void draw(int wantedGear)
     }
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(60, 40);
-    u8g2.print(sensor.curSpeed);
-    u8g2.setCursor(45, 60);
-    u8g2.print(F("km/h"));
+    u8g2.print(sensor.curSlip);
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.setCursor(0, 10);
     u8g2.print("shiftTemp:");
@@ -209,9 +247,12 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 40);
     u8g2.print(evalGear);
     u8g2.setCursor(100, 50);
-    u8g2.print(F("Ratio;"));    
+    u8g2.print(F("Ratio;"));
     u8g2.setCursor(100, 60);
-    u8g2.print(ratio);
+    u8g2.print(sensor.curRatio);
+  }
+  if (millis() - infoDisplayTime > 5000 ) {
+    infoDisplay = 0;
   }
 }
 
