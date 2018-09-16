@@ -32,12 +32,12 @@ Currently should work:
 - rpm reading (tested and works)
 - Electric steering wheel support (manual shifts, menu control)
 - oil temperature (tested and works)
+- n2/n3 speed sensors (tested and works)
+- evaluateGear, make sure which gear is in (tested and works)
 
 Implemented but needs real life testing:
 - adaptative shift pressure (works in lab)
 - External datalogging (format, method, works in lab)
-- evaluateGear, make sure which gear is in (works in lab)
-- n2/n3 speed sensors (works in lab)
 - w124 rpm meter (works in theory)
 
 Work in progress:
