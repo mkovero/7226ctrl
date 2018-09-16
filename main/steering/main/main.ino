@@ -17,53 +17,50 @@ void loop()
     int rightSide = analogRead(A0);
     int leftSide = analogRead(A1);
 
-    if (millis() - lastPress > 500)
+    if (rightSide > 860 && rightSide < 890 && (millis() - lastPress > 500))
     {
-        if (rightSide > 860 && rightSide < 890)
-        {
-            lastPress = millis();
-            Serial1.write(100);
-        }
-        if (rightSide > 730 && rightSide < 790)
-        {
-            lastPress = millis();
-            Serial1.write(101);
-        }
-        if (leftSide > 860 && leftSide < 890)
-        {
-            lastPress = millis();
-            Serial1.write(200);
-        }
-        if (leftSide > 730 && leftSide < 790)
-        {
-            lastPress = millis();
-            Serial1.write(201);
-        }
-        if (rightSide > 600 && rightSide < 670)
-        {
-            lastPress = millis();
-            Serial1.write(150);
-        }
-        if (rightSide > 430 && rightSide < 490)
-        {
-            lastPress = millis();
-            Serial1.write(151);
-        }
-        if (leftSide > 600 && leftSide < 670)
-        {
-            lastPress = millis();
-            Serial1.write(160);
-        }
-        if (leftSide > 430 && leftSide < 490)
-        {
-            lastPress = millis();
-            Serial1.write(161);
-        }
-        if (leftSide < 400 || rightSide < 400)
-        {
-            Serial.print(55);
-        }
-        Serial1.flush();
-      // if (debugEnabled) { Serial.print(rightSide); Serial.print("-"); Serial.println(leftSide); }
+        lastPress = millis();
+        Serial1.write(100);
     }
+    if (rightSide > 730 && rightSide < 790)
+    {
+        lastPress = millis();
+        Serial1.write(101);
+    }
+    if (leftSide > 860 && leftSide < 890 && (millis() - lastPress > 500))
+    {
+        lastPress = millis();
+        Serial1.write(200);
+    }
+    if (leftSide > 730 && leftSide < 790)
+    {
+        lastPress = millis();
+        Serial1.write(201);
+    }
+    if (rightSide > 600 && rightSide < 670)
+    {
+        lastPress = millis();
+        Serial1.write(150);
+    }
+    if (rightSide > 430 && rightSide < 490)
+    {
+        lastPress = millis();
+        Serial1.write(151);
+    }
+    if (leftSide > 600 && leftSide < 670)
+    {
+        lastPress = millis();
+        Serial1.write(160);
+    }
+    if (leftSide > 430 && leftSide < 490)
+    {
+        lastPress = millis();
+        Serial1.write(161);
+    }
+    if (leftSide < 400 || rightSide < 400)
+    {
+        Serial.print(55);
+    }
+    Serial1.flush();
+    // if (debugEnabled) { Serial.print(rightSide); Serial.print("-"); Serial.println(leftSide); }
 }
