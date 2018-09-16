@@ -52,7 +52,7 @@ boolean w124rpm = true;
 boolean fuelPumpControl = false;
 
 // calculate vehicleSpeed from engine RPM
-boolean rpmSpeed = false; 
+boolean rpmSpeed = true; 
 
 // calculate vehicleSpeed from diff abs sensor
 boolean diffSpeed = true; 
@@ -69,7 +69,7 @@ boolean radioEnabled = true;
 // everything starts with ignition (do not change.)
 boolean ignition = true;
 // state of fuel pumps
-boolean fuelPumps = false;
+boolean fuelPumps = true;
 // state of horn
 boolean horn = false;
 // Adaptive pressure
