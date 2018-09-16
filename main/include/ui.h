@@ -16,6 +16,9 @@ extern int lastMapVal;
 extern boolean shiftPending;
 extern float ratio;
 extern int n2Speed, n3Speed;
+extern int evalGear;
+extern float gearSlip;
+
 #ifdef __arm__
 extern "C" char* sbrk(int incr);
 #else  // __ARM__

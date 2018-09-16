@@ -8,6 +8,7 @@ void decideGear(Task* me);
 int evaluateGear();
 float ratioFromGear(int inputGear);
 int gearFromRatio(float inputRatio);
+float getGearSlip();
 
 extern byte gear;         
 extern int cSolenoid;  
