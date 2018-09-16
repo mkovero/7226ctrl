@@ -527,4 +527,17 @@ int gearFromRatio(float inputRatio)
     return returnGear;
   }
 }
+
+float gearSlip() {
+  float maxRatio, minRatio, slip;
+
+  if ( ratio > maxRatio ) {
+    maxRatio = ratio;
+  } else if ( ratio < minRatio ) {
+    minRatio = ratio;
+  }
+  slip = maxRatio - minRatio;
+
+  return slip;
+}
 // END OF CORE
