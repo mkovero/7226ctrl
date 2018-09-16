@@ -24,13 +24,15 @@ int spcPercentVal = 100;
 int mpcPercentVal = 100;
 
 // for timers
-unsigned long int shiftStartTime = 0;
+unsigned long int shiftStartTime, shiftStopTime = 0;
 unsigned long int shiftDuration = 0;
 
 // Solenoid used
 int cSolenoidEnabled = 0;
 int cSolenoid = 0; // Change solenoid pin to be controlled.
 int lastMapVal;
+int shiftLoad = 0;
+int shiftAtfTemp = 0;
 
 // Gear shift logic
 // Beginning of gear change phase
@@ -49,7 +51,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.println(newGear);
   }
 
-  if (trans)
+  if (trans && (millis() - shiftStopTime > 1000))
   {
 
     if (adaptive)
@@ -107,8 +109,8 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     //  Serial.print(F("-"));
    //   Serial.println(spcModVal);
     }
-  }
   cSolenoidEnabled = cSolenoid;
+  }
 }
 
 // End of gear change phase
@@ -120,7 +122,8 @@ void switchGearStop()
   gear = pendingGear;               // we can happily say we're on new gear
   shiftBlocker = false;
   shiftPending = false;
-
+  shiftStopTime = millis();
+  
   if (debugEnabled)
   {
     Serial.print(F("[switchGearStop->switchGearStop] End of gear change current-solenoid: "));
@@ -141,6 +144,8 @@ void gearchangeUp(int newGear)
   if (shiftBlocker == false && shiftPending == true)
   {
     pendingGear = newGear;
+    shiftLoad = sensor.curLoad;
+    shiftAtfTemp = sensor.curAtfTemp;
     if (debugEnabled)
     {
       Serial.print(F("[gearChangeUp->gearChangeUp] performing change prev-new: "));
@@ -243,6 +248,8 @@ void gearchangeDown(int newGear)
   if (shiftBlocker == false && shiftPending == true)
   {
     pendingGear = newGear;
+    shiftLoad = sensor.curLoad;
+    shiftAtfTemp = sensor.curAtfTemp;
     if (debugEnabled)
     {
       Serial.print(F("[gearChangeDown->gearChangeDown] performing change prev-new: "));
@@ -501,12 +508,12 @@ int gearFromRatio(float inputRatio)
     int returnGear = 1;
     return returnGear;
   }
-  else if (inputRatio < 2.22 && inputRatio > 2.16)
+  else if (inputRatio < 2.62 && inputRatio > 2.26)
   {
     int returnGear = 2;
     return returnGear;
   }
-  else if (inputRatio < 1.44 && inputRatio > 1.38)
+  else if (inputRatio < 1.60 && inputRatio > 1.35)
   {
     int returnGear = 3;
     return returnGear;
@@ -516,7 +523,7 @@ int gearFromRatio(float inputRatio)
     int returnGear = 4;
     return returnGear;
   }
-  else if (inputRatio < 0.86 && inputRatio > 0.8)
+  else if (inputRatio < 0.90)
   {
     int returnGear = 5;
     return returnGear;
