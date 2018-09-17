@@ -47,8 +47,10 @@ void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
   struct ConfigParam config = readConfig();
-  static int maxSpeed, maxBoost, maxOilTemp, maxAtfTemp, maxRPM, infoDisplay;
+  static int maxSpeed, maxBoost, maxOilTemp, maxAtfTemp, maxRPM;
+  static int infoDisplay = 1;
   static double infoDisplayTime;
+  static boolean infoDisplayShown, infoBoost, infoSpeed = false;
 
   if (sensor.curOilTemp > maxOilTemp)
   {
@@ -73,7 +75,14 @@ void draw(int wantedGear)
 
   if (infoDisplay > 0)
   {
-    if (infoDisplay == 1) {
+    if (!infoDisplayShown)
+    {
+      infoDisplay = millis();
+      infoDisplayShown = true;
+    }
+
+    if (infoDisplay == 1)
+    {
       u8g2.setFont(u8g2_font_fub14_tf);
       u8g2.setCursor(60, 40);
       u8g2.print(F("LAMP DEFECTIVE"));
@@ -85,7 +94,9 @@ void draw(int wantedGear)
       u8g2.print(F("boostLimit checkpoint"));
       u8g2.setCursor(60, 50);
       u8g2.print(sensor.curBoostLim);
-    } else if ( infoDisplay == 3 ) {
+    }
+    else if (infoDisplay == 3)
+    {
       u8g2.setFont(u8g2_font_fub14_tf);
       u8g2.setCursor(60, 40);
       u8g2.print(("Speed fault"));
@@ -245,14 +256,22 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 30);
     u8g2.print(F("RGear:"));
     u8g2.setCursor(100, 40);
-    u8g2.print(evalGear);
+    u8g2.print(evalGearVal);
     u8g2.setCursor(100, 50);
     u8g2.print(F("Ratio;"));
     u8g2.setCursor(100, 60);
     u8g2.print(sensor.curRatio);
   }
-  if (millis() - infoDisplayTime > 5000 ) {
+  if ((millis() - infoDisplayTime > 5000) && infoDisplayShown) 
+  {
     infoDisplay = 0;
+    infoDisplayShown = false;
+  } else if ((sensor.curBoostLim > 0) && !infoBoost) {
+    infoDisplay = 2;
+    infoBoost = true;
+  } else if (speedFault && !infoSpeed) {
+    infoDisplay = 3;
+    infoSpeed = true;
   }
 }
 

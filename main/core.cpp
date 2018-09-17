@@ -540,9 +540,9 @@ float getGearSlip() {
   float slip;
 
   if ( ratio > maxRatio[gear] ) {
-    maxRatio = ratio;
-  } else if ( ratio < minRatio[gear] ) {
-    minRatio = ratio;
+    maxRatio[gear] = ratio;
+  } else if ( ratio < minRatio[gear] && ratio > 0.00 ) {
+    minRatio[gear] = ratio;
   }
   slip = maxRatio[gear] - minRatio[gear];
 

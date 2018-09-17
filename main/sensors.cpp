@@ -14,7 +14,7 @@ unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, 
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
-int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgTemp, evalGear;
+int avgAtfTemp, avgBoostValue, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgTemp, evalGearVal;
 float alpha = 0.7, gearSlip;
 
 // Interrupt for N2 hallmode sensor
@@ -100,7 +100,7 @@ void pollsensors(Task *me)
     }
 
     gearSlip = getGearSlip();
-    evalGear = evaluateGear();
+    evalGearVal = evaluateGear();
 
     /*  Serial.print(n2Speed);
     Serial.print("-");
@@ -415,6 +415,6 @@ struct SensorVals readSensors()
   // we need to calculate these in precise moment to get accurate reading, so this acts just an interface for global vars.
   sensor.curSlip = gearSlip;
   sensor.curRatio = ratio;
-  sensor.curEvalGear = evalGear;
+  sensor.curEvalGear = evalGearVal;
   return sensor;
 }
