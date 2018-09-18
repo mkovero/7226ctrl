@@ -144,13 +144,13 @@ int speedRead()
       if (!speedFault)
       {
         speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
-        if (debugEnabled)
+       /* if (debugEnabled)
         {
           Serial.print(F("SPEED FAULT: detected - autoshift disabled "));
           Serial.print(vehicleSpeedDiff);
           Serial.print(F("-"));
           Serial.println(vehicleSpeedRPM);
-        }
+        }*/
       }
     }
     else
@@ -240,6 +240,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
+  oilTemp = oilTemp - 60;
   avgTemp = (avgTemp * 5 + oilTemp) / 10;
   return avgTemp;
 }
@@ -250,7 +251,7 @@ int boostRead()
   if (boostSensor)
   {
     //reading MAP/boost
-    float boostVoltage = analogRead(boostPin) * 3.30;
+    float boostVoltage = analogRead(boostPin) * 3.0;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
     if (avgBoostValue < 0)
@@ -331,9 +332,9 @@ a[3] = 4.141869911401698e-05
   int R2 = 216 / (1023.0 / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
-  float atfTemp = T - 273.15;
+  float atfTemp = T - 273.15 + 165;
   avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
-  if (tempRead > 1015)
+  if (wantedGear == 6 || wantedGear == 8)
   {
     avgAtfTemp = oilRead();
   }
@@ -368,10 +369,9 @@ a[3] = 4.141869911401698e-05
     atfTemp = 9999;
   }
   atfTemp = atfTemp + 15;
-  return atfTemp;
+  return atfTemp;*/
   // Beta coefficient version
- /* float tempRead = analogRead(atfPin);
-  tempRead = tempRead - 200; // Voltage compensation
+  /*float tempRead = analogRead(atfPin);
   tempRead = 1023 / tempRead - 1;
   tempRead = 216 / tempRead;
   float atfTemp;
@@ -385,8 +385,8 @@ a[3] = 4.141869911401698e-05
   {
     atfTemp = oilRead();
   }   
-  atfTemp = atfTemp + 25;
-  return atfTemp; */
+  atfTemp = atfTemp;
+  return atfTemp;*/
 }
 
 int freeMemory()
