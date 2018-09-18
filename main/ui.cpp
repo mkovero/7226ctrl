@@ -84,26 +84,32 @@ void draw(int wantedGear)
     if (infoDisplay == 1)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(60, 40);
-      u8g2.print(F("LAMP DEFECTIVE"));
+      u8g2.setCursor(10, 40);
+      u8g2.print(F("LAMP"));
+      u8g2.setCursor(10, 60);
+      u8g2.print(F("DEFECTIVE"));
+
     }
     else if (infoDisplay == 2)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(60, 40);
-      u8g2.print(F("boostLimit checkpoint"));
-      u8g2.setCursor(60, 50);
+      u8g2.setCursor(10, 40);
+      u8g2.print(F("boostLimit"));
+      u8g2.setCursor(10, 60);
       u8g2.print(sensor.curBoostLim);
     }
     else if (infoDisplay == 3)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(60, 40);
-      u8g2.print(("Speed fault"));
+      u8g2.setCursor(10, 40);
+      u8g2.print(F("Speed"));
+      u8g2.setCursor(10, 60);
+      u8g2.print(F("fault"));
+
     }
   }
 
-  if (page == 1)
+  if (page == 1 && infoDisplay == 0)
   {
     u8g2.setFont(u8g2_font_logisoso16_tr);
     u8g2.setCursor(50, 20);
@@ -173,7 +179,7 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 60);
     u8g2.print(sensor.curLoad);
   }
-  else if (page == 2)
+  else if (page == 2  && infoDisplay == 0)
   {
     float boostBar;
     u8g2.drawFrame(5, 8, 115, 24);
@@ -200,7 +206,7 @@ void draw(int wantedGear)
       u8g2.print(F("LOW TEMP"));
     }
   }
-  else if (page == 3)
+  else if (page == 3 && infoDisplay == 0)
   {
     u8g2.setFont(u8g2_font_logisoso16_tr);
     u8g2.setCursor(50, 20);
@@ -266,10 +272,14 @@ void draw(int wantedGear)
   {
     infoDisplay = 0;
     infoDisplayShown = false;
-  } else if ((sensor.curBoostLim > 0) && !infoBoost) {
+  } else if (millis() < 2000) {
+    infoDisplay = 1;
+    infoBoost = true;
+  }
+  else if ((sensor.curBoostLim > 0) && !infoBoost) {
     infoDisplay = 2;
     infoBoost = true;
-  } else if (speedFault && !infoSpeed) {
+  } else if (speedFault && !infoSpeed && wantedGear < 6) {
     infoDisplay = 3;
     infoSpeed = true;
   }
@@ -337,6 +347,12 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(sensor.curBoostLim);
     Serial.print(F(";"));
-    Serial.println(lastMapVal);
+    Serial.print(n2Speed);
+    Serial.print(F(";"));
+    Serial.print(n3Speed);
+    Serial.print(F(";"));
+    Serial.print(ratio);
+    Serial.print(F(";"));
+    Serial.println(slip);
   }
 }
