@@ -59,6 +59,7 @@ work by Markus Kovero (mui@mui.fi) with regards and big thanks to:
 - Toni Lassila for ideas
 
 Schematics are for teensy, can be utilized with mega as well to some extent.
+
 There are two revisionds of PCBs complete, tested and working "Rev H" and "Rev I".
 
 ![Alt text](/schematics.png?raw=true "Schematics for teensy")
