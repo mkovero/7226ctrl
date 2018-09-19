@@ -54,6 +54,7 @@ work by Markus Kovero (mui@mui.fi) with regards and big thanks to:
 - Tuomas Kantola for maps and related math
 - Tommi Otsavaara for guiding in electronics
 - Mikko Kovero and Pete for mechanical side of things
+- Jami Karvanen for datalogging and frontend stuff
 - Liia Ahola for pcb tracing
 - Joosep Vahar for testing
 - Toni Lassila for ideas
