@@ -49,10 +49,16 @@ Not started/pending:
 
 
 
-work by Markus Kovero (mui@mui.fi) with regards to Tuomas Kantola.
+work by Markus Kovero (mui@mui.fi) with regards and big thanks to:
+Tuomas Kantola for maps and related math
+Tommi Otsavaara for guiding in electronics
+Mikko Kovero and Pete for mechanical side of things
+Liia Ahola for pcb tracing
+Joosep Vahar for testing
+Toni Lassila for ideas
 
 Schematics are for teensy, can be utilized with mega as well to some extent.
-I'm in progress of designing PCB for this to make things easier, currently its just too much wire to handle in reasonable manner.
+There are two revisionds of PCBs complete, tested and working "Rev H" and "Rev I".
 
 ![Alt text](/schematics.png?raw=true "Schematics for teensy")
 
