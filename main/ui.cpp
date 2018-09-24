@@ -88,7 +88,6 @@ void draw(int wantedGear)
       u8g2.print(F("LAMP"));
       u8g2.setCursor(10, 60);
       u8g2.print(F("DEFECTIVE"));
-
     }
     else if (infoDisplay == 2)
     {
@@ -105,7 +104,6 @@ void draw(int wantedGear)
       u8g2.print(F("Speed"));
       u8g2.setCursor(10, 60);
       u8g2.print(F("fault"));
-
     }
   }
 
@@ -129,10 +127,20 @@ void draw(int wantedGear)
     {
       u8g2.print(gear);
     }
-    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending)
+    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && !preShift && !postShift)
     {
       u8g2.setCursor(40, 20);
       u8g2.print(F("SHIFT"));
+    }
+    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && preShift)
+    {
+      u8g2.setCursor(40, 20);
+      u8g2.print(F("PRESHIFT"));
+    }
+    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && postShift)
+    {
+      u8g2.setCursor(40, 20);
+      u8g2.print(F("POSTSHIFT"));
     }
     if (fullAuto && wantedGear < 6)
     {
@@ -179,7 +187,7 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 60);
     u8g2.print(sensor.curLoad);
   }
-  else if (page == 2  && infoDisplay == 0)
+  else if (page == 2 && infoDisplay == 0)
   {
     float boostBar;
     u8g2.drawFrame(5, 8, 115, 24);
@@ -268,18 +276,23 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 60);
     u8g2.print(sensor.curRatio);
   }
-  if ((millis() - infoDisplayTime > 5000) && infoDisplayShown) 
+  if ((millis() - infoDisplayTime > 5000) && infoDisplayShown)
   {
     infoDisplay = 0;
     infoDisplayShown = false;
-  } else if (millis() < 2000) {
+  }
+  else if (millis() < 2000)
+  {
     infoDisplay = 1;
     infoBoost = true;
   }
-  else if ((sensor.curBoostLim > 0) && !infoBoost) {
+  else if ((sensor.curBoostLim > 0) && !infoBoost)
+  {
     infoDisplay = 2;
     infoBoost = true;
-  } else if (speedFault && !infoSpeed && wantedGear < 6) {
+  }
+  else if (speedFault && !infoSpeed && wantedGear < 6)
+  {
     infoDisplay = 3;
     infoSpeed = true;
   }
