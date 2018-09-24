@@ -139,7 +139,7 @@ int speedRead()
   }
   if (rpmSpeed && diffSpeed)
   {
-    if (vehicleSpeedRPM / vehicleSpeedDiff > 1.3 || vehicleSpeedRPM / vehicleSpeedDiff < 0.7)
+    if (vehicleSpeedRPM / (float)vehicleSpeedDiff > 1.3 || vehicleSpeedRPM / (float)vehicleSpeedDiff < 0.7)
     {
       if (!speedFault)
       {
