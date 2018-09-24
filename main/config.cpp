@@ -89,6 +89,7 @@ struct ConfigParam readConfig()
   config.tireProfile = 65;
   config.tireInches = 15;
   config.diffRatio = 3.27;
+  config.nextShiftDelay = 1000; // ms. to wait before next shift to avoid accidental overshifting.
   return config;
 }
 

@@ -24,7 +24,7 @@ int spcPercentVal = 100;
 int mpcPercentVal = 100;
 
 // for timers
-unsigned long int shiftStartTime, shiftStopTime = 0;
+unsigned long int shiftStartTime, shiftStopTime, delaySinceLast = 0;
 unsigned long int shiftDuration = 0;
 
 // Solenoid used
@@ -33,15 +33,15 @@ int cSolenoid = 0; // Change solenoid pin to be controlled.
 int lastMapVal;
 int shiftLoad = 0;
 int shiftAtfTemp = 0;
+boolean preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
 
 // Gear shift logic
 // Beginning of gear change phase
 // Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
-  int spcSetVal = 0;
-  shiftStartTime = millis(); // Beginning to count shiftStartTime
-  shiftBlocker = true;       // Blocking any other shift operations during the shift
+  struct ConfigParam config = readConfig();
+  delaySinceLast = millis() - shiftStopTime;
 
   if (debugEnabled)
   {
@@ -51,66 +51,124 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.println(newGear);
   }
 
-  if (trans && (millis() - shiftStopTime > 1000))
+  if (trans && (delaySinceLast > config.nextShiftDelay))
   {
+    shiftBlocker = true; // Blocking any other shift operations during the shift
+    preShift = true;
+    postShiftDone = false;
+    preShiftDone = false;
+    shiftDone = false;
+    
+    spcPercentVal = spcVal;
+    mpcPercentVal = mpcVal;
+    cSolenoidEnabled = cSolenoid;
+  }
+  else
+  {
+    if (debugEnabled)
+    {
+      Serial.print(F("[switchGearStart->switchGearStart] blocking change or transmission disabled delaySinceLast/nextShiftDelay: "));
+      Serial.print(delaySinceLast);
+      Serial.print(F("/"));
+      Serial.println(config.nextShiftDelay);
+    }
+  }
+}
 
-    if (adaptive)
-    {
-      int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
-      if (spcModVal < 10)
-      {
-        spcModVal = 10;
-      };
-      if (spcModVal > 190)
-      {
-        spcModVal = 200;
-      };
-      spcPercentVal = spcModVal / 100 * spcVal;
-    }
-    else
-    {
-      spcPercentVal = spcVal;
-      mpcPercentVal = mpcVal;
-    }
+void doPreShift()
+{
+  struct ConfigParam config = readConfig();
+  struct SensorVals sensor = readSensors();
 
-    // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
-
-    if (spcPercentVal > 100)
-    {
-      spcPercentVal = 100; // to make sure we're on the bounds.
-      if (debugEnabled)
-      {
-        Serial.println(F("[switchGearStart->switchGearStart] SPC high limit hit."));
-      }
-    }
-    if (spcPercentVal < 10)
-    {
-      spcPercentVal = 10; // to be on safe side.
-      if (debugEnabled)
-      {
-        Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit."));
-      }
-    }
-    spcSetVal = (100 - spcPercentVal) * 2.55;
-    mpcVal = (100 - mpcPercentVal) * 2.55;
-    analogWrite(tcc, 0);
-    analogWrite(spc, spcSetVal);
-    analogWrite(mpc, mpcVal);
-    analogWrite(cSolenoid, 255); // Beginning of gear change
+  if ((boostLimit && ((sensor.curBoostLim > 0) && (sensor.curBoost <= sensor.curBoostLim - config.boostDrop)) || sensor.curBoostLim == 0) || !boostLimit)
+  {
+    preShift = false;
+    preShiftDone = true;
 
     if (debugEnabled)
     {
-      Serial.print(F("[switchGearStart->switchGearStart] spcPressure-spcPercentVAl-mpcPressure-spcModVal: "));
-      Serial.print(spcSetVal);
-      Serial.print(F("-"));
-      Serial.print(spcPercentVal);
-      Serial.print(F("-"));
-      Serial.println(mpcVal);
-    //  Serial.print(F("-"));
-   //   Serial.println(spcModVal);
+      Serial.print(F("[switchGearStart->preShift] curBoost/curBoostLim: "));
+      Serial.print(sensor.curBoost);
+      Serial.print(F("/"));
+      Serial.println(sensor.curBoostLim);
     }
-  cSolenoidEnabled = cSolenoid;
+  } else {
+      Serial.print(F("[switchGearStart->preShift] blocking curBoost/curBoostLim: "));
+      Serial.print(sensor.curBoost);
+      Serial.print(F("/"));
+      Serial.println(sensor.curBoostLim);
   }
+}
+
+void doShift()
+{
+  int spcSetVal = (100 - spcPercentVal) * 2.55;
+  int mpcSetVal = (100 - mpcPercentVal) * 2.55;
+
+  if (adaptive)
+  {
+    int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
+    if (spcModVal < 10)
+    {
+      spcModVal = 10;
+    };
+    if (spcModVal > 190)
+    {
+      spcModVal = 200;
+    };
+    spcPercentVal = spcModVal / 100 * spcSetVal;
+  }
+
+  if (spcPercentVal > 100)
+  {
+    spcPercentVal = 100; // to make sure we're on the bounds.
+    if (debugEnabled)
+    {
+      Serial.println(F("[switchGearStart->switchGearStart] SPC high limit hit."));
+    }
+  }
+
+  if (spcPercentVal < 10)
+  {
+    spcPercentVal = 10; // to be on safe side.
+    if (debugEnabled)
+    {
+      Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit."));
+    }
+  }
+  spcSetVal = (100 - spcPercentVal) * 2.55; // these are calculated twice to make sure if there is changes they are noted.
+  mpcSetVal = (100 - mpcPercentVal) * 2.55;
+
+  shiftStartTime = millis(); // Beginning to count shiftStartTime
+
+  analogWrite(tcc, 0);
+  analogWrite(spc, spcSetVal);
+  analogWrite(mpc, mpcSetVal);
+  analogWrite(cSolenoidEnabled, 255); // Beginning of gear change
+
+  if (debugEnabled)
+  {
+    Serial.print(F("[switchGearStart->doShift] spcPercentVal/mpcPercentVal "));
+    Serial.print(spcPercentVal);
+    Serial.print(F("/"));
+    Serial.println(mpcPercentVal);
+  }
+  preShiftDone = false;
+  shiftDone = true;
+}
+
+void doPostShift()
+{
+  // You can do post shift stuff here.
+  if (debugEnabled)
+  {
+    Serial.println(F("[switchGearStart->postShift] completed. "));
+  }
+
+  postShift = false;
+  postShiftDone = true;
+  shiftPending = false;
+  shiftBlocker = false;
 }
 
 // End of gear change phase
@@ -120,10 +178,8 @@ void switchGearStop()
   analogWrite(spc, 0);              // spc off
   analogWrite(mpc, 0);              // mpc off
   gear = pendingGear;               // we can happily say we're on new gear
-  shiftBlocker = false;
-  shiftPending = false;
   shiftStopTime = millis();
-  
+
   if (debugEnabled)
   {
     Serial.print(F("[switchGearStop->switchGearStop] End of gear change current-solenoid: "));
@@ -134,6 +190,7 @@ void switchGearStop()
     Serial.println(cSolenoid);
   }
   shiftStartTime = 0;
+  postShift = true;
 }
 
 // upshift parameter logic gathering
@@ -146,6 +203,7 @@ void gearchangeUp(int newGear)
     pendingGear = newGear;
     shiftLoad = sensor.curLoad;
     shiftAtfTemp = sensor.curAtfTemp;
+
     if (debugEnabled)
     {
       Serial.print(F("[gearChangeUp->gearChangeUp] performing change prev-new: "));
@@ -153,11 +211,6 @@ void gearchangeUp(int newGear)
       Serial.print(F("->"));
       Serial.println(newGear);
     }
-  }
-  else if (debugEnabled)
-  {
-    Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
-  }
 
   switch (newGear)
   {
@@ -239,6 +292,10 @@ void gearchangeUp(int newGear)
   default:
     break;
   }
+  } else if (debugEnabled)
+  {
+    Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
+  }
 }
 
 // downshift parameter logic gathering
@@ -257,12 +314,7 @@ void gearchangeDown(int newGear)
       Serial.print(F("->"));
       Serial.println(newGear);
     }
-  }
-  else
-  {
-    Serial.println(F("[gearChangeDown->gearChangeDown] Blocking change"));
-  }
-
+  
   switch (newGear)
   {
   case 1:
@@ -342,6 +394,10 @@ void gearchangeDown(int newGear)
     break;
   default:
     break;
+  }
+  }   else if (debugEnabled)
+  {
+    Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
   }
 }
 
@@ -535,13 +591,17 @@ int gearFromRatio(float inputRatio)
   }
 }
 
-float getGearSlip() {
+float getGearSlip()
+{
   static float maxRatio[5], minRatio[5];
   float slip;
 
-  if ( ratio > maxRatio[gear] ) {
+  if (ratio > maxRatio[gear])
+  {
     maxRatio[gear] = ratio;
-  } else if ( ratio < minRatio[gear] && ratio > 0.00 ) {
+  }
+  else if (ratio < minRatio[gear] && ratio > 0.00)
+  {
     minRatio[gear] = ratio;
   }
   slip = maxRatio[gear] - minRatio[gear];

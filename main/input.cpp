@@ -208,7 +208,7 @@ void boostControl(Task *me)
     if (shiftBlocker)
     {
       // During the shift
-      if (sensor.curBoostLim > config.boostDrop)
+      if (preShift && sensor.curBoostLim > config.boostDrop)
       {
         pidBoostLim = sensor.curBoostLim - config.boostDrop;
       }
@@ -287,7 +287,7 @@ void polltrans(Task *me)
   if (shiftBlocker)
   {
     shiftDuration = millis() - shiftStartTime;
-    if (shiftDuration > shiftDelay)
+    if (shiftDuration > shiftDelay && shiftDone)
     {
       if (debugEnabled)
       {
@@ -299,6 +299,18 @@ void polltrans(Task *me)
         Serial.println(atfRead());
       }
       switchGearStop();
+    }
+    if (preShift && !preShiftDone)
+    {
+      doPreShift();
+    }
+    else if (!preShift && preShiftDone)
+    {
+      doShift();
+    }
+    else if (postShift && !postShiftDone)
+    {
+      doPostShift();
     }
   }
 
@@ -354,11 +366,11 @@ void polltrans(Task *me)
       analogWrite(y3, 0);
       ignition = false;
     }
-    
+    /*
     if (evaluateGear() < 6 && wantedGear < 6)
     {
       gear = evaluateGear();
-    }
+    }*/
   }
 
   if (radioEnabled)
