@@ -353,6 +353,6 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(ratio);
     Serial.print(F(";"));
-    Serial.println(slip);
+    Serial.println(gearSlip);
   }
 }
