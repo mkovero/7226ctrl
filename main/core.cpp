@@ -80,6 +80,7 @@ void doPreShift()
   struct ConfigParam config = readConfig();
   struct SensorVals sensor = readSensors();
 
+  // Things to do before actual shift, example is for waiting boost to settle to the target. (boostControl should let it drop in this scenario).
   if ((boostLimit && ((sensor.curBoostLim > 0) && (sensor.curBoost <= sensor.curBoostLim - config.boostDrop)) || sensor.curBoostLim == 0) || !boostLimit)
   {
     preShift = false;
@@ -102,6 +103,7 @@ void doPreShift()
 
 void doShift()
 {
+  // Actual shift
   int spcSetVal = (100 - spcPercentVal) * 2.55;
   int mpcSetVal = (100 - mpcPercentVal) * 2.55;
 
