@@ -520,6 +520,7 @@ void decideGear(Task *me)
 
 int evaluateGear()
 {
+  struct SensorVals sensor = readSensors();
   int incomingShaftSpeed = 0;
   int measuredGear = 0;
 
