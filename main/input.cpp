@@ -284,6 +284,7 @@ void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
   unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
+  
   if (shiftBlocker)
   {
     shiftDuration = millis() - shiftStartTime;
