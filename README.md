@@ -12,7 +12,7 @@ First revision of working pcb (rev H) is done:
 
 Fourth (rev K) just finished also and seems to pass testing;
 
-<http://www.mui.fi/pcbsmd1.jpg>
+<http://www.mui.fi/smd-revk.jpg>
 
 and gerber files are available under pcb/ with bom, with exception of the latest for now.
 
