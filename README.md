@@ -6,11 +6,13 @@ In a nutshell this was supposed to be reverse engineered transmission controller
 As with most things of life, this got bit out of hand and currently also controls boost, speedometer, rpm meter, fuelpumps and even horn, its also able to communicate with electrical steering wheel for menus and manual button shifts.
 Canbus interface is also supported on pcb but I have not yet utilized in any meaningful fashion.
 
-First revision of working pcb is done:
+First revision of working pcb (rev H) is done:
 
 <http://www.mui.fi/pcb-valmis.jpg> 
 
-and gerber files are available under pcb/ with bom.
+Fourth (rev K) just finished also and seems to pass testing;
+<http://www.mui.fi/pcbsmd1.jpg>
+and gerber files are available under pcb/ with bom, with exception of the latest for now.
 
 Assembly instructions are not included, but I would be happy if someone would wish to write those.
 
@@ -59,9 +61,6 @@ work by Markus Kovero (mui@mui.fi) with regards and big thanks to:
 - Joosep Vahar for testing
 - Toni Lassila for ideas
 
-Schematics are for teensy, can be utilized with mega as well to some extent.
+Schematics are for teensy, can be utilized with mega as well to some extent, tho mega support is started to be deprecated due obvious performance reasons.
 
-There are two revisionds of PCBs complete, tested and working "Rev H" and "Rev I".
-
-![Alt text](/schematics.png?raw=true "Schematics for teensy")
-
+There are four revisionds of PCBs complete, tested and working "Rev H", "Rev I" and "Rev K".
