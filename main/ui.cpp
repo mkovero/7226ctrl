@@ -364,8 +364,12 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(n3Speed);
     Serial.print(F(";"));
-    Serial.print(ratio);
+    Serial.print(sensor.curEvalGear);
     Serial.print(F(";"));
-    Serial.println(gearSlip);
+    Serial.print(sensor.curRatio);
+    Serial.print(F(";"));
+    Serial.print(sensor.curSlip);
+    Serial.print(F(";"));
+    Serial.println(sensor.curBattery);    
   }
 }

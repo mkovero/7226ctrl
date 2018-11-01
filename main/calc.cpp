@@ -24,6 +24,13 @@ int readBoostVoltage(int voltage)
     return result;
 
 }
+// Mapping battery voltage to actual voltage
+int readBatVoltage(int voltage)
+{
+ 
+  int result = map(voltage, 0, 3375, 0, 15000); // 0-15V
+    return result;
+}
 
 // Function to read 2d maps from flash (maps declared with PROGMEM)
 int readMap(const int theMap[14][12], int x, int y)

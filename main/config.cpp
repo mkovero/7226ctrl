@@ -74,6 +74,10 @@ boolean fuelPumps = true;
 boolean horn = false;
 // Adaptive pressure
 boolean adaptive = false;
+// Battery monitor
+boolean batteryMonitor = true;
+// Exhaust pressure sensor
+boolean exhaustPresSensor = false;
 
 byte page = 1; // first page to show in UI
 
@@ -94,4 +98,3 @@ struct ConfigParam readConfig()
 }
 
 // End of environment conf
-
