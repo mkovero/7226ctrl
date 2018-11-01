@@ -47,7 +47,7 @@ void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
   struct ConfigParam config = readConfig();
-  static int maxSpeed, maxBoost, maxOilTemp, maxAtfTemp, maxRPM;
+  static int maxSpeed, maxBoost, maxExPres, maxOilTemp, maxAtfTemp, maxRPM, maxPresDiff;
   static int infoDisplay = 1;
   static double infoDisplayTime;
   static boolean infoDisplayShown, infoBoost, infoSpeed = false;
@@ -63,6 +63,14 @@ void draw(int wantedGear)
   if (sensor.curBoost > maxBoost)
   {
     maxBoost = sensor.curBoost;
+  }
+  if (sensor.curExPres > maxExPres)
+  {
+    maxExPres = sensor.curExPres;
+  }
+  if (sensor.curPresDiff > maxPresDiff)
+  {
+    maxPresDiff = sensor.curPresDiff;
   }
   if (sensor.curAtfTemp > maxAtfTemp)
   {
@@ -174,6 +182,10 @@ void draw(int wantedGear)
     u8g2.print(sensor.curBoost);
     u8g2.setCursor(25, 60);
     u8g2.print(maxBoost);
+    u8g2.setCursor(0, 70);
+    u8g2.print(sensor.curExPres);
+    u8g2.setCursor(25, 70);
+    u8g2.print(maxExPres);
     u8g2.setCursor(100, 10);
     u8g2.print(F("RPM:"));
     u8g2.setCursor(100, 20);
@@ -358,7 +370,11 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(sensor.curBoost);
     Serial.print(F(";"));
+    Serial.print(sensor.curExPres);
+    Serial.print(F(";"));
     Serial.print(sensor.curBoostLim);
+    Serial.print(F(";"));
+    Serial.print(sensor.curPresDiff);
     Serial.print(F(";"));
     Serial.print(n2Speed);
     Serial.print(F(";"));

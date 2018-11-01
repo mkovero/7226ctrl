@@ -453,6 +453,7 @@ struct SensorVals readSensors()
   sensor.curExTemp = exhaustTempRead();
   sensor.curBoost = boostRead();
   sensor.curExPres = exhaustPressureRead();
+  sensor.curPresDiff = sensor.curExPres / sensor.curBoost;
   sensor.curBoostLim = boostLimitRead(sensor.curOilTemp);
   sensor.curTps = tpsRead();
   sensor.curRPM = rpmRead();
