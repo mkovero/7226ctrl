@@ -26,7 +26,7 @@ const double Kp = 200;
 double Ki = 100;      
 const double Kd = 25; //This is not necessarily good idea.
 */
-double pidBoost, boostPWM, pidBoostLim;
+double pidBoost, boostPWM, pidBoostLim, hornPressTime;
 
 //Load PID controller
 AutoPID myPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, Kp, Ki, Kd);
@@ -178,6 +178,7 @@ void hornOn()
   // Simple horn control
   digitalWrite(hornPin, HIGH);
   horn = true;
+  hornPressTime = millis();
   if (debugEnabled)
   {
     Serial.println("Horn pressed");
@@ -382,10 +383,16 @@ void polltrans(Task *me)
   {
     pollkeys();
   }
+  if (horn && (millis() - hornPressTime > 300)) 
+  {
+    hornOff();
+  }
 }
 
 int adaptSPC(int mapId, int xVal, int yVal)
 {
+  int current = 0;
+  #ifdef ASPC
   int modVal = 5;
   int aSpcUpState = digitalRead(aSpcUpSwitch);     // Adapt pressure up
   int aSpcDownState = digitalRead(aSpcDownSwitch); // Adapt pressure down
@@ -446,7 +453,7 @@ int adaptSPC(int mapId, int xVal, int yVal)
       }
     }
   }
-
+  #endif
   return current;
 }
 
@@ -510,10 +517,6 @@ void radioControl()
         page = 3;
       }
       readData = 0;
-    }
-    else if (horn)
-    {
-      hornOff();
     }
   }
 }
