@@ -50,7 +50,7 @@ void draw(int wantedGear)
   static int maxSpeed, maxBoost, maxExPres, maxOilTemp, maxAtfTemp, maxRPM, maxPresDiff;
   static int infoDisplay = 1;
   static double infoDisplayTime;
-  static boolean infoDisplayShown, infoBoost, infoSpeed = false;
+  static boolean infoDisplayShown, infoBoost, infoSpeed, infoSlip, infoBattery = false;
 
   if (sensor.curOilTemp > maxOilTemp)
   {
@@ -110,6 +110,22 @@ void draw(int wantedGear)
       u8g2.setFont(u8g2_font_fub14_tf);
       u8g2.setCursor(10, 40);
       u8g2.print(F("Speed"));
+      u8g2.setCursor(10, 60);
+      u8g2.print(F("fault"));
+    }
+    else if (infoDisplay == 4)
+    {
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(10, 40);
+      u8g2.print(F("Slip"));
+      u8g2.setCursor(10, 60);
+      u8g2.print(F("fault"));
+    }
+    else if (infoDisplay == 5)
+    {
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(10, 40);
+      u8g2.print(F("Battery"));
       u8g2.setCursor(10, 60);
       u8g2.print(F("fault"));
     }
@@ -296,17 +312,32 @@ void draw(int wantedGear)
   else if (millis() < 2000)
   {
     infoDisplay = 1;
-    infoBoost = true;
   }
   else if ((sensor.curBoostLim > 0) && !infoBoost)
   {
     infoDisplay = 2;
     infoBoost = true;
+    infoDisplayTime = millis();
+    infoDisplayShown = true;
   }
   else if (speedFault && !infoSpeed && wantedGear < 6)
   {
     infoDisplay = 3;
     infoSpeed = true;
+    infoDisplayTime = millis();
+    infoDisplayShown = true;
+  }
+  else if (slipFault && !infoSlip && wantedGear < 6) {
+    infoDisplay = 4;
+    infoSlip = true;
+    infoDisplayTime = millis();
+    infoDisplayShown = true;
+  }
+   else if (batteryFault && !infoBattery) {
+    infoDisplay = 5;
+    infoBattery = true;
+    infoDisplayTime = millis();
+    infoDisplayShown = true;
   }
 }
 

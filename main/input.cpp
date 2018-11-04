@@ -206,7 +206,8 @@ void boostControl(Task *me)
     myPID.setBangBang(100, 50);
     myPID.setTimeStep(100);
 
-    if (shiftBlocker)
+
+    if (shiftBlocker && !slipFault)
     {
       // During the shift
       if (preShift && sensor.curBoostLim > config.boostDrop)
@@ -226,7 +227,7 @@ void boostControl(Task *me)
     }
 
     // Just a sanity check to make sure PID library is not doing anything stupid.
-    if (sensor.curBoostLim > 0)
+    if (sensor.curBoostLim > 0 && !slipFault)
     {
       myPID.run();
       //   analogWrite(boostCtrl, boostPWM);

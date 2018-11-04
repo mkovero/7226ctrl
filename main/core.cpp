@@ -614,7 +614,7 @@ int gearFromRatio(float inputRatio)
 
 float getGearSlip()
 {
-  static float maxRatio[5], minRatio[5];
+  static float maxRatio[5] = { 0.00, 0.00, 0.00, 0.00, 0.00 } , minRatio[5] = { 0.00, 0.00, 0.00, 0.00, 0.00 };
   float slip;
 
   if (ratio > maxRatio[gear])
@@ -628,5 +628,30 @@ float getGearSlip()
   slip = maxRatio[gear] - minRatio[gear];
 
   return slip;
+}
+
+void faultMon(Task *me)
+{
+  struct SensorVals sensor = readSensors();
+  struct ConfigParam config = readConfig();
+
+  if (sensor.curSlip > config.maxSlip && sensor.curRPM > config.stallSpeed)
+  {
+    slipFault = true;
+  }
+    else
+    {
+      slipFault = false;
+    }
+
+  if (sensor.curBattery < config.batteryLimit)
+  {
+    batteryFault = true;
+  }
+    else
+    {
+      batteryFault = false;
+    }
+
 }
 // END OF CORE

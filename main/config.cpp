@@ -59,6 +59,10 @@ boolean diffSpeed = true;
 
 // fault mode for speed sensors
 boolean speedFault = false; 
+// fault mode for battery fault
+boolean batteryFault = false;
+// fault mode for excess slip
+boolean slipFault = false;
 
 // gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
 boolean evalGear = false;
@@ -94,6 +98,9 @@ struct ConfigParam readConfig()
   config.tireInches = 15;
   config.diffRatio = 3.27;
   config.nextShiftDelay = 1000; // ms. to wait before next shift to avoid accidental overshifting.
+  config.maxSlip = 0.5; // Maximum allowed slip before error
+  config.stallSpeed = 2200; // torque converter stall speed
+  config.batteryLimit = 11500; // battery voltage limit in 11.5v
   return config;
 }
 
