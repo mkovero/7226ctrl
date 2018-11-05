@@ -235,14 +235,12 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
   float tempRead = analogRead(oilPin);
   tempRead = tempRead;
-  int R2 = 470 / (1023.0 / (float)tempRead - 1.0);
+  int R2 = 4700 / (922.0 / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
-  oilTemp = oilTemp - 60;
-  avgTemp = (avgTemp * 5 + oilTemp) / 10;
-  return avgTemp;
+ return oilTemp;
 }
 
 int boostRead()
@@ -357,20 +355,22 @@ a[3] = 4.141869911401698e-05
    it is expected to use 220ohm resistor in voltage divider with actual temp sensor in 5V and Vmax brought down to 3V.
   //float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;*/
 
-  float c1 = 23.99266925e-03, c2 = -37.31821417e-04, c3 = 155.6950843e-07;
+  float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
   float tempRead = analogRead(atfPin);
   tempRead = tempRead; // Voltage compensation
-  int R2 = 216 / (1023.0 / (float)tempRead - 1.0);
+  int R2 = 230 / (922.0 / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
-  float atfTemp = T - 273.15 + 165;
-  avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
+  float atfTemp = T - 273.15;
   if (wantedGear == 6 || wantedGear == 8)
   {
-    avgAtfTemp = oilRead();
+    atfTemp = oilRead();
   }
-  avgAtfTemp = avgAtfTemp;
-  return avgAtfTemp;
+  atfTemp = atfTemp;
+  return atfTemp;
+
+
+  
 
   /*
   int atfTempCalculated = 0;
@@ -402,9 +402,9 @@ a[3] = 4.141869911401698e-05
   atfTemp = atfTemp + 15;
   return atfTemp;*/
   // Beta coefficient version
-  /*float tempRead = analogRead(atfPin);
+ /* float tempRead = analogRead(atfPin);
   tempRead = 1023 / tempRead - 1;
-  tempRead = 216 / tempRead;
+  tempRead = 220 / tempRead;
   float atfTemp;
   atfTemp = tempRead / 1000;     // (R/Ro)
   atfTemp = log(atfTemp);                  // ln(R/Ro)
