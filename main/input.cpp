@@ -206,7 +206,6 @@ void boostControl(Task *me)
     myPID.setBangBang(100, 50);
     myPID.setTimeStep(100);
 
-
     if (shiftBlocker && !slipFault)
     {
       // During the shift
@@ -227,7 +226,7 @@ void boostControl(Task *me)
     }
 
     // Just a sanity check to make sure PID library is not doing anything stupid.
-    if (sensor.curBoostLim > 0 && !slipFault)
+    if (sensor.curBoostLim > 0 && !slipFault && truePower)
     {
       myPID.run();
       //   analogWrite(boostCtrl, boostPWM);
@@ -286,7 +285,7 @@ void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
   unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
-  
+
   if (shiftBlocker)
   {
     shiftDuration = millis() - shiftStartTime;
@@ -384,7 +383,7 @@ void polltrans(Task *me)
   {
     pollkeys();
   }
-  if (horn && (millis() - hornPressTime > 300)) 
+  if (horn && (millis() - hornPressTime > 300))
   {
     hornOff();
   }
@@ -393,7 +392,7 @@ void polltrans(Task *me)
 int adaptSPC(int mapId, int xVal, int yVal)
 {
   int current = 0;
-  #ifdef ASPC
+#ifdef ASPC
   int modVal = 5;
   int aSpcUpState = digitalRead(aSpcUpSwitch);     // Adapt pressure up
   int aSpcDownState = digitalRead(aSpcDownSwitch); // Adapt pressure down
@@ -454,7 +453,7 @@ int adaptSPC(int mapId, int xVal, int yVal)
       }
     }
   }
-  #endif
+#endif
   return current;
 }
 
@@ -518,6 +517,17 @@ void radioControl()
         page = 3;
       }
       readData = 0;
+    }
+    else if (readData == 249)
+    {
+      if (truePower)
+      {
+        truePower = false;
+      }
+      else
+      {
+        truePower = true;
+      }
     }
   }
 }

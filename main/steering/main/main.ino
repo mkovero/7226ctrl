@@ -38,7 +38,11 @@ void loop()
             lastPress = millis();
             Serial1.write(201);
         }
-        if (rightSide > 600 && rightSide < 670)
+        if ((rightSide > 600 && rightSide < 670) && (leftSide > 600 && leftSide < 670)) {
+            lastPress = millis();
+            Serial1.write(249); 
+        }
+        if ((rightSide > 600 && rightSide < 670) && (leftSide < 600 && leftSide > 670))
         {
             lastPress = millis();
             Serial1.write(150);
@@ -48,7 +52,7 @@ void loop()
             lastPress = millis();
             Serial1.write(151);
         }
-        if (leftSide > 600 && leftSide < 670)
+        if (leftSide > 600 && leftSide < 670) 
         {
             lastPress = millis();
             Serial1.write(160);

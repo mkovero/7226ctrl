@@ -82,6 +82,8 @@ boolean adaptive = false;
 boolean batteryMonitor = true;
 // Exhaust pressure sensor
 boolean exhaustPresSensor = false;
+// Default power mode
+boolean truePower = false;
 
 byte page = 1; // first page to show in UI
 

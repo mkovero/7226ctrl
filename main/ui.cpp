@@ -177,8 +177,16 @@ void draw(int wantedGear)
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(60, 40);
     u8g2.print(sensor.curSpeed);
-    u8g2.setCursor(45, 60);
-    u8g2.print(F("km/h"));
+    if (truePower)
+    {
+      u8g2.setCursor(45, 60);
+      u8g2.print(F("km/h (++)"));
+    }
+    else
+    {
+      u8g2.setCursor(45, 60);
+      u8g2.print(F("km/h"));
+    }
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.setCursor(0, 10);
     u8g2.print("atfTemp:");
@@ -327,13 +335,15 @@ void draw(int wantedGear)
     infoDisplayTime = millis();
     infoDisplayShown = true;
   }
-  else if (slipFault && !infoSlip && wantedGear < 6) {
+  else if (slipFault && !infoSlip && wantedGear < 6)
+  {
     infoDisplay = 4;
     infoSlip = true;
     infoDisplayTime = millis();
     infoDisplayShown = true;
   }
-   else if (batteryFault && !infoBattery) {
+  else if (batteryFault && !infoBattery)
+  {
     infoDisplay = 5;
     infoBattery = true;
     infoDisplayTime = millis();
@@ -417,6 +427,6 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(sensor.curSlip);
     Serial.print(F(";"));
-    Serial.println(sensor.curBattery);    
+    Serial.println(sensor.curBattery);
   }
 }

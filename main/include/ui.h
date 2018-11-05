@@ -13,7 +13,7 @@ extern boolean w124speedo;
 extern boolean w124rpm;
 extern byte wantedGear,page;
 extern int lastMapVal;
-extern boolean shiftPending;
+extern boolean shiftPending,truePower;
 extern float ratio;
 extern int n2Speed, n3Speed;
 extern float gearSlip;
