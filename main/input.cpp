@@ -111,6 +111,7 @@ void gearUp()
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker)
     {
+      newGear = gear;
       newGear++;
     }
 
@@ -130,6 +131,7 @@ void gearDown()
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker)
     {
+      newGear = gear;
       newGear--;
     }
 
