@@ -26,7 +26,7 @@ const double Kp = 200;
 double Ki = 100;      
 const double Kd = 25; //This is not necessarily good idea.
 */
-double pidBoost, boostPWM, pidBoostLim;
+double pidBoost, boostPWM, pidBoostLim, hornPressTime;
 
 //Load PID controller
 AutoPID myPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, Kp, Ki, Kd);
@@ -178,6 +178,7 @@ void hornOn()
   // Simple horn control
   digitalWrite(hornPin, HIGH);
   horn = true;
+  hornPressTime = millis();
   if (debugEnabled)
   {
     Serial.println("Horn pressed");
@@ -205,10 +206,10 @@ void boostControl(Task *me)
     myPID.setBangBang(100, 50);
     myPID.setTimeStep(100);
 
-    if (shiftBlocker)
+    if (shiftBlocker && !slipFault)
     {
       // During the shift
-      if (sensor.curBoostLim > config.boostDrop)
+      if (preShift && sensor.curBoostLim > config.boostDrop)
       {
         pidBoostLim = sensor.curBoostLim - config.boostDrop;
       }
@@ -225,7 +226,7 @@ void boostControl(Task *me)
     }
 
     // Just a sanity check to make sure PID library is not doing anything stupid.
-    if (sensor.curBoostLim > 0)
+    if (sensor.curBoostLim > 0 && !slipFault && truePower)
     {
       myPID.run();
       //   analogWrite(boostCtrl, boostPWM);
@@ -284,10 +285,11 @@ void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
   unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
+
   if (shiftBlocker)
   {
     shiftDuration = millis() - shiftStartTime;
-    if (shiftDuration > shiftDelay)
+    if (shiftDuration > shiftDelay && shiftDone)
     {
       if (debugEnabled)
       {
@@ -299,6 +301,18 @@ void polltrans(Task *me)
         Serial.println(atfRead());
       }
       switchGearStop();
+    }
+    if (preShift && !preShiftDone)
+    {
+      doPreShift();
+    }
+    else if (!preShift && preShiftDone)
+    {
+      doShift();
+    }
+    else if (postShift && !postShiftDone)
+    {
+      doPostShift();
     }
   }
 
@@ -354,11 +368,11 @@ void polltrans(Task *me)
       analogWrite(y3, 0);
       ignition = false;
     }
-    
+    /*
     if (evaluateGear() < 6 && wantedGear < 6)
     {
       gear = evaluateGear();
-    }
+    }*/
   }
 
   if (radioEnabled)
@@ -369,10 +383,16 @@ void polltrans(Task *me)
   {
     pollkeys();
   }
+  if (horn && (millis() - hornPressTime > 300))
+  {
+    hornOff();
+  }
 }
 
 int adaptSPC(int mapId, int xVal, int yVal)
 {
+  int current = 0;
+#ifdef ASPC
   int modVal = 5;
   int aSpcUpState = digitalRead(aSpcUpSwitch);     // Adapt pressure up
   int aSpcDownState = digitalRead(aSpcDownSwitch); // Adapt pressure down
@@ -433,7 +453,7 @@ int adaptSPC(int mapId, int xVal, int yVal)
       }
     }
   }
-
+#endif
   return current;
 }
 
@@ -498,9 +518,16 @@ void radioControl()
       }
       readData = 0;
     }
-    else if (horn)
+    else if (readData == 249)
     {
-      hornOff();
+      if (truePower)
+      {
+        truePower = false;
+      }
+      else
+      {
+        truePower = true;
+      }
     }
   }
 }

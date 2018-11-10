@@ -1,4 +1,5 @@
 #include <SoftTimer.h>
+
 void pollstick(Task* me);
 void gearUp();
 void gearDown();
@@ -30,4 +31,5 @@ extern boolean radioEnabled;
 extern boolean stickCtrl;
 extern boolean horn;
 extern boolean manual;
+extern boolean truePower;
 extern byte page;

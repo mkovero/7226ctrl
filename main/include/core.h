@@ -9,6 +9,10 @@ int evaluateGear();
 float ratioFromGear(int inputGear);
 int gearFromRatio(float inputRatio);
 float getGearSlip();
+void doPreShift();
+void doShift();
+void doPostShift();
+void faultMon(Task* me);
 
 extern byte gear;         
 extern int cSolenoid;  
@@ -31,3 +35,4 @@ extern boolean speedFault;
 extern boolean adaptive;
 extern boolean evalGear;
 extern int shiftLoad, shiftAtfTemp;
+extern boolean preShift, postShift, preShiftDone, postShiftDone, shiftDone, batteryFault, slipFault;

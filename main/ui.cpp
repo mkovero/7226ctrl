@@ -47,10 +47,10 @@ void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
   struct ConfigParam config = readConfig();
-  static int maxSpeed, maxBoost, maxOilTemp, maxAtfTemp, maxRPM;
+  static int maxSpeed, maxBoost, maxExPres, maxOilTemp, maxAtfTemp, maxRPM, maxPresDiff;
   static int infoDisplay = 1;
   static double infoDisplayTime;
-  static boolean infoDisplayShown, infoBoost, infoSpeed = false;
+  static boolean infoDisplayShown, infoBoost, infoSpeed, infoSlip, infoBattery = false;
 
   if (sensor.curOilTemp > maxOilTemp)
   {
@@ -63,6 +63,14 @@ void draw(int wantedGear)
   if (sensor.curBoost > maxBoost)
   {
     maxBoost = sensor.curBoost;
+  }
+  if (sensor.curExPres > maxExPres)
+  {
+    maxExPres = sensor.curExPres;
+  }
+  if (sensor.curPresDiff > maxPresDiff)
+  {
+    maxPresDiff = sensor.curPresDiff;
   }
   if (sensor.curAtfTemp > maxAtfTemp)
   {
@@ -88,7 +96,6 @@ void draw(int wantedGear)
       u8g2.print(F("LAMP"));
       u8g2.setCursor(10, 60);
       u8g2.print(F("DEFECTIVE"));
-
     }
     else if (infoDisplay == 2)
     {
@@ -105,7 +112,22 @@ void draw(int wantedGear)
       u8g2.print(F("Speed"));
       u8g2.setCursor(10, 60);
       u8g2.print(F("fault"));
-
+    }
+    else if (infoDisplay == 4)
+    {
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(10, 40);
+      u8g2.print(F("Slip"));
+      u8g2.setCursor(10, 60);
+      u8g2.print(F("fault"));
+    }
+    else if (infoDisplay == 5)
+    {
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(10, 40);
+      u8g2.print(F("Battery"));
+      u8g2.setCursor(10, 60);
+      u8g2.print(F("fault"));
     }
   }
 
@@ -129,10 +151,20 @@ void draw(int wantedGear)
     {
       u8g2.print(gear);
     }
-    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending)
+    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && !preShift && !postShift)
     {
       u8g2.setCursor(40, 20);
       u8g2.print(F("SHIFT"));
+    }
+    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && preShift)
+    {
+      u8g2.setCursor(40, 20);
+      u8g2.print(F("PRESHIFT"));
+    }
+    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && postShift)
+    {
+      u8g2.setCursor(40, 20);
+      u8g2.print(F("POSTSHIFT"));
     }
     if (fullAuto && wantedGear < 6)
     {
@@ -145,8 +177,16 @@ void draw(int wantedGear)
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(60, 40);
     u8g2.print(sensor.curSpeed);
-    u8g2.setCursor(45, 60);
-    u8g2.print(F("km/h"));
+    if (truePower)
+    {
+      u8g2.setCursor(45, 60);
+      u8g2.print(F("km/h (++)"));
+    }
+    else
+    {
+      u8g2.setCursor(45, 60);
+      u8g2.print(F("km/h"));
+    }
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.setCursor(0, 10);
     u8g2.print("atfTemp:");
@@ -166,6 +206,10 @@ void draw(int wantedGear)
     u8g2.print(sensor.curBoost);
     u8g2.setCursor(25, 60);
     u8g2.print(maxBoost);
+    u8g2.setCursor(0, 70);
+    u8g2.print(sensor.curExPres);
+    u8g2.setCursor(25, 70);
+    u8g2.print(maxExPres);
     u8g2.setCursor(100, 10);
     u8g2.print(F("RPM:"));
     u8g2.setCursor(100, 20);
@@ -179,7 +223,7 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 60);
     u8g2.print(sensor.curLoad);
   }
-  else if (page == 2  && infoDisplay == 0)
+  else if (page == 2 && infoDisplay == 0)
   {
     float boostBar;
     u8g2.drawFrame(5, 8, 115, 24);
@@ -268,20 +312,42 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 60);
     u8g2.print(sensor.curRatio);
   }
-  if ((millis() - infoDisplayTime > 5000) && infoDisplayShown) 
+  if ((millis() - infoDisplayTime > 5000) && infoDisplayShown)
   {
     infoDisplay = 0;
     infoDisplayShown = false;
-  } else if (millis() < 2000) {
-    infoDisplay = 1;
-    infoBoost = true;
   }
-  else if ((sensor.curBoostLim > 0) && !infoBoost) {
+  else if (millis() < 2000)
+  {
+    infoDisplay = 1;
+  }
+  else if ((sensor.curBoostLim > 0) && !infoBoost)
+  {
     infoDisplay = 2;
     infoBoost = true;
-  } else if (speedFault && !infoSpeed && wantedGear < 6) {
+    infoDisplayTime = millis();
+    infoDisplayShown = true;
+  }
+  else if (speedFault && !infoSpeed && wantedGear < 6)
+  {
     infoDisplay = 3;
     infoSpeed = true;
+    infoDisplayTime = millis();
+    infoDisplayShown = true;
+  }
+  else if (slipFault && !infoSlip && wantedGear < 6)
+  {
+    infoDisplay = 4;
+    infoSlip = true;
+    infoDisplayTime = millis();
+    infoDisplayShown = true;
+  }
+  else if (batteryFault && !infoBattery)
+  {
+    infoDisplay = 5;
+    infoBattery = true;
+    infoDisplayTime = millis();
+    infoDisplayShown = true;
   }
 }
 
@@ -345,14 +411,22 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(sensor.curBoost);
     Serial.print(F(";"));
+    Serial.print(sensor.curExPres);
+    Serial.print(F(";"));
     Serial.print(sensor.curBoostLim);
+    Serial.print(F(";"));
+    Serial.print(sensor.curPresDiff);
     Serial.print(F(";"));
     Serial.print(n2Speed);
     Serial.print(F(";"));
     Serial.print(n3Speed);
     Serial.print(F(";"));
-    Serial.print(ratio);
+    Serial.print(sensor.curEvalGear);
     Serial.print(F(";"));
-    Serial.println(slip);
+    Serial.print(sensor.curRatio);
+    Serial.print(F(";"));
+    Serial.print(sensor.curSlip);
+    Serial.print(F(";"));
+    Serial.println(sensor.curBattery);
   }
 }

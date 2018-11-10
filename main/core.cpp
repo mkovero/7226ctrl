@@ -24,7 +24,7 @@ int spcPercentVal = 100;
 int mpcPercentVal = 100;
 
 // for timers
-unsigned long int shiftStartTime, shiftStopTime = 0;
+unsigned long int shiftStartTime, shiftStopTime, delaySinceLast = 0;
 unsigned long int shiftDuration = 0;
 
 // Solenoid used
@@ -33,15 +33,15 @@ int cSolenoid = 0; // Change solenoid pin to be controlled.
 int lastMapVal;
 int shiftLoad = 0;
 int shiftAtfTemp = 0;
+boolean preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
 
 // Gear shift logic
 // Beginning of gear change phase
 // Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
-  int spcSetVal = 0;
-  shiftStartTime = millis(); // Beginning to count shiftStartTime
-  shiftBlocker = true;       // Blocking any other shift operations during the shift
+  struct ConfigParam config = readConfig();
+  delaySinceLast = millis() - shiftStopTime;
 
   if (debugEnabled)
   {
@@ -51,66 +51,128 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.println(newGear);
   }
 
-  if (trans && (millis() - shiftStopTime > 1000))
+  if (trans && (delaySinceLast > config.nextShiftDelay))
   {
+    shiftBlocker = true;   // Blocking any other shift operations during the shift
+    preShift = true;       // Poke start of preShift mode (input.cpp polltrans checks these).
+    postShiftDone = false; // Reset previous states
+    preShiftDone = false;
+    shiftDone = false;
 
-    if (adaptive)
+    spcPercentVal = spcVal;
+    mpcPercentVal = mpcVal;
+    cSolenoidEnabled = cSolenoid;
+  }
+  else
+  {
+    if (debugEnabled)
     {
-      int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
-      if (spcModVal < 10)
-      {
-        spcModVal = 10;
-      };
-      if (spcModVal > 190)
-      {
-        spcModVal = 200;
-      };
-      spcPercentVal = spcModVal / 100 * spcVal;
+      Serial.print(F("[switchGearStart->switchGearStart] blocking change or transmission disabled delaySinceLast/nextShiftDelay: "));
+      Serial.print(delaySinceLast);
+      Serial.print(F("/"));
+      Serial.println(config.nextShiftDelay);
     }
-    else
-    {
-      spcPercentVal = spcVal;
-      mpcPercentVal = mpcVal;
-    }
+  }
+}
 
-    // Send PWM signal to SPC(Shift Pressure Control)-solenoid along with MPC(Modulation Pressure Control)-solenoid.
+void doPreShift()
+{
+  struct ConfigParam config = readConfig();
+  struct SensorVals sensor = readSensors();
 
-    if (spcPercentVal > 100)
-    {
-      spcPercentVal = 100; // to make sure we're on the bounds.
-      if (debugEnabled)
-      {
-        Serial.println(F("[switchGearStart->switchGearStart] SPC high limit hit."));
-      }
-    }
-    if (spcPercentVal < 10)
-    {
-      spcPercentVal = 10; // to be on safe side.
-      if (debugEnabled)
-      {
-        Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit."));
-      }
-    }
-    spcSetVal = (100 - spcPercentVal) * 2.55;
-    mpcVal = (100 - mpcPercentVal) * 2.55;
-    analogWrite(tcc, 0);
-    analogWrite(spc, spcSetVal);
-    analogWrite(mpc, mpcVal);
-    analogWrite(cSolenoid, 255); // Beginning of gear change
+  // Things to do before actual shift, example is for waiting boost to settle to the target. (boostControl should let it drop in this scenario).
+  if ((boostLimit && ((sensor.curBoostLim > 0) && (sensor.curBoost <= sensor.curBoostLim - config.boostDrop)) || sensor.curBoostLim == 0) || !boostLimit)
+  {
+    preShift = false;
+    preShiftDone = true;
 
     if (debugEnabled)
     {
-      Serial.print(F("[switchGearStart->switchGearStart] spcPressure-spcPercentVAl-mpcPressure-spcModVal: "));
-      Serial.print(spcSetVal);
-      Serial.print(F("-"));
-      Serial.print(spcPercentVal);
-      Serial.print(F("-"));
-      Serial.println(mpcVal);
-    //  Serial.print(F("-"));
-   //   Serial.println(spcModVal);
+      Serial.print(F("[switchGearStart->preShift] curBoost/curBoostLim: "));
+      Serial.print(sensor.curBoost);
+      Serial.print(F("/"));
+      Serial.println(sensor.curBoostLim);
     }
-  cSolenoidEnabled = cSolenoid;
   }
+  else
+  {
+    Serial.print(F("[switchGearStart->preShift] blocking curBoost/curBoostLim: "));
+    Serial.print(sensor.curBoost);
+    Serial.print(F("/"));
+    Serial.println(sensor.curBoostLim);
+  }
+}
+
+void doShift()
+{
+  // Actual shift
+  int spcSetVal = (100 - spcPercentVal) * 2.55;
+  int mpcSetVal = (100 - mpcPercentVal) * 2.55;
+
+  if (adaptive)
+  {
+    int spcModVal = adaptSPC(lastMapVal, lastXval, lastYval);
+    if (spcModVal < 10)
+    {
+      spcModVal = 10;
+    };
+    if (spcModVal > 190)
+    {
+      spcModVal = 200;
+    };
+    spcPercentVal = spcModVal / 100 * spcSetVal;
+  }
+
+  if (spcPercentVal > 100)
+  {
+    spcPercentVal = 100; // to make sure we're on the bounds.
+    if (debugEnabled)
+    {
+      Serial.println(F("[switchGearStart->switchGearStart] SPC high limit hit."));
+    }
+  }
+
+  if (spcPercentVal < 10)
+  {
+    spcPercentVal = 10; // to be on safe side.
+    if (debugEnabled)
+    {
+      Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit."));
+    }
+  }
+  spcSetVal = (100 - spcPercentVal) * 2.55; // these are calculated twice to make sure if there is changes they are noted.
+  mpcSetVal = (100 - mpcPercentVal) * 2.55;
+
+  shiftStartTime = millis(); // Beginning to count shiftStartTime
+
+  analogWrite(tcc, 0);
+  analogWrite(spc, spcSetVal);
+  analogWrite(mpc, mpcSetVal);
+  analogWrite(cSolenoidEnabled, 255); // Beginning of gear change
+
+  if (debugEnabled)
+  {
+    Serial.print(F("[switchGearStart->doShift] spcPercentVal/mpcPercentVal "));
+    Serial.print(spcPercentVal);
+    Serial.print(F("/"));
+    Serial.println(mpcPercentVal);
+  }
+  preShiftDone = false;
+  shiftDone = true;
+}
+
+void doPostShift()
+{
+  // You can do post shift stuff here.
+  if (debugEnabled)
+  {
+    Serial.println(F("[switchGearStart->postShift] completed. "));
+  }
+
+  postShift = false;
+  postShiftDone = true;
+  shiftPending = false;
+  shiftBlocker = false;
 }
 
 // End of gear change phase
@@ -119,11 +181,16 @@ void switchGearStop()
   analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
   analogWrite(spc, 0);              // spc off
   analogWrite(mpc, 0);              // mpc off
-  gear = pendingGear;               // we can happily say we're on new gear
-  shiftBlocker = false;
-  shiftPending = false;
+  if (evalGear)
+  {
+    gear = evaluateGear();
+  }
+  else
+  {
+    gear = pendingGear; // we can happily say we're on new gear
+  }
   shiftStopTime = millis();
-  
+
   if (debugEnabled)
   {
     Serial.print(F("[switchGearStop->switchGearStop] End of gear change current-solenoid: "));
@@ -134,6 +201,7 @@ void switchGearStop()
     Serial.println(cSolenoid);
   }
   shiftStartTime = 0;
+  postShift = true;
 }
 
 // upshift parameter logic gathering
@@ -146,6 +214,7 @@ void gearchangeUp(int newGear)
     pendingGear = newGear;
     shiftLoad = sensor.curLoad;
     shiftAtfTemp = sensor.curAtfTemp;
+
     if (debugEnabled)
     {
       Serial.print(F("[gearChangeUp->gearChangeUp] performing change prev-new: "));
@@ -153,91 +222,91 @@ void gearchangeUp(int newGear)
       Serial.print(F("->"));
       Serial.println(newGear);
     }
+
+    switch (newGear)
+    {
+    case 1:
+      gear = 1;
+      break;
+    case 2:
+      if (debugEnabled)
+      {
+        Serial.print(F("[gearchangeUp->switchGearStart] Solenoid y3 requested with spcMap12/mpcMap12, load/atfTemp "));
+        Serial.print(sensor.curLoad);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
+      }
+      if (!sensors)
+      {
+        switchGearStart(y3, 100, 100);
+      }
+      if (sensors)
+      {
+        lastMapVal = 100;
+        switchGearStart(y3, readMap(spcMap12, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap12, sensor.curLoad, sensor.curAtfTemp));
+      }
+      break;
+    case 3:
+      if (debugEnabled)
+      {
+        Serial.print(F("[gearchangeUp->switchGearStart] Solenoid y4 requested with spcMap23/mpcMap23, load/atfTemp "));
+        Serial.print(sensor.curLoad);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
+      }
+      if (!sensors)
+      {
+        switchGearStart(y4, 100, 100);
+      }
+      if (sensors)
+      {
+        lastMapVal = 130;
+        switchGearStart(y4, readMap(spcMap23, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap23, sensor.curLoad, sensor.curAtfTemp));
+      }
+      break;
+    case 4:
+      if (debugEnabled)
+      {
+        Serial.print(F("[gearchangeUp->switchGearStart] Solenoid y5 requested with spcMap34/mpcMap34, load/atfTemp "));
+        Serial.print(sensor.curLoad);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
+      }
+      if (!sensors)
+      {
+        switchGearStart(y5, 100, 100);
+      }
+      if (sensors)
+      {
+        lastMapVal = 160;
+        switchGearStart(y5, readMap(spcMap34, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap34, sensor.curLoad, sensor.curAtfTemp));
+      }
+      break;
+    case 5:
+      if (debugEnabled)
+      {
+        Serial.print(F("[gearchangeUp->switchGearStart] Solenoid y3 requested with spcMap45/mpcMap45, load/atfTemp "));
+        Serial.print(sensor.curLoad);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
+      }
+      if (!sensors)
+      {
+        switchGearStart(y3, 100, 100);
+      }
+      if (sensors)
+      {
+        lastMapVal = 190;
+        switchGearStart(y3, readMap(spcMap45, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap45, sensor.curLoad, sensor.curAtfTemp));
+      }
+      break;
+    default:
+      break;
+    }
   }
   else if (debugEnabled)
   {
     Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
-  }
-
-  switch (newGear)
-  {
-  case 1:
-    gear = 1;
-    break;
-  case 2:
-    if (debugEnabled)
-    {
-      Serial.print(F("[gearchangeUp->switchGearStart] Solenoid y3 requested with spcMap12/mpcMap12, load/atfTemp "));
-      Serial.print(sensor.curLoad);
-      Serial.print(F("-"));
-      Serial.println(sensor.curAtfTemp);
-    }
-    if (!sensors)
-    {
-      switchGearStart(y3, 100, 100);
-    }
-    if (sensors)
-    {
-      lastMapVal = 100;
-      switchGearStart(y3, readMap(spcMap12, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap12, sensor.curLoad, sensor.curAtfTemp));
-    }
-    break;
-  case 3:
-    if (debugEnabled)
-    {
-      Serial.print(F("[gearchangeUp->switchGearStart] Solenoid y4 requested with spcMap23/mpcMap23, load/atfTemp "));
-      Serial.print(sensor.curLoad);
-      Serial.print(F("-"));
-      Serial.println(sensor.curAtfTemp);
-    }
-    if (!sensors)
-    {
-      switchGearStart(y4, 100, 100);
-    }
-    if (sensors)
-    {
-      lastMapVal = 130;
-      switchGearStart(y4, readMap(spcMap23, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap23, sensor.curLoad, sensor.curAtfTemp));
-    }
-    break;
-  case 4:
-    if (debugEnabled)
-    {
-      Serial.print(F("[gearchangeUp->switchGearStart] Solenoid y5 requested with spcMap34/mpcMap34, load/atfTemp "));
-      Serial.print(sensor.curLoad);
-      Serial.print(F("-"));
-      Serial.println(sensor.curAtfTemp);
-    }
-    if (!sensors)
-    {
-      switchGearStart(y5, 100, 100);
-    }
-    if (sensors)
-    {
-      lastMapVal = 160;
-      switchGearStart(y5, readMap(spcMap34, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap34, sensor.curLoad, sensor.curAtfTemp));
-    }
-    break;
-  case 5:
-    if (debugEnabled)
-    {
-      Serial.print(F("[gearchangeUp->switchGearStart] Solenoid y3 requested with spcMap45/mpcMap45, load/atfTemp "));
-      Serial.print(sensor.curLoad);
-      Serial.print(F("-"));
-      Serial.println(sensor.curAtfTemp);
-    }
-    if (!sensors)
-    {
-      switchGearStart(y3, 100, 100);
-    }
-    if (sensors)
-    {
-      lastMapVal = 190;
-      switchGearStart(y3, readMap(spcMap45, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap45, sensor.curLoad, sensor.curAtfTemp));
-    }
-    break;
-  default:
-    break;
   }
 }
 
@@ -257,91 +326,91 @@ void gearchangeDown(int newGear)
       Serial.print(F("->"));
       Serial.println(newGear);
     }
-  }
-  else
-  {
-    Serial.println(F("[gearChangeDown->gearChangeDown] Blocking change"));
-  }
 
-  switch (newGear)
+    switch (newGear)
+    {
+    case 1:
+      if (debugEnabled)
+      {
+        Serial.print(F("[gearchangeDown->switchGearStart] Solenoid y3 requested with spcMap21/mpcMap21, load/atfTemp "));
+        Serial.print(sensor.curLoad);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
+      }
+      if (!sensors)
+      {
+        switchGearStart(y3, 100, 100);
+      }
+      if (sensors)
+      {
+        lastMapVal = 210;
+        switchGearStart(y3, readMap(spcMap21, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap21, sensor.curLoad, sensor.curAtfTemp));
+      }
+      break;
+    case 2:
+      if (debugEnabled)
+      {
+        Serial.print(F("[gearchangeDown->switchGearStart] Solenoid y4 requested with spcMap32/mpcMap32, load/atfTemp "));
+        Serial.print(sensor.curLoad);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
+      }
+      if (!sensors)
+      {
+        switchGearStart(y4, 100, 100);
+      }
+      if (sensors)
+      {
+        lastMapVal = 240;
+        switchGearStart(y4, readMap(spcMap32, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap32, sensor.curLoad, sensor.curAtfTemp));
+      }
+      break;
+    case 3:
+      if (debugEnabled)
+      {
+        Serial.print(F("[gearchangeDown->switchGearStart] Solenoid y5 requested with spcMap43/mpcMap43, load/atfTemp "));
+        Serial.print(sensor.curLoad);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
+      }
+      if (!sensors)
+      {
+        switchGearStart(y5, 100, 100);
+      }
+      if (sensors)
+      {
+        lastMapVal = 270;
+        switchGearStart(y5, readMap(spcMap43, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap43, sensor.curLoad, sensor.curAtfTemp));
+      }
+      break;
+    case 4:
+      if (debugEnabled)
+      {
+        Serial.print(F("[gearchangeDown->switchGearStart] Solenoid y3 requested with spcMap54/mpcMap54, load/atfTemp "));
+        Serial.print(sensor.curLoad);
+        Serial.print(F("-"));
+        Serial.println(sensor.curAtfTemp);
+      }
+      if (!sensors)
+      {
+        switchGearStart(y3, 100, 100);
+      }
+      if (sensors)
+      {
+        lastMapVal = 300;
+        switchGearStart(y3, readMap(spcMap54, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap54, sensor.curLoad, sensor.curAtfTemp));
+      }
+      break;
+    case 5:
+      gear = 5;
+      break;
+    default:
+      break;
+    }
+  }
+  else if (debugEnabled)
   {
-  case 1:
-    if (debugEnabled)
-    {
-      Serial.print(F("[gearchangeDown->switchGearStart] Solenoid y3 requested with spcMap21/mpcMap21, load/atfTemp "));
-      Serial.print(sensor.curLoad);
-      Serial.print(F("-"));
-      Serial.println(sensor.curAtfTemp);
-    }
-    if (!sensors)
-    {
-      switchGearStart(y3, 100, 100);
-    }
-    if (sensors)
-    {
-      lastMapVal = 210;
-      switchGearStart(y3, readMap(spcMap21, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap21, sensor.curLoad, sensor.curAtfTemp));
-    }
-    break;
-  case 2:
-    if (debugEnabled)
-    {
-      Serial.print(F("[gearchangeDown->switchGearStart] Solenoid y4 requested with spcMap32/mpcMap32, load/atfTemp "));
-      Serial.print(sensor.curLoad);
-      Serial.print(F("-"));
-      Serial.println(sensor.curAtfTemp);
-    }
-    if (!sensors)
-    {
-      switchGearStart(y4, 100, 100);
-    }
-    if (sensors)
-    {
-      lastMapVal = 240;
-      switchGearStart(y4, readMap(spcMap32, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap32, sensor.curLoad, sensor.curAtfTemp));
-    }
-    break;
-  case 3:
-    if (debugEnabled)
-    {
-      Serial.print(F("[gearchangeDown->switchGearStart] Solenoid y5 requested with spcMap43/mpcMap43, load/atfTemp "));
-      Serial.print(sensor.curLoad);
-      Serial.print(F("-"));
-      Serial.println(sensor.curAtfTemp);
-    }
-    if (!sensors)
-    {
-      switchGearStart(y5, 100, 100);
-    }
-    if (sensors)
-    {
-      lastMapVal = 270;
-      switchGearStart(y5, readMap(spcMap43, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap43, sensor.curLoad, sensor.curAtfTemp));
-    }
-    break;
-  case 4:
-    if (debugEnabled)
-    {
-      Serial.print(F("[gearchangeDown->switchGearStart] Solenoid y3 requested with spcMap54/mpcMap54, load/atfTemp "));
-      Serial.print(sensor.curLoad);
-      Serial.print(F("-"));
-      Serial.println(sensor.curAtfTemp);
-    }
-    if (!sensors)
-    {
-      switchGearStart(y3, 100, 100);
-    }
-    if (sensors)
-    {
-      lastMapVal = 300;
-      switchGearStart(y3, readMap(spcMap54, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap54, sensor.curLoad, sensor.curAtfTemp));
-    }
-    break;
-  case 5:
-    gear = 5;
-    break;
-  default:
-    break;
+    Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
   }
 }
 
@@ -451,6 +520,7 @@ void decideGear(Task *me)
 
 int evaluateGear()
 {
+  struct SensorVals sensor = readSensors();
   int incomingShaftSpeed = 0;
   int measuredGear = 0;
 
@@ -463,9 +533,16 @@ int evaluateGear()
     incomingShaftSpeed = n2Speed;
     //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
   }
-  ratio = (float)incomingShaftSpeed / vehicleSpeedRevs;
+  if (n3Speed == 0 && sensor.curSpeed < 20)
+  {
+    measuredGear = 1; // If we're near standstill and there is no N3 info, we can assume that we're on 1.
+  }
+  else
+  {
+    ratio = (float)incomingShaftSpeed / vehicleSpeedRevs;
+    measuredGear = gearFromRatio(ratio);
+  }
 
-  measuredGear = gearFromRatio(ratio);
   return measuredGear;
 }
 
@@ -535,17 +612,46 @@ int gearFromRatio(float inputRatio)
   }
 }
 
-float getGearSlip() {
-  static float maxRatio[5], minRatio[5];
+float getGearSlip()
+{
+  static float maxRatio[5] = { 0.00, 0.00, 0.00, 0.00, 0.00 } , minRatio[5] = { 0.00, 0.00, 0.00, 0.00, 0.00 };
   float slip;
 
-  if ( ratio > maxRatio[gear] ) {
+  if (ratio > maxRatio[gear])
+  {
     maxRatio[gear] = ratio;
-  } else if ( ratio < minRatio[gear] && ratio > 0.00 ) {
+  }
+  else if (ratio < minRatio[gear] && ratio > 0.00)
+  {
     minRatio[gear] = ratio;
   }
   slip = maxRatio[gear] - minRatio[gear];
 
   return slip;
+}
+
+void faultMon(Task *me)
+{
+  struct SensorVals sensor = readSensors();
+  struct ConfigParam config = readConfig();
+
+  if (sensor.curSlip > config.maxSlip && sensor.curRPM > config.stallSpeed)
+  {
+    slipFault = true;
+  }
+    else
+    {
+      slipFault = false;
+    }
+
+  if (sensor.curBattery < config.batteryLimit)
+  {
+    batteryFault = true;
+  }
+    else
+    {
+      batteryFault = false;
+    }
+
 }
 // END OF CORE

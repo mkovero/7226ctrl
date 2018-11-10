@@ -17,6 +17,10 @@
 
     Big thanks to 
     Tuomas Kantola for maps and related math
+    Tommi Otsavaara for guiding in electronics
+    Mikko Kovero and Pete for mechanical side of things
+    Jami Karvanen for datalogging and frontend stuff
+    Liia Ahola for pcb tracing
     Joosep Vahar for testing
     Toni Lassila for ideas
 */
@@ -41,27 +45,21 @@ Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
 Task pollSensors(100, pollsensors);       // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
 Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
-Task pollBoostControl(500, boostControl); // 500ms for boost control*/
+Task pollBoostControl(100, boostControl); // 100ms for boost control*/
+Task pollFaultMon(10, faultMon);  // 10ms Fault monitor
 
 void setup()
 {
   delay(1000);
 
-#ifdef MEGA
-  TCCR2B = TCCR2B & 0b11111000 | 0x03; // 980hz on pins 9,10
-  TCCR5B = TCCR5B & 0b11111000 | 0x05; // 30hz on pins 44-46
-#endif
-
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
 
-#ifdef TEENSY
   analogWriteFrequency(spc, 1000);     // 1khz for spc
   analogWriteFrequency(mpc, 1000);     // and mpc
   analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
   analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
-#endif
 
   Serial.begin(115200);
 
@@ -88,6 +86,7 @@ void setup()
   pinMode(speedoCtrl, OUTPUT);
   pinMode(fuelPumpCtrl, OUTPUT);
   pinMode(SPIcs, OUTPUT);
+  pinMode(hornPin, OUTPUT);
 
   // Sensor input
   pinMode(boostPin, INPUT); // boost sensor
@@ -98,27 +97,24 @@ void setup()
   pinMode(n3pin, INPUT);    // N3 sensor
   pinMode(speedPin, INPUT); // vehicle speed
   pinMode(rpmPin, INPUT);
+  pinMode(batteryPin, INPUT);
 
-#ifdef TEENSY
   *portConfigRegister(boostPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-#endif
 
   //For manual control
   pinMode(autoSwitch, INPUT);
   pinMode(gupSwitch, INPUT);   // gear up
   pinMode(gdownSwitch, INPUT); // gear down
 
-#ifdef TEENSY
   *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-#endif
 
   //For stick control
   pinMode(whitepin, INPUT);
@@ -126,18 +122,21 @@ void setup()
   pinMode(greenpin, INPUT);
   pinMode(yellowpin, INPUT);
 
-#ifdef TEENSY
   *portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-#endif
 
+#ifdef ASPC
   pinMode(aSpcUpSwitch, INPUT);
   pinMode(aSpcDownSwitch, INPUT);
-#ifdef TEENSY
   *portConfigRegister(aSpcUpSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(aSpcDownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+#else
+  pinMode(exhaustPresPin, INPUT);
+  pinMode(exhaustTempPin, INPUT);
+  *portConfigRegister(exhaustPresPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(exhaustTempPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 #endif
 
   // Make sure solenoids are all off.
