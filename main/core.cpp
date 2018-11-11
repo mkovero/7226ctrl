@@ -51,7 +51,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     Serial.println(newGear);
   }
 
-  if (trans && (delaySinceLast > config.nextShiftDelay))
+  if (trans)
   {
     shiftBlocker = true;   // Blocking any other shift operations during the shift
     preShift = true;       // Poke start of preShift mode (input.cpp polltrans checks these).
