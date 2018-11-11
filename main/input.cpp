@@ -19,7 +19,7 @@ const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lo
 double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double Kd = 0; //100, 1 Pid Derivative Gain.
 boolean garageShift = false;
-double garageTime, lastShift;
+double garageTime, lastShift, lastInput;
 
 /*
 const double Kp = 200; 
@@ -460,11 +460,12 @@ int adaptSPC(int mapId, int xVal, int yVal)
 void radioControl()
 {
   static byte readData;
+  static byte pwrCounter = 1;
 
   if (Serial1.available() > 0)
   {
     readData = Serial1.read();
-
+    
     if (readData == 100 && !shiftPending && gear < 5)
     {
       lastShift = millis();
@@ -520,14 +521,22 @@ void radioControl()
     }
     else if (readData == 249)
     {
-      if (truePower)
+      if (millis() - lastInput > 1000) {
+      pwrCounter = pwrCounter+1;
+      lastInput = millis();
+      }  
+      
+      if (truePower && pwrCounter > 5)
       {
         truePower = false;
+        pwrCounter = 1;
       }
-      else
+      else if (!truePower && pwrCounter > 5)
       {
         truePower = true;
+        pwrCounter = 1;
       }
+
     }
   }
 }
