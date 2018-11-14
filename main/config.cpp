@@ -84,6 +84,8 @@ boolean batteryMonitor = true;
 boolean exhaustPresSensor = false;
 // Default power mode
 boolean truePower = false;
+// torque converter lock
+boolean tccLock = true;
 
 byte page = 1; // first page to show in UI
 

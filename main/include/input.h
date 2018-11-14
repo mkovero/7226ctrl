@@ -32,4 +32,5 @@ extern boolean stickCtrl;
 extern boolean horn;
 extern boolean manual;
 extern boolean truePower;
+extern boolean tccLock;
 extern byte page;

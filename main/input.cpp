@@ -286,7 +286,7 @@ void fuelControl(Task *me)
 void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
-  struct ConfigParam config = readConfig(); 
+  struct ConfigParam config = readConfig();
   unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
 
   if (shiftBlocker)
@@ -356,15 +356,18 @@ void polltrans(Task *me)
       analogWrite(y5, 0);
     }
 
-    if (sensor.curTps < 40 && sensor.curSpeed > 80 && gear >= config.firstTccGear)
+    if (tccLock)
     {
-      analogWrite(tcc, 255);
+      // Enable torque converter lock when tps is less than 40%, current speed is more than 80km/h and gear is within allowed range.
+      if (sensor.curTps < 40 && sensor.curSpeed > 80 && gear >= config.firstTccGear && gear > 1)
+      {
+        analogWrite(tcc, 255);
+      }
+      else
+      {
+        analogWrite(tcc, 0);
+      }
     }
-    else
-    {
-      analogWrite(tcc, 0);
-    }
-
     // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
     if (ignition)
     {
@@ -468,7 +471,7 @@ void radioControl()
   if (Serial1.available() > 0)
   {
     readData = Serial1.read();
-    
+
     if (readData == 100 && !shiftPending && gear < 5)
     {
       lastShift = millis();
@@ -524,11 +527,12 @@ void radioControl()
     }
     else if (readData == 249)
     {
-      if (millis() - lastInput > 1000) {
-      pwrCounter = pwrCounter+1;
-      lastInput = millis();
-      }  
-      
+      if (millis() - lastInput > 1000)
+      {
+        pwrCounter = pwrCounter + 1;
+        lastInput = millis();
+      }
+
       if (truePower && pwrCounter > 5)
       {
         truePower = false;
@@ -539,7 +543,6 @@ void radioControl()
         truePower = true;
         pwrCounter = 1;
       }
-
     }
   }
 }
