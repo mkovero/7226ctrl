@@ -355,7 +355,7 @@ void polltrans(Task *me)
       analogWrite(y5, 0);
     }
 
-    if (sensor.curTps < 40 && sensor.curSpeed > 80 && gear == 5)
+    if (sensor.curTps < 40 && sensor.curSpeed > 80 && gear >= config.firstTccGear)
     {
       analogWrite(tcc, 255);
     }
