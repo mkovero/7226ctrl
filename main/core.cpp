@@ -34,6 +34,7 @@ int lastMapVal;
 int shiftLoad = 0;
 int shiftAtfTemp = 0;
 boolean preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
+double lastShiftPoint;
 
 // Gear shift logic
 // Beginning of gear change phase
@@ -173,6 +174,7 @@ void doPostShift()
   postShiftDone = true;
   shiftPending = false;
   shiftBlocker = false;
+  lastShiftPoint = millis();
 }
 
 // End of gear change phase
