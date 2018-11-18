@@ -82,7 +82,7 @@ work by Markus Kovero (mui@mui.fi) with regards and big thanks to:
 - Jami Karvanen for datalogging and frontend stuff
 - Liia Ahola for pcb tracing
 - Joosep Vahar for testing
-- Toni Lassila for ideas
+- Toni Lassila and Jan Blonski for ideas
 
 Schematics are for teensy, can be utilized with mega as well to some extent, tho mega support is going to be deprecated due obvious performance reasons.
 

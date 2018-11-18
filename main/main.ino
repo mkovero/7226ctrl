@@ -22,7 +22,7 @@
     Jami Karvanen for datalogging and frontend stuff
     Liia Ahola for pcb tracing
     Joosep Vahar for testing
-    Toni Lassila for ideas
+    Toni Lassila and Jan Blonski for ideas
 */
 
 #include <Arduino.h>
