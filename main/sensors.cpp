@@ -252,10 +252,6 @@ int boostRead()
     float boostVoltage = analogRead(boostPin) * 3.0;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
-    if (avgBoostValue < 0)
-    {
-      avgBoostValue = 0;
-    }
   }
 
   return avgBoostValue;
