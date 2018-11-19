@@ -109,8 +109,8 @@ void pollsensors(Task *me)
     Serial.print("-");
     Serial.println(evalgear);*/
     lastSensorTime = millis();
-    attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING); // Attach again
-    attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
+    attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, FALLING); // Attach again
+    attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
   }
@@ -259,10 +259,6 @@ int boostRead()
     float boostVoltage = analogRead(boostPin) * 3.0;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
-    if (avgBoostValue < 0)
-    {
-      avgBoostValue = 0;
-    }
   }
 
   return avgBoostValue;

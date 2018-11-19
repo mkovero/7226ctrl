@@ -286,6 +286,7 @@ void fuelControl(Task *me)
 void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
+  struct ConfigParam config = readConfig();
   unsigned int shiftDelay = readMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
 
   if (shiftBlocker)
@@ -333,10 +334,10 @@ void polltrans(Task *me)
       garageTime = millis();
     }
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
-    if (wantedGear <= 6 || wantedGear == 8)
+    if (wantedGear == 8 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
     {
       int mpcSetVal = (100 - mpcVal) * 2.55;
-      // analogWrite(mpc, mpcSetVal);
+      analogWrite(mpc, mpcSetVal);
     }
 
     if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 1000))
@@ -355,26 +356,31 @@ void polltrans(Task *me)
       analogWrite(y5, 0);
     }
 
-    if (sensor.curTps < 40 && sensor.curSpeed > 80 && gear == 5)
+    if (tccLock)
     {
-      analogWrite(tcc, 255);
+      // Enable torque converter lock when tps is less than 40%, current speed is more than 80km/h and gear is within allowed range.
+      if (sensor.curTps < 40 && sensor.curSpeed > 80 && gear >= config.firstTccGear && gear > 1)
+      {
+        analogWrite(tcc, 255);
+      }
+      else
+      {
+        analogWrite(tcc, 0);
+      }
     }
-    else
-    {
-      analogWrite(tcc, 0);
-    }
-
     // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
     if (ignition)
     {
       analogWrite(y3, 0);
       ignition = false;
     }
-    /*
-    if (evaluateGear() < 6 && wantedGear < 6)
+    if (evalGear)
     {
-      gear = evaluateGear();
-    }*/
+      int evaluatedGear = evaluateGear() if (evaluatedGear < 6 && wantedGear < 6)
+      {
+        gear = evaluateGear();
+      }
+    }
   }
 
   if (radioEnabled)
@@ -467,7 +473,7 @@ void radioControl()
   if (Serial1.available() > 0)
   {
     readData = Serial1.read();
-    
+
     if (readData == 100 && !shiftPending && gear < 5)
     {
       lastShift = millis();
@@ -523,11 +529,12 @@ void radioControl()
     }
     else if (readData == 249)
     {
-      if (millis() - lastInput > 1000) {
-      pwrCounter = pwrCounter+1;
-      lastInput = millis();
-      }  
-      
+      if (millis() - lastInput > 1000)
+      {
+        pwrCounter = pwrCounter + 1;
+        lastInput = millis();
+      }
+
       if (truePower && pwrCounter > 5)
       {
         truePower = false;
@@ -538,7 +545,6 @@ void radioControl()
         truePower = true;
         pwrCounter = 1;
       }
-
     }
   }
 }

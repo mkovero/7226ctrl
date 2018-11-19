@@ -84,6 +84,8 @@ boolean batteryMonitor = true;
 boolean exhaustPresSensor = false;
 // Default power mode
 boolean truePower = false;
+// torque converter lock
+boolean tccLock = true;
 
 byte page = 1; // first page to show in UI
 
@@ -103,6 +105,7 @@ struct ConfigParam readConfig()
   config.maxSlip = 0.5; // Maximum allowed slip before error
   config.stallSpeed = 2200; // torque converter stall speed
   config.batteryLimit = 11500; // battery voltage limit in 11.5v
+  config.firstTccGear = 5; // first gear when tcc is used.
   return config;
 }
 

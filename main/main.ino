@@ -22,7 +22,7 @@
     Jami Karvanen for datalogging and frontend stuff
     Liia Ahola for pcb tracing
     Joosep Vahar for testing
-    Toni Lassila for ideas
+    Toni Lassila and Jan Blonski for ideas
 */
 
 #include <Arduino.h>
@@ -93,8 +93,8 @@ void setup()
   pinMode(tpsPin, INPUT);   // throttle position sensor
   pinMode(oilPin, INPUT);   // engine coolant sensor
   pinMode(atfPin, INPUT);   // ATF temp
-  pinMode(n2pin, INPUT);    // N2 sensor
-  pinMode(n3pin, INPUT);    // N3 sensor
+  pinMode(n2pin, INPUT_PULLUP);    // N2 sensor
+  pinMode(n3pin, INPUT_PULLUP);    // N3 sensor
   pinMode(speedPin, INPUT); // vehicle speed
   pinMode(rpmPin, INPUT);
   pinMode(batteryPin, INPUT);
@@ -102,8 +102,8 @@ void setup()
   *portConfigRegister(boostPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
@@ -156,8 +156,8 @@ void setup()
   digitalWrite(rpmPin, HIGH); // pull-up
   digitalWrite(SPIcs, LOW);
 
-  attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, RISING);
-  attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, FALLING);
+  attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
 
