@@ -87,6 +87,8 @@ boolean truePower = false;
 // torque converter lock
 boolean tccLock = true;
 
+boolean carRunning = false;
+
 byte page = 1; // first page to show in UI
 
 struct ConfigParam readConfig()

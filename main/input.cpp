@@ -395,6 +395,11 @@ void polltrans(Task *me)
   {
     hornOff();
   }
+  if (sensor.curRPM > 0) {
+    carRunning = true;
+  } else {
+    carRunning = false;
+  }
 }
 
 int adaptSPC(int mapId, int xVal, int yVal)

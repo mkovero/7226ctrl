@@ -616,14 +616,16 @@ int gearFromRatio(float inputRatio)
 
 float getGearSlip()
 {
+  struct SensorVals sensor = readSensors();
+  struct ConfigParam config = readConfig();
   static float maxRatio[5] = { 0.00, 0.00, 0.00, 0.00, 0.00 } , minRatio[5] = { 0.00, 0.00, 0.00, 0.00, 0.00 };
   float slip;
 
-  if (ratio > maxRatio[gear])
+  if (ratio > maxRatio[gear] && sensor.curRPM > config.stallSpeed)
   {
     maxRatio[gear] = ratio;
   }
-  else if (ratio < minRatio[gear] && ratio > 0.00)
+  else if (ratio < minRatio[gear] && sensor.curRPM > config.stallSpeed)
   {
     minRatio[gear] = ratio;
   }
