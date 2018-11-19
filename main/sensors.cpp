@@ -290,7 +290,7 @@ int batteryRead()
 
 int boostLimitRead(int oilTemp)
 {
-  int allowedBoostPressure = readBoostMap(boostControlPressureMap, gear, oilTemp);
+  int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
   return allowedBoostPressure;
 }
 

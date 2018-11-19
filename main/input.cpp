@@ -334,7 +334,7 @@ void polltrans(Task *me)
       garageTime = millis();
     }
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
-    if (wantedGear == 8 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
+    if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
     {
       int mpcSetVal = (100 - mpcVal) * 2.55;
       analogWrite(mpc, mpcSetVal);

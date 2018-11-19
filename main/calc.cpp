@@ -69,21 +69,8 @@ int readMap(const int theMap[14][12], int x, int y)
 }
 
 // Function to read 2d maps from flash (maps declared with PROGMEM)
-int readBoostMap(const int theMap[14][6], int x, int y)
+int readGearMap(const int theMap[14][6], int x, int y)
 {
-  int xidx = 0; // by default near first element
-  int xelements = LEN(theMap[0]);
-
-  int distance = abs(pgm_read_word_near(&theMap[0][xidx]) - x); // distance comparison
-  for (int i = 1; i < xelements; i++)
-  {
-    int d = abs(pgm_read_word_near(&theMap[0][i]) - x);
-    if (d < distance)
-    {
-      xidx = i;
-      distance = d;
-    }
-  }
   int yidx = 0; // by default near first element
   int yelements = LEN(*theMap);
 
@@ -97,9 +84,7 @@ int readBoostMap(const int theMap[14][6], int x, int y)
       distance = d;
     }
   }
-  lastXval = xidx;
-  lastYval = yidx;
-  int mapValue = pgm_read_word_near(&theMap[yidx][xidx]);
+  int mapValue = pgm_read_word_near(&theMap[yidx][x]);
   
   return mapValue;
 }
