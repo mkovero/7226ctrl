@@ -40,11 +40,10 @@ void rpmInterrupt()
 // Polling sensors
 void pollsensors(Task *me)
 {
+  struct ConfigParam config = readConfig();
 
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
-  const int rpmPulsesPerRev = 6;
-  const int vehicleSpeedPulsesPerRev = 29; // number of teeths in w124 rear diff
 
   if (millis() - lastSensorTime >= 1000)
   {
@@ -76,9 +75,9 @@ void pollsensors(Task *me)
       n3Speed = 0;
     }
 
-    if (vehicleSpeedPulses >= vehicleSpeedPulsesPerRev)
+    if (vehicleSpeedPulses >= config.rearDiffTeeth)
     {
-      vehicleSpeedRevs = vehicleSpeedPulses / vehicleSpeedPulsesPerRev / elapsedTime * 1000 * 60;
+      vehicleSpeedRevs = vehicleSpeedPulses / config.rearDiffTeeth / elapsedTime * 1000 * 60;
       vehicleSpeedPulses = 0;
     }
     else
@@ -88,9 +87,9 @@ void pollsensors(Task *me)
     }
 
     // RPM as per elapsedTime
-    if (rpmPulse >= rpmPulsesPerRev)
+    if (rpmPulse >= config.triggerWheelTeeth)
     {
-      rpmRevs = rpmPulse / rpmPulsesPerRev / elapsedTime * 1000 * 60;
+      rpmRevs = rpmPulse / config.triggerWheelTeeth / elapsedTime * 1000 * 60;
       rpmPulse = 0;
     }
     else

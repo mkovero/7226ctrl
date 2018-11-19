@@ -103,11 +103,13 @@ struct ConfigParam readConfig()
   config.tireProfile = 65;
   config.tireInches = 15;
   config.diffRatio = 3.27;
+  config.rearDiffTeeth = 29; // number of teeth in diff
   config.nextShiftDelay = 1000; // ms. to wait before next shift to avoid accidental overshifting.
   config.maxSlip = 0.5; // Maximum allowed slip before error
   config.stallSpeed = 2200; // torque converter stall speed
   config.batteryLimit = 11500; // battery voltage limit in 11.5v
   config.firstTccGear = 5; // first gear when tcc is used.
+  config.triggerWheelTeeth = 6; // number of teeth in trigger wheel for RPM calculation
   return config;
 }
 
