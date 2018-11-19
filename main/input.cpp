@@ -376,7 +376,8 @@ void polltrans(Task *me)
     }
     if (evalGear)
     {
-      int evaluatedGear = evaluateGear() if (evaluatedGear < 6 && wantedGear < 6)
+      int evaluatedGear = evaluateGear();
+      if (evaluatedGear < 6 && wantedGear < 6)
       {
         gear = evaluateGear();
       }

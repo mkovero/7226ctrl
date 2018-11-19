@@ -74,7 +74,7 @@ int readGearMap(const int theMap[14][6], int x, int y)
   int yidx = 0; // by default near first element
   int yelements = LEN(*theMap);
 
-  distance = abs(pgm_read_word_near(&theMap[yidx][0]) - y);
+  int distance = abs(pgm_read_word_near(&theMap[yidx][0]) - y);
   for (int i = 1; i < yelements; i++)
   {
     int d = abs(pgm_read_word_near(&theMap[i][0]) - y);
