@@ -284,7 +284,7 @@ void draw(int wantedGear)
       u8g2.print(F(")"));
     }
     u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(60, 40);
+    u8g2.setCursor(50, 40);
     u8g2.print(sensor.curSlip);
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.setCursor(0, 10);
