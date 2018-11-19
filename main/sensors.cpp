@@ -14,7 +14,7 @@ unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, 
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
-int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgTemp, evalGearVal;
+int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal;
 float alpha = 0.7, gearSlip;
 
 // Interrupt for N2 hallmode sensor
@@ -240,7 +240,14 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
- return oilTemp;
+  if (wantedGear == 6 || wantedGear == 8)
+  {
+  avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +10;
+  }
+  else {
+  avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +10;
+  }
+ return avgOilTemp;
 }
 
 int boostRead()
@@ -358,11 +365,12 @@ a[3] = 4.141869911401698e-05
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   float atfTemp = T - 273.15;
+    avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
+
   if (wantedGear == 6 || wantedGear == 8)
   {
     atfTemp = oilRead();
   }
-  atfTemp = atfTemp;
   return atfTemp;
 
 
