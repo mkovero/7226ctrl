@@ -347,14 +347,15 @@ void polltrans(Task *me)
     }
 
     // 3-4 Shift solenoid is pulsed continuously while in Park and during selector lever movement (Garage Shifts).
-    if (wantedGear > 5)
+    // Testing whether we actually need this.
+ /*   if (wantedGear > 5)
     {
       analogWrite(y5, 255);
     }
     else if (!shiftBlocker && wantedGear < 6)
     {
       analogWrite(y5, 0);
-    }
+    }*/ 
 
     if (tccLock)
     {
