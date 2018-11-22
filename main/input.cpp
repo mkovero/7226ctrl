@@ -18,7 +18,7 @@ byte wantedGear = 100;
 const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
 double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double Kd = 0; //100, 1 Pid Derivative Gain.
-boolean garageShift = false;
+boolean garageShift,garageShiftMove = false;
 double garageTime, lastShift, lastInput;
 
 /*
@@ -49,35 +49,45 @@ void pollstick(Task *me)
     gear = 2; // force reset gear to 2
     shiftPending = false;
     shiftBlocker = false;
+    garageShiftMove = false;
   } // P
   if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
   {
     wantedGear = 7;
     gear = 2; // force reset gear to 2
+    garageShiftMove = false;
   }           // R
   if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
   {
     wantedGear = 6;
+    garageShiftMove = false;    
   } // N
   if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW)
   {
     wantedGear = 5;
+    garageShiftMove = false; // these should not be necessary after wantedGear <5, but don't want to risk this keeping y5 alive for some reason.
   }
   if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH)
   {
     wantedGear = 4;
+    garageShiftMove = false;
   }
   if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW)
   {
     wantedGear = 3;
+    garageShiftMove = false;
   }
   if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW)
   {
     wantedGear = 2;
+    garageShiftMove = false;
   }
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH)
   {
     wantedGear = 1;
+    garageShiftMove = false;
+  } else {
+    garageShiftMove = true;
   }
 
   if (autoState == HIGH)
@@ -348,14 +358,14 @@ void polltrans(Task *me)
 
     // 3-4 Shift solenoid is pulsed continuously while in Park and during selector lever movement (Garage Shifts).
     // Testing whether we actually need this.
- /*   if (wantedGear > 5)
+    if (wantedGear > 5 && garageShiftMove && stick)
     {
       analogWrite(y5, 255);
     }
-    else if (!shiftBlocker && wantedGear < 6)
+    else if (!garageShiftMove && !shiftBlocker)
     {
       analogWrite(y5, 0);
-    }*/ 
+    }
 
     if (tccLock)
     {
