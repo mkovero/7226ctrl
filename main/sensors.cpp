@@ -241,10 +241,10 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float oilTemp = T - 273.15;
   if (wantedGear == 6 || wantedGear == 8)
   {
-  avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +10;
+  avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
   }
   else {
-  avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +10;
+  avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
   }
  return avgOilTemp;
 }
@@ -370,6 +370,7 @@ a[3] = 4.141869911401698e-05
   {
     atfTemp = oilRead();
   }
+  atfTemp = atfTemp + 30;
   return atfTemp;
 
 
