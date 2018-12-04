@@ -33,5 +33,7 @@ extern boolean horn;
 extern boolean manual;
 extern boolean truePower;
 extern boolean tccLock;
+extern boolean stick;
+extern boolean autoGear;
 extern double lastShiftPoint;
 extern byte page;

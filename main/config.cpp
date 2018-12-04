@@ -32,7 +32,7 @@ boolean debugEnabled = true;
 boolean fullAuto = false;
 
 // Stick control
-boolean stickCtrl = true;
+boolean stickCtrl = false;
 
 // Boost control
 boolean boostLimit = true;
@@ -65,7 +65,7 @@ boolean batteryFault = false;
 boolean slipFault = false;
 
 // gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
-boolean evalGear = false;
+boolean evalGear = true;
 
 // radio control
 boolean radioEnabled = true; 

@@ -41,7 +41,7 @@ void pollstick(Task *me)
   int greenState = digitalRead(greenpin);
   int yellowState = digitalRead(yellowpin);
   int autoState = digitalRead(autoSwitch);
-
+  garageShiftMove = true;
   // Determine position
   if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
   {
@@ -86,30 +86,28 @@ void pollstick(Task *me)
   {
     wantedGear = 1;
     garageShiftMove = false;
-  } else {
-    garageShiftMove = true;
   }
 
   if (autoState == HIGH)
   {
-    if (!stickCtrl)
+    if (!fullAuto)
     {
       if (debugEnabled)
       {
-        Serial.println(F("pollstick: Stick control on "));
+        Serial.println(F("pollstick: fullAuto on "));
       }
-      stickCtrl = true;
+      fullAuto = true;
     }
   }
   else
   {
-    if (stickCtrl)
+    if (fullAuto)
     {
-      if (debugEnabled)
+    /*  if (debugEnabled)
       {
-        Serial.println(F("pollstick: Stick control off "));
-      }
-      stickCtrl = false;
+        Serial.println(F("pollstick: fullAuto off "));
+      }*/
+      fullAuto = false;
     }
   }
 }
@@ -344,12 +342,12 @@ void polltrans(Task *me)
       garageTime = millis();
     }
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
-    if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
+   /* if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
     {
       int mpcSetVal = (100 - mpcVal) * 2.55;
       analogWrite(mpc, mpcSetVal);
     }
-
+*/
     if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 1000))
     {
       analogWrite(spc, 0);
@@ -361,8 +359,9 @@ void polltrans(Task *me)
     if (wantedGear > 5 && garageShiftMove && stick)
     {
       analogWrite(y5, 255);
+      delay(500);
     }
-    else if (!garageShiftMove && !shiftBlocker)
+    if (!garageShiftMove)
     {
       analogWrite(y5, 0);
     }
@@ -385,7 +384,7 @@ void polltrans(Task *me)
       analogWrite(y3, 0);
       ignition = false;
     }
-    if (evalGear)
+    if (evalGear && !shiftBlocker && sensor.curSpeed > 10)
     {
       int evaluatedGear = evaluateGear();
       if (evaluatedGear < 6 && wantedGear < 6)
