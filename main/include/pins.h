@@ -56,4 +56,5 @@
 #define speedPin 21 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
 #define rpmPin 20 // voltage div 12/3 <-> black <-> whitebluewhite = 1kohm/380ohm div // DIN12
 #define batteryPin A21 // car battery monitor
-#define refPin A22 // sensor voltage ref
+//#define refPin A22 // sensor voltage ref
+#define refPin A13 // using this in exhaustTempPin for now.
