@@ -143,7 +143,7 @@ int speedRead()
       if (!speedFault)
       {
         speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
-       /* if (debugEnabled)
+                           /* if (debugEnabled)
         {
           Serial.print(F("SPEED FAULT: detected - autoshift disabled "));
           Serial.print(vehicleSpeedDiff);
@@ -240,14 +240,14 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
- /* if (wantedGear == 6 || wantedGear == 8)
+  /* if (wantedGear == 6 || wantedGear == 8)
   {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
   }
   else {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
   }*/
- return oilTemp;
+  return oilTemp;
 }
 
 int boostRead()
@@ -294,7 +294,6 @@ int batteryRead()
   return batteryMonVal;
 }
 
-
 int boostLimitRead(int oilTemp)
 {
   int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
@@ -309,7 +308,7 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
 
   if (curBoostLim == 0)
   {
-    boostPercent = 100;
+    boostPercent = 100 * curBoost / config.boostSpring;
   }
   else
   {
@@ -375,9 +374,6 @@ a[3] = 4.141869911401698e-05
   //atfTemp = atfTemp + 30;
   return atfTemp;
 
-
-  
-
   /*
   int atfTempCalculated = 0;
   int atfTempRaw = analogRead(atfPin);
@@ -408,7 +404,7 @@ a[3] = 4.141869911401698e-05
   atfTemp = atfTemp + 15;
   return atfTemp;*/
   // Beta coefficient version
- /* float tempRead = analogRead(atfPin);
+  /* float tempRead = analogRead(atfPin);
   tempRead = 1023 / tempRead - 1;
   tempRead = 220 / tempRead;
   float atfTemp;
