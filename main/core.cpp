@@ -183,14 +183,9 @@ void switchGearStop()
   analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
   analogWrite(spc, 0);              // spc off
   analogWrite(mpc, 0);              // mpc off
-  if (evalGear)
-  {
-    gear = evaluateGear();
-  }
-  else
-  {
-    gear = pendingGear; // we can happily say we're on new gear
-  }
+
+  gear = pendingGear; // we can happily say we're on new gear
+
   shiftStopTime = millis();
 
   if (debugEnabled)
@@ -422,11 +417,12 @@ void decideGear(Task *me)
   int moreGear = gear + 1;
   int lessGear = gear - 1;
   struct SensorVals sensor = readSensors();
+  struct ConfigParam config = readConfig();
 
   // Determine speed related downshift and upshift here.
   int autoGear = readMap(gearMap, sensor.curTps, sensor.curSpeed);
 
-  if (!shiftBlocker && !shiftPending && !speedFault && wantedGear < 6 && millis() - lastShiftPoint > 2000)
+  if (!shiftBlocker && !shiftPending && !speedFault && wantedGear < 6 && millis() - lastShiftPoint > config.nextShiftDelay)
   {
     if (autoGear > gear && fullAuto && sensor.curSpeed > 10)
     {
@@ -618,7 +614,7 @@ float getGearSlip()
 {
   struct SensorVals sensor = readSensors();
   struct ConfigParam config = readConfig();
-  static float maxRatio[5] = { 0.00, 0.00, 0.00, 0.00, 0.00 } , minRatio[5] = { 0.00, 0.00, 0.00, 0.00, 0.00 };
+  static float maxRatio[5] = {0.00, 0.00, 0.00, 0.00, 0.00}, minRatio[5] = {0.00, 0.00, 0.00, 0.00, 0.00};
   float slip;
 
   if (ratio > maxRatio[gear] && sensor.curRPM > config.stallSpeed)
@@ -643,19 +639,18 @@ void faultMon(Task *me)
   {
     slipFault = true;
   }
-    else
-    {
-      slipFault = false;
-    }
+  else
+  {
+    slipFault = false;
+  }
 
   if (sensor.curBattery < config.batteryLimit)
   {
     batteryFault = true;
   }
-    else
-    {
-      batteryFault = false;
-    }
-
+  else
+  {
+    batteryFault = false;
+  }
 }
 // END OF CORE
