@@ -233,20 +233,21 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
   float tempRead = analogRead(oilPin);
+  float refRead = analogRead(refPin);
   tempRead = tempRead;
-  int R2 = 4700 / (922.0 / (float)tempRead - 1.0);
+  int R2 = 4700 / (refRead / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15;
-  if (wantedGear == 6 || wantedGear == 8)
+ /* if (wantedGear == 6 || wantedGear == 8)
   {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
   }
   else {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
-  }
- return avgOilTemp;
+  }*/
+ return oilTemp;
 }
 
 int boostRead()
@@ -359,18 +360,19 @@ a[3] = 4.141869911401698e-05
 
   float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
   float tempRead = analogRead(atfPin);
+  float refRead = analogRead(refPin);
   tempRead = tempRead; // Voltage compensation
-  int R2 = 230 / (922.0 / (float)tempRead - 1.0);
+  int R2 = 230 / (refRead / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   float atfTemp = T - 273.15;
-    avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
+  //  avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
 
   if (wantedGear == 6 || wantedGear == 8)
   {
     atfTemp = oilRead();
   }
-  atfTemp = atfTemp + 30;
+  //atfTemp = atfTemp + 30;
   return atfTemp;
 
 

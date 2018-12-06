@@ -147,7 +147,7 @@ void draw(int wantedGear)
     {
       u8g2.print(F("P"));
     }
-    if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && !shiftPending)
+    if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && !shiftPending && gear < 6 )
     {
       u8g2.print(gear);
     }
@@ -391,10 +391,10 @@ void datalog(Task *me)
   {
     struct SensorVals sensor = readSensors();
 
-    if (debugEnabled)
+    /*if (debugEnabled)
     {
       debugEnabled = false;
-    }
+    }*/
     Serial.print(sensor.curSpeed);
     Serial.print(F(";"));
     Serial.print(sensor.curRPM);

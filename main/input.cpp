@@ -103,10 +103,10 @@ void pollstick(Task *me)
   {
     if (fullAuto)
     {
-    /*  if (debugEnabled)
+      if (debugEnabled)
       {
         Serial.println(F("pollstick: fullAuto off "));
-      }*/
+      }
       fullAuto = false;
     }
   }
