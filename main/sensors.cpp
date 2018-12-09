@@ -379,9 +379,9 @@ a[3] = 4.141869911401698e-05
   float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
   float tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
-  avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
-  avgAtfRef = (avgAtfRef * 29 + refRead) / 30;
-  int R2 = 230 / (avgAtfRef / (float)avgAtfTemp - 1.0);
+//  avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
+//  avgAtfRef = (avgAtfRef * 29 + refRead) / 30;
+  int R2 = 230 / (1023 / (float)tempRead - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
@@ -390,7 +390,7 @@ a[3] = 4.141869911401698e-05
   {
     atfTemp = oilRead();
   }
-  atfTemp = atfTemp + 20;
+  //atfTemp = 49;
   return atfTemp;
 
   /*

@@ -68,6 +68,17 @@ int readMap(const int theMap[14][12], int x, int y)
 
 int readPercentualMap(const int theMap[14][12], int x, int y)
 {
+
+  if (y < -20)
+  {
+    y = -20;
+  }
+
+  if (y > 100)
+  {
+    y = 100;
+  }
+
   int xidx = 0; // by default near first element
   int xelements = LEN(theMap[0]);
 
@@ -96,10 +107,11 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   }
   lastXval = xidx;
   lastYval = yidx;
-  
+
   int calculatedPoint = 0;
   int mapValue = pgm_read_word_near(&theMap[yidx][xidx]);
-  int prevMapValue = pgm_read_word_near(&theMap[yidx - 1][xidx]);
+  int prevMapValue = pgm_read_word_near(&theMap[yidx][xidx - 1]);
+  int prevMapValue2 = pgm_read_word_near(&theMap[yidx - 1][xidx]);
   int nextMapValue = pgm_read_word_near(&theMap[yidx + 1][xidx]);
   int fuzzyMapValue = pgm_read_word_near(&theMap[yidx + 1][xidx - 1]);
   int fuzzyMapValue2 = pgm_read_word_near(&theMap[yidx - 1][xidx - 1]);
@@ -108,39 +120,30 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   int prevY = pgm_read_word_near(&theMap[yidx - 1][0]);
   int prevX = pgm_read_word_near(&theMap[0][xidx - 1]);
 
-float betweenL1 = (curX - x) / (curX - prevX);
-float calculatedLine1 = mapValue - (betweenL1 * (mapValue - prevMapValue));
+  float betweenL1 = (curX - x) / (curX - prevX);                              //*
+  float calculatedLine1 = mapValue - (betweenL1 * (mapValue - prevMapValue)); //*
 
-if ( x > curX ) {
-    float calculatedLine2 = nextMapValue - (betweenL1 * (nextMapValue - fuzzyMapValue));
-    float twoPoints = ((y - curY) / prevY - curY);
-    float calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
-}
-if ( x < curX ) {
-    float calculatedLine2 = prevMapValue - (betweenL1 * (prevMapValue - fuzzyMapValue2));
-    float twoPoints = ((y - curY) / curY - prevY);
-    float calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
-}
-else {
+  if (y > curY)
+  {
+    float calculatedLine2 = nextMapValue - (betweenL1 * (nextMapValue - fuzzyMapValue));         //*
+    float twoPoints = (y - curY) / (prevY - curY);                                               //*
+    float calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2)); //*
+  }
+  if (y < curY)
+  {
+    float calculatedLine2 = prevMapValue2 - (betweenL1 * (prevMapValue2 - fuzzyMapValue2)); //*
+    float twoPoints = (y - curY) / (curY - prevY);
+    calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
+  }
+  else
+  {
     float calculatedLine2 = calculatedLine1;
-    float twoPoints = ((y - curY) / prevY - curY);
-    float calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
-}
+    int twoPoints = (y - curY) / (prevY - curY);
+    calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
+  }
 
-//float percY = mapValue - (pgm_read_word_near(&theMap[yidx][0]) - y) / (pgm_read_word_near(&theMap[yidx][0]) - pgm_read_word_near(&theMap[yidx - 1][0])) * (mapValue * pgm_read_word_near(&theMap[yidx -1][xidx]));
-//  float percX = mapValue - (pgm_read_word_near(&theMap[0][xidx]) - x) / (pgm_read_word_near(&theMap[0][xidx]) - pgm_read_word_near(&theMap[0][xidx - 1])) * (mapValue * pgm_read_word_near(&theMap[yidx][xidx -1]));
-  
   return calculatedPoint;
 }
-
-//35 / 40 = 0,875
-//40 / 35 = 1,142
-// 82-(40-35)/(40-30)*(82-72)
-// 35 = mitattu arvo
-// 40 = lähin y-akseli
-// 30 = aikaisempi y-akseli
-// 72 = aikaisemman arvo
-// 82 lähimmän arvo
 
 // Function to read 2d maps from flash (maps declared with PROGMEM)
 int readGearMap(const int theMap[14][6], int x, int y)

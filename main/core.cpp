@@ -240,7 +240,7 @@ void gearchangeUp(int newGear)
       if (sensors)
       {
         lastMapVal = 100;
-        switchGearStart(y3, readMap(spcMap12, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap12, sensor.curLoad, sensor.curAtfTemp));
+        switchGearStart(y3, readPercentualMap(spcMap12, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap12, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
     case 3:
@@ -258,7 +258,7 @@ void gearchangeUp(int newGear)
       if (sensors)
       {
         lastMapVal = 130;
-        switchGearStart(y4, readMap(spcMap23, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap23, sensor.curLoad, sensor.curAtfTemp));
+        switchGearStart(y4, readPercentualMap(spcMap23, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap23, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
     case 4:
@@ -276,7 +276,7 @@ void gearchangeUp(int newGear)
       if (sensors)
       {
         lastMapVal = 160;
-        switchGearStart(y5, readMap(spcMap34, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap34, sensor.curLoad, sensor.curAtfTemp));
+        switchGearStart(y5, readPercentualMap(spcMap34, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap34, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
     case 5:
@@ -294,7 +294,7 @@ void gearchangeUp(int newGear)
       if (sensors)
       {
         lastMapVal = 190;
-        switchGearStart(y3, readMap(spcMap45, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap45, sensor.curLoad, sensor.curAtfTemp));
+        switchGearStart(y3, readPercentualMap(spcMap45, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap45, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
     default:
@@ -341,7 +341,7 @@ void gearchangeDown(int newGear)
       if (sensors)
       {
         lastMapVal = 210;
-        switchGearStart(y3, readMap(spcMap21, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap21, sensor.curLoad, sensor.curAtfTemp));
+        switchGearStart(y3, readPercentualMap(spcMap21, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap21, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
     case 2:
@@ -359,7 +359,7 @@ void gearchangeDown(int newGear)
       if (sensors)
       {
         lastMapVal = 240;
-        switchGearStart(y4, readMap(spcMap32, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap32, sensor.curLoad, sensor.curAtfTemp));
+        switchGearStart(y4, readPercentualMap(spcMap32, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap32, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
     case 3:
@@ -377,7 +377,7 @@ void gearchangeDown(int newGear)
       if (sensors)
       {
         lastMapVal = 270;
-        switchGearStart(y5, readMap(spcMap43, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap43, sensor.curLoad, sensor.curAtfTemp));
+        switchGearStart(y5, readPercentualMap(spcMap43, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap43, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
     case 4:
@@ -395,7 +395,7 @@ void gearchangeDown(int newGear)
       if (sensors)
       {
         lastMapVal = 300;
-        switchGearStart(y3, readMap(spcMap54, sensor.curLoad, sensor.curAtfTemp), readMap(mpcMap54, sensor.curLoad, sensor.curAtfTemp));
+        switchGearStart(y3, readPercentualMap(spcMap54, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap54, sensor.curLoad, sensor.curAtfTemp));
       }
       break;
     case 5:
