@@ -4,6 +4,7 @@
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))
 int lastXval, lastYval;
 int maxBoostPressure = 700; // Max pressure on boost sensor
+boolean ShiftDebugEnabled = false;
 
 // Calculation helpers
 
@@ -78,7 +79,7 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   {
     y = 100;
   }
-
+/*
   int xidx = 0; // by default near first element
   int xelements = LEN(theMap[0]);
 
@@ -107,41 +108,119 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   }
   lastXval = xidx;
   lastYval = yidx;
+   */
+    int xidx = 0; // by default near first element
+     int yidx = 0; // by default near first element
+     int xelements = 12;
+  int yelements = 14;
+  
+ for (int i = 1; i < xelements; i++)
+  {
+    int curVal = pgm_read_dword_near(&theMap[0][i]);
 
+   if (x <= curVal)
+    {
+      xidx = i;
+      break;
+
+    }
+  }
+
+for (int i = 1; i < yelements; i++)
+  {
+    int curVal = pgm_read_dword_near(&theMap[i][0]);
+
+    if (y <= curVal)
+    {
+      yidx = i;
+      break;
+
+    }
+  }
+  
   int calculatedPoint = 0;
-  int mapValue = pgm_read_word_near(&theMap[yidx][xidx]);
-  int prevMapValue = pgm_read_word_near(&theMap[yidx][xidx - 1]);
-  int prevMapValue2 = pgm_read_word_near(&theMap[yidx - 1][xidx]);
-  int nextMapValue = pgm_read_word_near(&theMap[yidx + 1][xidx]);
-  int fuzzyMapValue = pgm_read_word_near(&theMap[yidx + 1][xidx - 1]);
-  int fuzzyMapValue2 = pgm_read_word_near(&theMap[yidx - 1][xidx - 1]);
-  int curY = pgm_read_word_near(&theMap[yidx][0]);
-  int curX = pgm_read_word_near(&theMap[0][xidx]);
-  int prevY = pgm_read_word_near(&theMap[yidx - 1][0]);
-  int prevX = pgm_read_word_near(&theMap[0][xidx - 1]);
+  int mapValue = pgm_read_dword_near(&theMap[yidx][xidx]);
+  int prevMapValue = pgm_read_dword_near(&theMap[yidx][xidx - 1]);
+  int prevMapValue2 = pgm_read_dword_near(&theMap[yidx - 1][xidx]);
+  int nextMapValue = pgm_read_dword_near(&theMap[yidx + 1][xidx]);
+  int fuzzyMapValue = pgm_read_dword_near(&theMap[yidx + 1][xidx - 1]);
+  int fuzzyMapValue2 = pgm_read_dword_near(&theMap[yidx - 1][xidx - 1]);
+  int curY = pgm_read_dword_near(&theMap[yidx][0]);
+  int curX = pgm_read_dword_near(&theMap[0][xidx]);
+  int prevY = pgm_read_dword_near(&theMap[yidx - 1][0]);
+  int prevX = pgm_read_dword_near(&theMap[0][xidx - 1]);
 
-  float betweenL1 = (curX - x) / (curX - prevX);                              //*
-  float calculatedLine1 = mapValue - (betweenL1 * (mapValue - prevMapValue)); //*
+  double betweenL1 = ((curX - x) / (curX - prevX));                              //*
+  double calculatedLine1 = mapValue - (betweenL1 * (mapValue - prevMapValue)); //*
+
 
   if (y > curY)
   {
-    float calculatedLine2 = nextMapValue - (betweenL1 * (nextMapValue - fuzzyMapValue));         //*
-    float twoPoints = (y - curY) / (prevY - curY);                                               //*
-    float calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2)); //*
+    double calculatedLine2 = nextMapValue - (betweenL1 * (nextMapValue - fuzzyMapValue));         
+    double twoPoints = ((y - curY) / (prevY - curY));  
+    calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2)); 
+    
+    if (ShiftDebugEnabled) {
+        Serial.print("y: ");
+    Serial.println(y);
+    Serial.print("curY: ");
+    Serial.println(curY);
+    Serial.print("prevY: ");
+    Serial.println(prevY);   
+    Serial.print("twopoints: ");
+  Serial.println(twoPoints);
+    Serial.print("calculatedLine2: ");
+    Serial.println(calculatedLine2);
+        Serial.print("calculatedLine1: ");
+    Serial.println(calculatedLine1);
+            Serial.print("1calculatedPoint: ");
+    Serial.println(calculatedPoint);
+    }
   }
-  if (y < curY)
+  else if (y < curY)
   {
-    float calculatedLine2 = prevMapValue2 - (betweenL1 * (prevMapValue2 - fuzzyMapValue2)); //*
-    float twoPoints = (y - curY) / (curY - prevY);
+    double calculatedLine2 = prevMapValue2 - (betweenL1 * (prevMapValue2 - fuzzyMapValue2)); //*
+    double twoPoints = ((y - curY) / (curY - prevY));
     calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
+
+ if (ShiftDebugEnabled) {
+    Serial.print("y: ");
+    Serial.println(y);
+    Serial.print("curY: ");
+    Serial.println(curY);
+    Serial.print("prevY: ");
+    Serial.println(prevY);   
+    Serial.print("twopoints: ");
+    Serial.println(twoPoints);
+    Serial.print("calculatedLine2: ");
+    Serial.println(calculatedLine2);
+        Serial.print("calculatedLine1: ");
+    Serial.println(calculatedLine1);
+        Serial.print("2calculatedPoint: ");
+    Serial.println(calculatedPoint);
+ }
   }
   else
   {
-    float calculatedLine2 = calculatedLine1;
-    int twoPoints = (y - curY) / (prevY - curY);
-    calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
-  }
+    double calculatedLine2 = calculatedLine1;
+    double twoPoints = ((y - curY) / (prevY - curY));
+        calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
 
+  if (ShiftDebugEnabled) {
+    Serial.print("y: ");
+    Serial.println(y);
+    Serial.print("curY: ");
+    Serial.println(curY);
+    Serial.print("prevY: ");
+    Serial.println(prevY);   
+    Serial.print("twopoints: ");
+  Serial.println(twoPoints);
+      Serial.print("calculatedLine2: ");
+    Serial.println(calculatedLine2);
+            Serial.print("3calculatedPoint: ");
+    Serial.println(calculatedPoint);
+  }
+  }
   return calculatedPoint;
 }
 
