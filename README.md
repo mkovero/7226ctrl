@@ -40,6 +40,7 @@ Currently should work:
 - n2/n3 speed sensors (tested and works)
 - evaluateGear, make sure which gear is in (tested and works)
 - Torque converter lock based on default scenario (100% lock when on 5th gear, >80km/h and low load conditions)
+- percentual map reads preferably without floats (eg. value between point x and y).
 
 Implemented but needs real life testing:
 - adaptative shift pressure (works in lab)
@@ -53,7 +54,6 @@ Work in progress:
 
 Not started/pending:
 - PID controlled PWM for temperature stability
-- percentual map reads preferably without floats (eg. value between point x and y).
 
 Currently datalogged (custom intervals, default is once per second): 
 - vehicle speed
