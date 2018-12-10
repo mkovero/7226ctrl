@@ -150,14 +150,27 @@ for (int i = 1; i < yelements; i++)
   int prevY = pgm_read_dword_near(&theMap[yidx - 1][0]);
   int prevX = pgm_read_dword_near(&theMap[0][xidx - 1]);
 
-  double betweenL1 = ((curX - x) / (curX - prevX));                              //*
-  double calculatedLine1 = mapValue - (betweenL1 * (mapValue - prevMapValue)); //*
+  float betweenL1 = ((float(curX) - x) / (curX - prevX));                              //*
+  float calculatedLine1 = mapValue - (betweenL1 * (mapValue - prevMapValue)); //*
+    if (ShiftDebugEnabled) {
 
-
+        Serial.print("mapvalue: ");
+    Serial.println(mapValue);
+            Serial.print("prevmapvalue: ");
+    Serial.println(prevMapValue);
+                Serial.print("betweenL1: ");
+    Serial.println(betweenL1);
+        Serial.print("x: ");
+    Serial.println(x);
+    Serial.print("curX: ");
+    Serial.println(curX);
+    Serial.print("prevX: ");
+    Serial.println(prevX);   
+    }
   if (y > curY)
   {
     double calculatedLine2 = nextMapValue - (betweenL1 * (nextMapValue - fuzzyMapValue));         
-    double twoPoints = ((y - curY) / (prevY - curY));  
+    float twoPoints = ((float(y) - curY) / (prevY - curY));  
     calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2)); 
     
     if (ShiftDebugEnabled) {
@@ -180,7 +193,7 @@ for (int i = 1; i < yelements; i++)
   else if (y < curY)
   {
     double calculatedLine2 = prevMapValue2 - (betweenL1 * (prevMapValue2 - fuzzyMapValue2)); //*
-    double twoPoints = ((y - curY) / (curY - prevY));
+    float twoPoints = ((float(y) - curY) / (curY - prevY));
     calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
 
  if (ShiftDebugEnabled) {
@@ -203,7 +216,7 @@ for (int i = 1; i < yelements; i++)
   else
   {
     double calculatedLine2 = calculatedLine1;
-    double twoPoints = ((y - curY) / (prevY - curY));
+    float twoPoints = ((float(y) - curY) / (prevY - curY));
         calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
 
   if (ShiftDebugEnabled) {
