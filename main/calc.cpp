@@ -79,7 +79,7 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   {
     y = 100;
   }
-/*
+  /*
   int xidx = 0; // by default near first element
   int xelements = LEN(theMap[0]);
 
@@ -109,24 +109,23 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   lastXval = xidx;
   lastYval = yidx;
    */
-    int xidx = 0; // by default near first element
-     int yidx = 0; // by default near first element
-     int xelements = 12;
+  int xidx = 0; // by default near first element
+  int yidx = 0; // by default near first element
+  int xelements = 12;
   int yelements = 14;
-  
- for (int i = 1; i < xelements; i++)
+
+  for (int i = 1; i < xelements; i++)
   {
     int curVal = pgm_read_dword_near(&theMap[0][i]);
 
-   if (x <= curVal)
+    if (x <= curVal)
     {
       xidx = i;
       break;
-
     }
   }
 
-for (int i = 1; i < yelements; i++)
+  for (int i = 1; i < yelements; i++)
   {
     int curVal = pgm_read_dword_near(&theMap[i][0]);
 
@@ -134,10 +133,9 @@ for (int i = 1; i < yelements; i++)
     {
       yidx = i;
       break;
-
     }
   }
-  
+
   int calculatedPoint = 0;
   int mapValue = pgm_read_dword_near(&theMap[yidx][xidx]);
   int prevMapValue = pgm_read_dword_near(&theMap[yidx][xidx - 1]);
@@ -150,44 +148,46 @@ for (int i = 1; i < yelements; i++)
   int prevY = pgm_read_dword_near(&theMap[yidx - 1][0]);
   int prevX = pgm_read_dword_near(&theMap[0][xidx - 1]);
 
-  float betweenL1 = ((float(curX) - x) / (curX - prevX));                              //*
+  float betweenL1 = ((float(curX) - x) / (curX - prevX));                     //*
   float calculatedLine1 = mapValue - (betweenL1 * (mapValue - prevMapValue)); //*
-    if (ShiftDebugEnabled) {
+  if (ShiftDebugEnabled)
+  {
 
-        Serial.print("mapvalue: ");
+    Serial.print("mapvalue: ");
     Serial.println(mapValue);
-            Serial.print("prevmapvalue: ");
+    Serial.print("prevmapvalue: ");
     Serial.println(prevMapValue);
-                Serial.print("betweenL1: ");
+    Serial.print("betweenL1: ");
     Serial.println(betweenL1);
-        Serial.print("x: ");
+    Serial.print("x: ");
     Serial.println(x);
     Serial.print("curX: ");
     Serial.println(curX);
     Serial.print("prevX: ");
-    Serial.println(prevX);   
-    }
+    Serial.println(prevX);
+  }
   if (y > curY)
   {
-    double calculatedLine2 = nextMapValue - (betweenL1 * (nextMapValue - fuzzyMapValue));         
-    float twoPoints = ((float(y) - curY) / (prevY - curY));  
-    calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2)); 
-    
-    if (ShiftDebugEnabled) {
-        Serial.print("y: ");
-    Serial.println(y);
-    Serial.print("curY: ");
-    Serial.println(curY);
-    Serial.print("prevY: ");
-    Serial.println(prevY);   
-    Serial.print("twopoints: ");
-  Serial.println(twoPoints);
-    Serial.print("calculatedLine2: ");
-    Serial.println(calculatedLine2);
-        Serial.print("calculatedLine1: ");
-    Serial.println(calculatedLine1);
-            Serial.print("1calculatedPoint: ");
-    Serial.println(calculatedPoint);
+    double calculatedLine2 = nextMapValue - (betweenL1 * (nextMapValue - fuzzyMapValue));
+    float twoPoints = ((float(y) - curY) / (prevY - curY));
+    calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
+
+    if (ShiftDebugEnabled)
+    {
+      Serial.print("y: ");
+      Serial.println(y);
+      Serial.print("curY: ");
+      Serial.println(curY);
+      Serial.print("prevY: ");
+      Serial.println(prevY);
+      Serial.print("twopoints: ");
+      Serial.println(twoPoints);
+      Serial.print("calculatedLine2: ");
+      Serial.println(calculatedLine2);
+      Serial.print("calculatedLine1: ");
+      Serial.println(calculatedLine1);
+      Serial.print("1calculatedPoint: ");
+      Serial.println(calculatedPoint);
     }
   }
   else if (y < curY)
@@ -196,43 +196,45 @@ for (int i = 1; i < yelements; i++)
     float twoPoints = ((float(y) - curY) / (curY - prevY));
     calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
 
- if (ShiftDebugEnabled) {
-    Serial.print("y: ");
-    Serial.println(y);
-    Serial.print("curY: ");
-    Serial.println(curY);
-    Serial.print("prevY: ");
-    Serial.println(prevY);   
-    Serial.print("twopoints: ");
-    Serial.println(twoPoints);
-    Serial.print("calculatedLine2: ");
-    Serial.println(calculatedLine2);
-        Serial.print("calculatedLine1: ");
-    Serial.println(calculatedLine1);
-        Serial.print("2calculatedPoint: ");
-    Serial.println(calculatedPoint);
- }
+    if (ShiftDebugEnabled)
+    {
+      Serial.print("y: ");
+      Serial.println(y);
+      Serial.print("curY: ");
+      Serial.println(curY);
+      Serial.print("prevY: ");
+      Serial.println(prevY);
+      Serial.print("twopoints: ");
+      Serial.println(twoPoints);
+      Serial.print("calculatedLine2: ");
+      Serial.println(calculatedLine2);
+      Serial.print("calculatedLine1: ");
+      Serial.println(calculatedLine1);
+      Serial.print("2calculatedPoint: ");
+      Serial.println(calculatedPoint);
+    }
   }
   else
   {
     double calculatedLine2 = calculatedLine1;
     float twoPoints = ((float(y) - curY) / (prevY - curY));
-        calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
+    calculatedPoint = calculatedLine2 - (twoPoints * (calculatedLine1 - calculatedLine2));
 
-  if (ShiftDebugEnabled) {
-    Serial.print("y: ");
-    Serial.println(y);
-    Serial.print("curY: ");
-    Serial.println(curY);
-    Serial.print("prevY: ");
-    Serial.println(prevY);   
-    Serial.print("twopoints: ");
-  Serial.println(twoPoints);
+    if (ShiftDebugEnabled)
+    {
+      Serial.print("y: ");
+      Serial.println(y);
+      Serial.print("curY: ");
+      Serial.println(curY);
+      Serial.print("prevY: ");
+      Serial.println(prevY);
+      Serial.print("twopoints: ");
+      Serial.println(twoPoints);
       Serial.print("calculatedLine2: ");
-    Serial.println(calculatedLine2);
-            Serial.print("3calculatedPoint: ");
-    Serial.println(calculatedPoint);
-  }
+      Serial.println(calculatedLine2);
+      Serial.print("3calculatedPoint: ");
+      Serial.println(calculatedPoint);
+    }
   }
   return calculatedPoint;
 }

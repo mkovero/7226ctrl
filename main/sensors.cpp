@@ -6,6 +6,7 @@
 #include "include/ui.h"
 #include "include/config.h"
 #include "include/core.h"
+#include <Filters.h>
 #include <SoftTimer.h>
 using namespace std;
 
@@ -16,6 +17,8 @@ int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 // sensor smoothing
 int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal,avgAtfRef,avgOilRef;
 float alpha = 0.7, gearSlip;
+FilterOnePole filterOneLowpass( LOWPASS, 1 ); // for atfTemp
+FilterOnePole filterOneLowpass2( LOWPASS, 1 ); // for oilTemp
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -234,9 +237,10 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
   float tempRead = analogRead(oilPin);
   float refRead = analogRead(refPin);
-  avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
-  avgOilRef = (avgOilRef * 9 + refRead) / 10;
-  int R2 = 4700 / (avgOilRef / (float)avgOilTemp - 1.0);
+  filterOneLowpass2.input( tempRead );
+  //avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
+  //avgOilRef = (avgOilRef * 9 + refRead) / 10;
+  int R2 = 4700 / (1023 / (float)filterOneLowpass2.output() - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
@@ -379,9 +383,10 @@ a[3] = 4.141869911401698e-05
   float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
   float tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
-//  avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
+  filterOneLowpass.input( tempRead );
+// avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
 //  avgAtfRef = (avgAtfRef * 29 + refRead) / 30;
-  int R2 = 230 / (1023 / (float)tempRead - 1.0);
+  int R2 = 230 / (1023 / (float)filterOneLowpass.output() - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
