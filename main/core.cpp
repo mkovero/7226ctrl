@@ -145,7 +145,9 @@ void doShift()
   mpcSetVal = (100 - mpcPercentVal) * 2.55;
 
   shiftStartTime = millis(); // Beginning to count shiftStartTime
-
+  // pinmode change is due the fact how n2/n3 speed sensors change during the shift.
+  pinMode(n2pin, INPUT);    // N2 sensor
+  pinMode(n3pin, INPUT);    // N3 sensor
   analogWrite(tcc, 0);
   analogWrite(spc, spcSetVal);
   analogWrite(mpc, mpcSetVal);
@@ -183,7 +185,8 @@ void switchGearStop()
   analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
   analogWrite(spc, 0);              // spc off
   analogWrite(mpc, 0);              // mpc off
-
+  pinMode(n2pin, INPUT_PULLUP);    // N2 sensor
+  pinMode(n3pin, INPUT_PULLUP);    // N3 sensor
   gear = pendingGear; // we can happily say we're on new gear
 
   shiftStopTime = millis();
