@@ -18,7 +18,7 @@ byte wantedGear = 100;
 const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
 double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double Kd = 0; //100, 1 Pid Derivative Gain.
-boolean garageShift,garageShiftMove = false;
+boolean garageShift, garageShiftMove = false;
 double garageTime, lastShift, lastInput;
 
 /*
@@ -56,11 +56,11 @@ void pollstick(Task *me)
     wantedGear = 7;
     gear = 2; // force reset gear to 2
     garageShiftMove = false;
-  }           // R
+  } // R
   if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
   {
     wantedGear = 6;
-    garageShiftMove = false;    
+    garageShiftMove = false;
   } // N
   if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW)
   {
@@ -157,29 +157,23 @@ void pollkeys()
 {
   int gupState = digitalRead(gupSwitch);     // Gear up
   int gdownState = digitalRead(gdownSwitch); // Gear down
-  static int prevgdownState = 0;
-  static int prevgupState = 0;
 
-  if (gdownState != prevgdownState || gupState != prevgupState)
+  if (gdownState == LOW && gupState == HIGH)
   {
-    if (gdownState == LOW && gupState == HIGH)
+    if (debugEnabled)
     {
-      prevgupState = gupState;
-      if (debugEnabled)
-      {
-        Serial.println(F("pollkeys: Gear up button"));
-      }
-      gearUp();
+      Serial.println(F("pollkeys: Gear up button"));
     }
-    else if (gupState == LOW && gdownState == HIGH)
+    gearUp();
+  }
+  else if (gupState == LOW && gdownState == HIGH)
+  {
+
+    if (debugEnabled)
     {
-      prevgdownState = gdownState;
-      if (debugEnabled)
-      {
-        Serial.println(F("pollkeys: Gear down button"));
-      }
-      gearDown();
+      Serial.println(F("pollkeys: Gear down button"));
     }
+    gearDown();
   }
 }
 
@@ -343,7 +337,7 @@ void polltrans(Task *me)
       garageTime = millis();
     }
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
-   /* if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
+    /* if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
     {
       int mpcSetVal = (100 - mpcVal) * 2.55;
       analogWrite(mpc, mpcSetVal);
@@ -407,9 +401,12 @@ void polltrans(Task *me)
   {
     hornOff();
   }
-  if (sensor.curRPM > 0) {
+  if (sensor.curRPM > 0)
+  {
     carRunning = true;
-  } else {
+  }
+  else
+  {
     carRunning = false;
   }
 }
