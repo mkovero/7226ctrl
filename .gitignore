@@ -10,3 +10,4 @@ Thumbs.db
 
 # Dataviz-related
 node_modules
+package-lock.json
