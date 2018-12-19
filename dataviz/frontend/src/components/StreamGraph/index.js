@@ -104,7 +104,7 @@ export default class StreamGraph extends Component {
     return (
       <div>
         <button onClick={() => console.log(data)}>Print data</button>
-        <svg id="chart" width="1080" height="1080"></svg>
+        <svg id="chart" width="720" height="720"></svg>
       </div>
     );
   }
