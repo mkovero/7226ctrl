@@ -7,16 +7,14 @@ import { svg, stack, stackOrderNone, stackOffsetSilhouette, area, curveMonotoneX
 import { range, max, min, transpose } from 'd3-array';
 import { transition } from 'd3-transition';
 
-// vehicleSpeed(kmh);rpmSensor(rpm);tpsSensor(%);gear(1-5);oilTemp(celcius);atfTemp(celcius);load(%);boostSensor(kPa);boostLimit(kPa);lastSPC(int);modVal(int);looptime(usec)
-var n = 12, // number of layers
+// nopeus;rpm;tps;vaihde;oiltemp;atftemp;load;boost;express;boostlim;pressdif;n2;n3;evalgear;ratio;slip;battery 
+var n = 9, // number of layers
     m = 150; // number of samples per layer
-const data = new Array(12).fill(null).map(() => new Array(m).fill(0));
+const data = new Array(n).fill(null).map(() => new Array(m).fill(0));
 
 var y;
 
 function streamGraph() {
-
-
 
     var stack_ = stack().keys(range(n)).offset(stackOffsetSilhouette),
         layers = stack_(transpose(data));
@@ -77,9 +75,7 @@ function streamGraph() {
         selectAll("path")
             .data(d)
             .attr("d", area_);
-
 }
-
     return transition;
 }
 
