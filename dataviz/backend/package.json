@@ -1,0 +1,15 @@
+{
+  "name": "mercedes-stats",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jami Karvanen",
+  "license": "ISC",
+  "dependencies": {
+    "serialport": "^7.0.2",
+    "ws": "^5.1.1"
+  }
+}
