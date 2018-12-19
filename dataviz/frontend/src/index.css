@@ -8,6 +8,6 @@ body {
 
 #chart {
   transform: rotate(90deg);
-  position: relative;
-  margin-left: -50px
+  position: fixed;
+  margin-left: -550px
 }

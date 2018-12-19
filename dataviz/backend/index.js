@@ -21,7 +21,7 @@ function stripData(line) {
 }
 
 function scaleData(line) {
-  let scaleFactor = 4000;
+  let scaleFactor = 3000;
   line[0] = (line[0]/300) * scaleFactor
   line[1] = (line[1]/10/650) * scaleFactor
   line[2] = (line[2]/100) * scaleFactor
