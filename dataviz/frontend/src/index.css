@@ -9,4 +9,5 @@ body {
 #chart {
   transform: rotate(90deg);
   position: relative;
+  margin-left: -50px
 }

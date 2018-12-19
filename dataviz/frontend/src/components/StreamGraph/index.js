@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { select, selectAll } from 'd3-selection';
-import { line, scaleLinear } from 'd3-scale';
-import { interpolate, interpolateRgb } from 'd3-interpolate';
+import { scaleLinear } from 'd3-scale';
 import { interpolateCool } from 'd3-scale-chromatic';
-import { svg, stack, stackOrderNone, stackOffsetSilhouette, area, curveMonotoneX, curveNatural } from 'd3-shape';
+import { stack, stackOffsetSilhouette, area, curveNatural } from 'd3-shape';
 import { range, max, min, transpose } from 'd3-array';
 import { transition } from 'd3-transition';
 
@@ -105,7 +104,7 @@ export default class StreamGraph extends Component {
     return (
       <div>
         <button onClick={() => console.log(data)}>Print data</button>
-        <svg id="chart" width="960" height="1000"></svg>
+        <svg id="chart" width="1920" height="1080"></svg>
       </div>
     );
   }
