@@ -35,8 +35,14 @@
 
 // Switches
 #define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey // DIN5
+
+#ifdef MANUAL
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6
 #define gupSwitch 24 // <-> NC // DIN7
+#else
+#define fuelInPin 23 // ex. 23 <-> NC // DIN6
+#define fuelOutPin 24 // <-> NC // DIN7
+#endif
 
 #ifdef ASPC
 #define aSpcUpSwitch 32 // ex 18 <-> missing grey? // DIN13

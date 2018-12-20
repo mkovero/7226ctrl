@@ -155,8 +155,13 @@ void gearDown()
 // Polling for manual switch keys
 void pollkeys()
 {
-  int gupState = digitalRead(gupSwitch);     // Gear up
-  int gdownState = digitalRead(gdownSwitch); // Gear down
+  int gupState = 0;
+  int gdownState = 0;
+  
+#ifdef MANUAL
+  gupState = digitalRead(gupSwitch);     // Gear up
+  gdownState = digitalRead(gdownSwitch); // Gear down
+#endif
 
   if (gdownState == LOW && gupState == HIGH)
   {
@@ -519,11 +524,11 @@ void radioControl()
     }
     else if (readData == 150)
     {
-      if (page < 3)
+      if (page < 4)
       {
         page++;
       }
-      else if (page > 3)
+      else if (page > 4)
       {
         page = 1;
       }
@@ -537,7 +542,7 @@ void radioControl()
       }
       else if (page < 1)
       {
-        page = 3;
+        page = 4;
       }
       readData = 0;
     }

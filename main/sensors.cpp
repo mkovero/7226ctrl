@@ -11,14 +11,14 @@
 using namespace std;
 
 // Internals
-unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog;
+unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog, fuelIn, fuelOut, fuelUsed, fuelUsedAvg;
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
-int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal,avgAtfRef,avgOilRef;
+int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal, avgAtfRef, avgOilRef;
 float alpha = 0.7, gearSlip;
-FilterOnePole filterOneLowpass( LOWPASS, 1 ); // for atfTemp
-FilterOnePole filterOneLowpass2( LOWPASS, 1 ); // for oilTemp
+FilterOnePole filterOneLowpass(LOWPASS, 1);  // for atfTemp
+FilterOnePole filterOneLowpass2(LOWPASS, 1); // for oilTemp
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -40,6 +40,16 @@ void rpmInterrupt()
   rpmPulse++;
 }
 
+void fuelInInterrupt()
+{
+  fuelIn++;
+}
+
+void fuelOutInterrupt()
+{
+  fuelOut++;
+}
+
 // Polling sensors
 void pollsensors(Task *me)
 {
@@ -54,6 +64,10 @@ void pollsensors(Task *me)
     detachInterrupt(n3pin);
     detachInterrupt(rpmPin);
     detachInterrupt(speedPin);
+#ifndef MANUAL
+    detachInterrupt(fuelInPin);
+    detachInterrupt(fuelOutPin);
+#endif
     float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
 
     if (n2SpeedPulses >= n2PulsesPerRev)
@@ -101,6 +115,11 @@ void pollsensors(Task *me)
       rpmPulse = 0;
     }
 
+    fuelUsed = fuelIn - fuelOut;
+    fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
+    fuelIn = 0;
+    fuelOut = 0;
+
     gearSlip = getGearSlip();
     evalGearVal = evaluateGear();
 
@@ -115,6 +134,10 @@ void pollsensors(Task *me)
     attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
+#ifndef MANUAL
+    attachInterrupt(digitalPinToInterrupt(fuelInPin), fuelOutInterrupt, RISING);
+    attachInterrupt(digitalPinToInterrupt(fuelOutPin), fuelInInterrupt, RISING);
+#endif
   }
 }
 
@@ -237,7 +260,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
   float tempRead = analogRead(oilPin);
   float refRead = analogRead(refPin);
-  filterOneLowpass2.input( tempRead );
+  filterOneLowpass2.input(tempRead);
   //avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
   //avgOilRef = (avgOilRef * 9 + refRead) / 10;
   int R2 = 4700 / (1023 / (float)filterOneLowpass2.output() - 1.0);
@@ -361,7 +384,7 @@ a[3] = 4.141869911401698e-05
   /* This is implementation using steinhart coefficient where as one below is original "Excel" solution by Tuomas Kantola
    it is expected to use 220ohm resistor in voltage divider with actual temp sensor in 5V and Vmax brought down to 3V.
   //float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;*/
-/*
+  /*
   float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
   float tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
@@ -383,15 +406,15 @@ a[3] = 4.141869911401698e-05
   float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
   float tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
-  filterOneLowpass.input( tempRead );
-// avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
-//  avgAtfRef = (avgAtfRef * 29 + refRead) / 30;
+  filterOneLowpass.input(tempRead);
+  // avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
+  //  avgAtfRef = (avgAtfRef * 29 + refRead) / 30;
   int R2 = 230 / (1023 / (float)filterOneLowpass.output() - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float atfTemp = T - 273.15;
-    if (wantedGear == 6 || wantedGear == 8)
+  if (wantedGear == 6 || wantedGear == 8)
   {
     atfTemp = oilRead();
   }
@@ -490,5 +513,7 @@ struct SensorVals readSensors()
   sensor.curSlip = gearSlip;
   sensor.curRatio = ratio;
   sensor.curEvalGear = evalGearVal;
+  sensor.fuelUsed = fuelUsed;
+  sensor.fuelUsedAvg = fuelUsedAvg;
   return sensor;
 }

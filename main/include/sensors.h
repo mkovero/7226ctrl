@@ -2,7 +2,7 @@
 
 struct SensorVals
 {
-    int curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, curPresDiff;
+    int curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, curPresDiff, fuelUsed, fuelUsedAvg;
     byte curTps, curLoad, curSpeed;
     float curSlip, curRatio;
 };
@@ -11,6 +11,8 @@ void N2SpeedInterrupt();
 void N3SpeedInterrupt();
 void vehicleSpeedInterrupt();
 void rpmInterrupt();
+void fuelInInterrupt();
+void fuelOutInterrupt();
 void pollsensors(Task* me);
 int speedRead();
 int tpsRead();
