@@ -35,8 +35,14 @@
 
 // Switches
 #define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey // DIN5
+
+#ifdef MANUAL
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6
 #define gupSwitch 24 // <-> NC // DIN7
+#else
+#define fuelInPin 23 // ex. 23 <-> NC // DIN6
+#define fuelOutPin 24 // <-> NC // DIN7
+#endif
 
 #ifdef ASPC
 #define aSpcUpSwitch 32 // ex 18 <-> missing grey? // DIN13
@@ -56,4 +62,5 @@
 #define speedPin 21 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
 #define rpmPin 20 // voltage div 12/3 <-> black <-> whitebluewhite = 1kohm/380ohm div // DIN12
 #define batteryPin A21 // car battery monitor
-#define refPin A13 // sensor voltage ref
+//#define refPin A22 // sensor voltage ref
+#define refPin A13 // using this in exhaustTempPin for now.

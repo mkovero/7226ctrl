@@ -38,7 +38,7 @@
 #include <AutoPID.h>
 
 // "Protothreading", we have time slots for different functions to be run.
-Task pollDisplay(200, updateDisplay);    // 500ms to update display*/
+Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
 Task pollData(200, datalog);              // 200ms to update datalogging
 Task pollStick(100, pollstick);           // 100ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
@@ -46,7 +46,7 @@ Task pollSensors(100, pollsensors);       // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
 Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
 Task pollBoostControl(100, boostControl); // 100ms for boost control*/
-Task pollFaultMon(10, faultMon);  // 10ms Fault monitor
+Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
 
 void setup()
 {
@@ -89,13 +89,13 @@ void setup()
   pinMode(hornPin, OUTPUT);
 
   // Sensor input
-  pinMode(boostPin, INPUT); // boost sensor
-  pinMode(tpsPin, INPUT);   // throttle position sensor
-  pinMode(oilPin, INPUT);   // engine coolant sensor
-  pinMode(atfPin, INPUT);   // ATF temp
-  pinMode(n2pin, INPUT_PULLUP);    // N2 sensor
-  pinMode(n3pin, INPUT_PULLUP);    // N3 sensor
-  pinMode(speedPin, INPUT); // vehicle speed
+  pinMode(boostPin, INPUT);     // boost sensor
+  pinMode(tpsPin, INPUT);       // throttle position sensor
+  pinMode(oilPin, INPUT);       // engine coolant sensor
+  pinMode(atfPin, INPUT);       // ATF temp
+  pinMode(n2pin, INPUT_PULLUP); // N2 sensor
+  pinMode(n3pin, INPUT_PULLUP); // N3 sensor
+  pinMode(speedPin, INPUT);     // vehicle speed
   pinMode(rpmPin, INPUT);
   pinMode(batteryPin, INPUT);
 
@@ -109,12 +109,18 @@ void setup()
 
   //For manual control
   pinMode(autoSwitch, INPUT);
+#ifdef MANUAL
   pinMode(gupSwitch, INPUT);   // gear up
   pinMode(gdownSwitch, INPUT); // gear down
-
-  *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+#else
+  pinMode(fuelInPin, INPUT);  // Fuel flow meter in
+  pinMode(fuelOutPin, INPUT); // Fuel flow meter out
+#endif
+
+  *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+
 
   //For stick control
   pinMode(whitepin, INPUT);
@@ -147,7 +153,7 @@ void setup()
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
   analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
-  
+
   if (rpmSpeed && fuelPumpControl)
   {
     analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
@@ -161,12 +167,12 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
 
-/* This is for erasing EEPROM on start.
+  /* This is for erasing EEPROM on start.
   for (int i = 0; i < EEPROM.length(); i++) {
      EEPROM.write(i, 0);
   }
 */
-       
+
   if (debugEnabled && !datalogger)
   {
     Serial.println(F("Started."));
