@@ -183,14 +183,9 @@ void switchGearStop()
   analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
   analogWrite(spc, 0);              // spc off
   analogWrite(mpc, 0);              // mpc off
-  if (evalGear)
-  {
-    gear = evaluateGear();
-  }
-  else
-  {
+
     gear = pendingGear; // we can happily say we're on new gear
-  }
+
   shiftStopTime = millis();
 
   if (debugEnabled)
