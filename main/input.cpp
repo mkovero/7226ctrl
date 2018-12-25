@@ -157,7 +157,7 @@ void pollkeys()
 {
   int gupState = 0;
   int gdownState = 0;
-  
+
 #ifdef MANUAL
   gupState = digitalRead(gupSwitch);     // Gear up
   gdownState = digitalRead(gdownSwitch); // Gear down
@@ -524,11 +524,11 @@ void radioControl()
     }
     else if (readData == 150)
     {
-      if (page < 4)
+      if (page < 5)
       {
         page++;
       }
-      else if (page > 4)
+      else if (page > 5)
       {
         page = 1;
       }
@@ -542,7 +542,7 @@ void radioControl()
       }
       else if (page < 1)
       {
-        page = 4;
+        page = 5;
       }
       readData = 0;
     }
