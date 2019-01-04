@@ -109,15 +109,17 @@ void setup()
 
   //For manual control
   pinMode(autoSwitch, INPUT);
-#ifdef MANUAL
+/*#ifdef MANUAL
   pinMode(gupSwitch, INPUT);   // gear up
   pinMode(gdownSwitch, INPUT); // gear down
   *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-#else
+#else*/
   pinMode(fuelInPin, INPUT);  // Fuel flow meter in
   pinMode(fuelOutPin, INPUT); // Fuel flow meter out
-#endif
+ // *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+ // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+//#endif
 
   *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 

@@ -317,11 +317,11 @@ void draw(int wantedGear)
    
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(20, 28);
-    u8g2.print(float(sensor.fuelUsed) / 1000);
+    u8g2.print(fuelIn);
     u8g2.setCursor(60, 28);
     u8g2.print(F(" / "));
     u8g2.setCursor(90, 28);
-    u8g2.print(float(sensor.fuelUsedAvg) / 1000);
+    u8g2.print(fuelOut);
   }
   if ((millis() - infoDisplayTime > 5000) && infoDisplayShown)
   {

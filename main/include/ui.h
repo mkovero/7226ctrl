@@ -17,7 +17,7 @@ extern boolean shiftPending,truePower;
 extern float ratio;
 extern int n2Speed, n3Speed;
 extern float gearSlip;
-
+extern unsigned long fuelIn, fuelOut;
 #ifdef __arm__
 extern "C" char* sbrk(int incr);
 #else  // __ARM__

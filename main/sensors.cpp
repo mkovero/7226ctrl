@@ -64,10 +64,10 @@ void pollsensors(Task *me)
     detachInterrupt(n3pin);
     detachInterrupt(rpmPin);
     detachInterrupt(speedPin);
-#ifndef MANUAL
+//#ifndef MANUAL
     detachInterrupt(fuelInPin);
     detachInterrupt(fuelOutPin);
-#endif
+//#endif
     float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
 
     if (n2SpeedPulses >= n2PulsesPerRev)
@@ -117,8 +117,8 @@ void pollsensors(Task *me)
 
     fuelUsed = fuelIn - fuelOut;
     fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
-    fuelIn = 0;
-    fuelOut = 0;
+   // fuelIn = 0;
+   // fuelOut = 0;
 
     gearSlip = getGearSlip();
     evalGearVal = evaluateGear();
@@ -134,10 +134,10 @@ void pollsensors(Task *me)
     attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
-#ifndef MANUAL
+//#ifndef MANUAL
     attachInterrupt(digitalPinToInterrupt(fuelInPin), fuelOutInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(fuelOutPin), fuelInInterrupt, RISING);
-#endif
+//#endif
   }
 }
 
@@ -216,6 +216,7 @@ int tpsRead()
   {
     tpsPercentValue = 0;
   }
+  tpsPercentValue = 80;
   return tpsPercentValue;
 }
 
@@ -267,7 +268,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
-  float oilTemp = T - 273.15;
+  float oilTemp = T - 273.15 - 50;
   /* if (wantedGear == 6 || wantedGear == 8)
   {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
@@ -367,6 +368,7 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   {
     trueLoad = 100;
   }
+  trueLoad = 80;
   return trueLoad;
 }
 
@@ -397,7 +399,7 @@ a[3] = 4.141869911401698e-05
   //avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
 
   if (wantedGear == 6 || wantedGear == 8)
-  {
+  { 
     atfTemp = oilRead();
   }
   //atfTemp = atfTemp + 30;
@@ -418,7 +420,7 @@ a[3] = 4.141869911401698e-05
   {
     atfTemp = oilRead();
   }
-  //atfTemp = 49;
+  atfTemp = atfTemp + 52;
   return atfTemp;
 
   /*
