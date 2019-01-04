@@ -14,7 +14,7 @@ Fourth (rev K) just finished also and seems to pass testing;
 
 <http://www.mui.fi/smd-revk.jpg>
 
-and gerber files are available under pcb/ with bom, with exception of the latest for now.
+and gerber files are available under pcb/ with boms.
 
 Assembly instructions are not included, but I would be happy if someone would wish to write those.
 

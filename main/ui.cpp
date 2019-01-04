@@ -147,7 +147,7 @@ void draw(int wantedGear)
     {
       u8g2.print(F("P"));
     }
-    if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && !shiftPending && gear < 6 )
+    if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && !shiftPending && gear < 6)
     {
       u8g2.print(gear);
     }
@@ -312,9 +312,9 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 60);
     u8g2.print(sensor.curRatio);
   }
-    else if (page == 4 && infoDisplay == 0)
+  else if (page == 4 && infoDisplay == 0)
   {
-   
+
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(20, 28);
     u8g2.print(fuelIn);
@@ -323,6 +323,11 @@ void draw(int wantedGear)
     u8g2.setCursor(90, 28);
     u8g2.print(fuelOut);
   }
+  else if (page == 5 && infoDisplay == 0)
+  {
+    u8g2.drawBitmap(0, 0, 1, 8, mersu_map);
+  }
+
   if ((millis() - infoDisplayTime > 5000) && infoDisplayShown)
   {
     infoDisplay = 0;
