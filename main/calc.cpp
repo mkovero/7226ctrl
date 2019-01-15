@@ -66,6 +66,41 @@ int readMap(const int theMap[14][12], int x, int y)
 
   return mapValue;
 }
+int readTempMap(const int theMap[23][2], int y)
+{
+  if (y < 564)
+  {
+    y = 564;
+  }
+
+  if (y > 2479)
+  {
+    y = 2479;
+  }
+  int yidx = 0; // by default near first element
+  int yelements = 23;
+
+  for (int i = 1; i < yelements; i++)
+  {
+    int curVal = pgm_read_dword_near(&theMap[i][0]);
+
+    if (y <= curVal)
+    {
+      yidx = i;
+      break;
+    }
+  }
+  
+  int curY = pgm_read_dword_near(&theMap[yidx][0]);              // valittu Y
+  int mapValue = pgm_read_dword_near(&theMap[yidx][1]);          // valittu X
+  int prevXMapValue = pgm_read_dword_near(&theMap[yidx - 1][1]); // edellinen X
+  int prevYMapValue = pgm_read_dword_near(&theMap[yidx - 1][0]); // edellinen Y
+
+  int betweenL1 = ((curY - y) / (curY - prevYMapValue)) * (mapValue - prevXMapValue) + prevXMapValue;
+  // valittu Y - annettu luku = xyz -> (xyz / (valittu Y - edellinen Y)) * (valittu X - edellinen X) + edellinen x
+
+  return betweenL1;
+}
 
 int readPercentualMap(const int theMap[14][12], int x, int y)
 {
@@ -79,36 +114,7 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
   {
     y = 100;
   }
-  /*
-  int xidx = 0; // by default near first element
-  int xelements = LEN(theMap[0]);
 
-  int distance = abs(pgm_read_word_near(&theMap[0][xidx]) - x); // distance comparison
-  for (int i = 1; i < xelements; i++)
-  {
-    int d = abs(pgm_read_word_near(&theMap[0][i]) - x);
-    if (d < distance)
-    {
-      xidx = i;
-      distance = d;
-    }
-  }
-  int yidx = 0; // by default near first element
-  int yelements = LEN(*theMap);
-
-  distance = abs(pgm_read_word_near(&theMap[yidx][0]) - y);
-  for (int i = 1; i < yelements; i++)
-  {
-    int d = abs(pgm_read_word_near(&theMap[i][0]) - y);
-    if (d < distance)
-    {
-      yidx = i;
-      distance = d;
-    }
-  }
-  lastXval = xidx;
-  lastYval = yidx;
-   */
   int xidx = 0; // by default near first element
   int yidx = 0; // by default near first element
   int xelements = 12;

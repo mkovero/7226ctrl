@@ -7,6 +7,7 @@
 #include "include/eeprom.h"
 #include "include/core.h"
 #include "include/config.h"
+#include "include/maps.h"
 #include <SoftTimer.h>
 
 /*#ifdef MEGA
