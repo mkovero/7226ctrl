@@ -110,6 +110,7 @@ struct ConfigParam readConfig()
   config.batteryLimit = 11500; // battery voltage limit in 11.5v
   config.firstTccGear = 5; // first gear when tcc is used.
   config.triggerWheelTeeth = 6; // number of teeth in trigger wheel for RPM calculation
+  config.tpsAgre = 2; // 1-10 how aggressive slope tps has
   return config;
 }
 

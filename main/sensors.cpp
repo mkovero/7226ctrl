@@ -199,9 +199,13 @@ int tpsRead()
   int tpsPercentValue = 0;
   if (tpsSensor)
   {
-
-    float tpsVoltage = analogRead(tpsPin) * 3.30;
+    struct ConfigParam config = readConfig();
+    float refRead = analogRead(refPin);
+    float refTps = refRead / 1023 * 3.3;
+    float tpsVoltage = analogRead(tpsPin) * 3.0;
     tpsPercentValue = readTPSVoltage(tpsVoltage);
+
+    tpsPercentValue = config.tpsAgre * tpsPercentValue;
 
     if (tpsPercentValue > 100)
     {
@@ -214,9 +218,9 @@ int tpsRead()
   }
   else
   {
-    tpsPercentValue = 0;
+    tpsPercentValue = 100;
   }
-  tpsPercentValue = 80;
+  
   return tpsPercentValue;
 }
 
@@ -259,8 +263,9 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   */
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
-  float tempRead = analogRead(oilPin);
+  float tempRead = analogRead(oilPin); tempRead = analogRead(oilPin);
   float refRead = analogRead(refPin);
+  float refTemp = refRead / 1023 * 3.3;
   filterOneLowpass2.input(tempRead);
   //avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
   //avgOilRef = (avgOilRef * 9 + refRead) / 10;
@@ -285,7 +290,9 @@ int boostRead()
   if (boostSensor)
   {
     //reading MAP/boost
-    float boostVoltage = analogRead(boostPin) * 3.0;
+    float refRead = analogRead(refPin);
+    float refBoost = refRead / 1023 * 3.3;
+    float boostVoltage = analogRead(boostPin) * 3.3;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
   }
@@ -352,7 +359,7 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   }
   else if (boostSensor && tpsSensor && rpmSpeed)
   {
-    trueLoad = (curTps * 0.48) + (boostPercent * 0.20) + (vehicleRPM * 0.32);
+    trueLoad = (curTps * 0.60) + (boostPercent * 0.20) + (vehicleRPM * 0.20);
   }
   else if (tpsSensor && !boostSensor)
   {
@@ -368,7 +375,7 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   {
     trueLoad = 100;
   }
-  trueLoad = 80;
+  //trueLoad = 80;
   return trueLoad;
 }
 
@@ -406,8 +413,9 @@ a[3] = 4.141869911401698e-05
   return T;
 */
   float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
-  float tempRead = analogRead(atfPin);
+  float tempRead = analogRead(atfPin); tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
+  float refTemp = refRead / 1023 * 3.3;
   filterOneLowpass.input(tempRead);
   // avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
   //  avgAtfRef = (avgAtfRef * 29 + refRead) / 30;
@@ -420,7 +428,9 @@ a[3] = 4.141869911401698e-05
   {
     atfTemp = oilRead();
   }
-  atfTemp = atfTemp + 52;
+  else {
+    atfTemp = atfTemp + 82;
+  }
   return atfTemp;
 
   /*

@@ -12,7 +12,7 @@ boolean ShiftDebugEnabled = false;
 int readTPSVoltage(int voltage)
 {
 
-  int result = map(voltage, 1900, 800, 0, 100);
+  int result = map(voltage, 2670, 800, 0, 100);
   return result;
 }
 
@@ -20,7 +20,7 @@ int readTPSVoltage(int voltage)
 int readBoostVoltage(int voltage)
 {
 
-  int result = map(voltage, 680, 2670, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
+  int result = map(voltage, 720, 3100, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
   return result;
 }
 // Mapping battery voltage to actual voltage
