@@ -264,7 +264,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   filterOneLowpass2.input(tempRead);
   //avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
   //avgOilRef = (avgOilRef * 9 + refRead) / 10;
-  int R2 = 4700 / (1023 / (float)filterOneLowpass2.output() - 1.0);
+  int R2 = 4700 / (refRead / (float)filterOneLowpass2.output() - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
