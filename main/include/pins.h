@@ -40,16 +40,16 @@
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6
 #define gupSwitch 24 // <-> NC // DIN7
 #else
-#define fuelInPin 23 // ex. 23 <-> NC // DIN6
-#define fuelOutPin 24 // <-> NC // DIN7
+#define fuelInPin 31 // ex. 23 <-> NC // DIN6
+#define fuelOutPin 32 // <-> NC // DIN7
 #endif
 
 #ifdef ASPC
 #define aSpcUpSwitch 32 // ex 18 <-> missing grey? // DIN13
 #define aSpcDownSwitch 31 // ex 17 <-> missing grey? // DIN12
 #else
-#define exhaustPresPin A12
-#define exhaustTempPin A13
+#define exhaustPresPin 23
+#define exhaustTempPin 24
 #endif
 
 // Car sensor input pins, black

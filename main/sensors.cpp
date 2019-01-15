@@ -64,10 +64,10 @@ void pollsensors(Task *me)
     detachInterrupt(n3pin);
     detachInterrupt(rpmPin);
     detachInterrupt(speedPin);
-#ifndef MANUAL
+//#ifndef MANUAL
     detachInterrupt(fuelInPin);
     detachInterrupt(fuelOutPin);
-#endif
+//#endif
     float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
 
     if (n2SpeedPulses >= n2PulsesPerRev)
@@ -117,8 +117,8 @@ void pollsensors(Task *me)
 
     fuelUsed = fuelIn - fuelOut;
     fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
-    fuelIn = 0;
-    fuelOut = 0;
+   // fuelIn = 0;
+   // fuelOut = 0;
 
     gearSlip = getGearSlip();
     evalGearVal = evaluateGear();
@@ -134,10 +134,10 @@ void pollsensors(Task *me)
     attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
-#ifndef MANUAL
+//#ifndef MANUAL
     attachInterrupt(digitalPinToInterrupt(fuelInPin), fuelOutInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(fuelOutPin), fuelInInterrupt, RISING);
-#endif
+//#endif
   }
 }
 
@@ -216,6 +216,7 @@ int tpsRead()
   {
     tpsPercentValue = 0;
   }
+  tpsPercentValue = 80;
   return tpsPercentValue;
 }
 
@@ -267,7 +268,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
-  float oilTemp = T - 273.15;
+  float oilTemp = T - 273.15 - 50;
   /* if (wantedGear == 6 || wantedGear == 8)
   {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
@@ -367,16 +368,67 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   {
     trueLoad = 100;
   }
+  trueLoad = 80;
   return trueLoad;
 }
 
 //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 int atfRead()
 {
+<<<<<<< HEAD
  
   float tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
   filterOneLowpass.input(tempRead);
+=======
+  /*
+  Steinhart-Hart coefficients
+a[0] = 1.428001776691670e-02
+a[1] = 3.123372804552903e-04
+a[2] = -5.605468817359506e-04
+a[3] = 4.141869911401698e-05
+*/
+
+  /* This is implementation using steinhart coefficient where as one below is original "Excel" solution by Tuomas Kantola
+   it is expected to use 220ohm resistor in voltage divider with actual temp sensor in 5V and Vmax brought down to 3V.
+  //float c1 = 1.428001776691670e-02, c2 = 3.123372804552903e-04, c3 = -5.605468817359506e-04;*/
+  /*
+  float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
+  float tempRead = analogRead(atfPin);
+  float refRead = analogRead(refPin);
+  avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
+  avgAtfRef = (avgAtfRef * 29 + refRead) / 30;
+  int R2 = 230 / (refRead / (float)avgAtfTemp - 1.0);
+  float logR2 = log(R2);
+  float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
+  float atfTemp = T - 273.15;
+  //avgAtfTemp = (avgAtfTemp * 5 + atfTemp) / 10;
+
+  if (wantedGear == 6 || wantedGear == 8)
+  { 
+    atfTemp = oilRead();
+  }
+  //atfTemp = atfTemp + 30;
+  return T;
+*/
+  float c1 = 23.90873855e-03, c2 = -37.13968686e-04, c3 = 154.5082593e-07;
+  float tempRead = analogRead(atfPin);
+  float refRead = analogRead(refPin);
+  filterOneLowpass.input(tempRead);
+  // avgAtfTemp = (avgAtfTemp * 29 + tempRead) / 30;
+  //  avgAtfRef = (avgAtfRef * 29 + refRead) / 30;
+  int R2 = 230 / (1023 / (float)filterOneLowpass.output() - 1.0);
+  float logR2 = log(R2);
+  float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
+  // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
+  float atfTemp = T - 273.15;
+  if (wantedGear == 6 || wantedGear == 8)
+  {
+    atfTemp = oilRead();
+  }
+  atfTemp = atfTemp + 52;
+  return atfTemp;
+>>>>>>> 3af730ea8dadad641c79903bc9d10dd2f094d000
 
   int R2 = 230 / (refRead / (float)filterOneLowpass.output() - 1.0);
   int  atfTemp = readTempMap(atfSensorMap, R2);
