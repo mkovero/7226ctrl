@@ -327,38 +327,63 @@ void draw(int wantedGear)
   }
   else if (page == 5 && infoDisplay == 0)
   {
-    if (configMode) {
-    u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(20, 28);
-    u8g2.print("Don't press throttle and press next");
-    u8g2.setCursor(60, 28);
-    u8g2.print(F(" : "));
-    u8g2.setCursor(90, 28);
-    u8g2.print(sensor.curTps);
-    tpsInit(0);
+    if (configMode)
+    {
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(20, 28);
+      u8g2.print("Don't press throttle and press next");
+      u8g2.setCursor(60, 28);
+      u8g2.print(F(" : "));
+      u8g2.setCursor(90, 28);
+      u8g2.print(sensor.curTps);
     }
-    else {
-    u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(20, 28);
-    u8g2.print("Not in config mode");
+    else
+    {
+      page = 1;
     }
   }
   else if (page == 6 && infoDisplay == 0)
   {
-    if (configMode) {
-    u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(20, 28);
-    u8g2.print("Press throttle fully and press next");
-    u8g2.setCursor(60, 28);
-    u8g2.print(F(" : "));
-    u8g2.setCursor(90, 28);
-    u8g2.print(sensor.curTps);
-    tpsInit(1);
+    if (configMode)
+    {
+      if (!tpsInitPhase1)
+      {
+        tpsInit(0);
+        tpsInitPhase1 = true;
+      }
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(20, 28);
+      u8g2.print("Press throttle fully and press next");
+      u8g2.setCursor(60, 28);
+      u8g2.print(F(" : "));
+      u8g2.setCursor(90, 28);
+      u8g2.print(sensor.curTps);
     }
-    else {
-    u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(20, 28);
-    u8g2.print("Not in config mode");
+    else
+    {
+      page = 1;
+    }
+  }
+  else if (page == 7 && infoDisplay == 0)
+  {
+    if (configMode)
+    {
+      if (!tpsInitPhase2)
+      {
+        tpsInit(1);
+        tpsInitPhase2 = true;
+      }
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(20, 28);
+      u8g2.print("TPS reset done");
+      u8g2.setCursor(60, 28);
+      u8g2.print(F(" : "));
+      u8g2.setCursor(90, 28);
+      u8g2.print(sensor.curTps);
+    }
+    else
+    {
+      page = 1;
     }
   }
   if ((millis() - infoDisplayTime > 5000) && infoDisplayShown)

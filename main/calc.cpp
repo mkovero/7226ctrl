@@ -12,14 +12,9 @@ boolean ShiftDebugEnabled = false;
 // Mapping throttle position sensor voltage to percentage
 int readTPSVoltage(int voltage)
 {
-<<<<<<< HEAD
   int minLimit = EEPROM.read(10);
   int maxLimit = EEPROM.read(11);
   int result = map(voltage, minLimit, maxLimit, 0, 100);
-=======
-
-  int result = map(voltage, 2670, 800, 0, 100);
->>>>>>> a7090cedc99d565141c4a44b7c7c55d4149fd29a
   return result;
 }
 
