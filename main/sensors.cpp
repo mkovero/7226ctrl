@@ -269,7 +269,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   filterOneLowpass2.input(tempRead);
   //avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
   //avgOilRef = (avgOilRef * 9 + refRead) / 10;
-  int R2 = 4700 / (refRead / (float)filterOneLowpass2.output() - 1.0);
+  int R2 = 4700 / (1023 / (float)filterOneLowpass2.output() - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
@@ -292,7 +292,7 @@ int boostRead()
     //reading MAP/boost
     float refRead = analogRead(refPin);
     float refBoost = refRead / 1023 * 3.3;
-    float boostVoltage = analogRead(boostPin) * 3.3;
+    float boostVoltage = analogRead(boostPin) * 3.0;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
   }
@@ -388,8 +388,9 @@ int atfRead()
   float refTemp = refRead / 1023 * 3.3;
   filterOneLowpass.input(tempRead);
 
-  int R2 = 230 / (refRead / (float)filterOneLowpass.output() - 1.0);
+  int R2 = 230 / (1023 / (float)filterOneLowpass.output() - 1.0) + 350;
   int  atfTemp = readTempMap(atfSensorMap, R2);
+
 
   if (wantedGear == 6 || wantedGear == 8)
   {
