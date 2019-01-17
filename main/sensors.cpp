@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
@@ -64,10 +65,10 @@ void pollsensors(Task *me)
     detachInterrupt(n3pin);
     detachInterrupt(rpmPin);
     detachInterrupt(speedPin);
-//#ifndef MANUAL
+    //#ifndef MANUAL
     detachInterrupt(fuelInPin);
     detachInterrupt(fuelOutPin);
-//#endif
+    //#endif
     float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
 
     if (n2SpeedPulses >= n2PulsesPerRev)
@@ -117,8 +118,8 @@ void pollsensors(Task *me)
 
     fuelUsed = fuelIn - fuelOut;
     fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
-   // fuelIn = 0;
-   // fuelOut = 0;
+    // fuelIn = 0;
+    // fuelOut = 0;
 
     gearSlip = getGearSlip();
     evalGearVal = evaluateGear();
@@ -134,10 +135,10 @@ void pollsensors(Task *me)
     attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
-//#ifndef MANUAL
+    //#ifndef MANUAL
     attachInterrupt(digitalPinToInterrupt(fuelInPin), fuelOutInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(fuelOutPin), fuelInInterrupt, RISING);
-//#endif
+    //#endif
   }
 }
 
@@ -220,8 +221,37 @@ int tpsRead()
   {
     tpsPercentValue = 100;
   }
-  
+
   return tpsPercentValue;
+}
+
+void tpsInit(int action)
+{
+  switch (action)
+  {
+  case 0:
+  {
+    int curValue = EEPROM.read(10);
+    int tpsVoltage = analogRead(tpsPin) * 3.30;
+    if (curValue != tpsVoltage)
+    {
+      EEPROM.write(10, tpsVoltage);
+    }
+    break;
+  }
+  case 1:
+  {
+    int curValue = EEPROM.read(11);
+    int tpsVoltage = analogRead(tpsPin) * 3.30;
+    if (curValue != tpsVoltage)
+    {
+      EEPROM.write(11, tpsVoltage);
+    }
+    break;
+  }
+  default:
+    break;
+  }
 }
 
 int rpmRead()
@@ -263,7 +293,8 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   */
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
-  float tempRead = analogRead(oilPin); tempRead = analogRead(oilPin);
+  float tempRead = analogRead(oilPin);
+  tempRead = analogRead(oilPin);
   float refRead = analogRead(refPin);
   float refTemp = refRead / 1023 * 3.3;
   filterOneLowpass2.input(tempRead);
@@ -382,7 +413,7 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
 //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 int atfRead()
 {
- 
+
   float tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
   float refTemp = refRead / 1023 * 3.3;

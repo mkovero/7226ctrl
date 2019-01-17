@@ -16,6 +16,7 @@ void fuelOutInterrupt();
 void pollsensors(Task* me);
 int speedRead();
 int tpsRead();
+void tpsInit(int action);
 int rpmRead();
 int boostRead();
 int exhaustPressureRead();

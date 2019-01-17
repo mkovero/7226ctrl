@@ -35,5 +35,6 @@ extern boolean truePower;
 extern boolean tccLock;
 extern boolean stick;
 extern boolean autoGear;
+extern boolean configMode;
 extern double lastShiftPoint;
 extern byte page;
