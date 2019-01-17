@@ -8,6 +8,7 @@
 #include "include/core.h"
 #include "include/config.h"
 #include "include/maps.h"
+#include "include/input.h"
 #include <SoftTimer.h>
 
 /*#ifdef MEGA
@@ -326,9 +327,40 @@ void draw(int wantedGear)
   }
   else if (page == 5 && infoDisplay == 0)
   {
-    u8g2.drawBitmap(0, 0, 1, 8, mersu_map);
+    if (configMode) {
+    u8g2.setFont(u8g2_font_fub14_tf);
+    u8g2.setCursor(20, 28);
+    u8g2.print("Don't press throttle and press next");
+    u8g2.setCursor(60, 28);
+    u8g2.print(F(" : "));
+    u8g2.setCursor(90, 28);
+    u8g2.print(sensor.curTps);
+    tpsInit(0);
+    }
+    else {
+    u8g2.setFont(u8g2_font_fub14_tf);
+    u8g2.setCursor(20, 28);
+    u8g2.print("Not in config mode");
+    }
   }
-
+  else if (page == 6 && infoDisplay == 0)
+  {
+    if (configMode) {
+    u8g2.setFont(u8g2_font_fub14_tf);
+    u8g2.setCursor(20, 28);
+    u8g2.print("Press throttle fully and press next");
+    u8g2.setCursor(60, 28);
+    u8g2.print(F(" : "));
+    u8g2.setCursor(90, 28);
+    u8g2.print(sensor.curTps);
+    tpsInit(1);
+    }
+    else {
+    u8g2.setFont(u8g2_font_fub14_tf);
+    u8g2.setCursor(20, 28);
+    u8g2.print("Not in config mode");
+    }
+  }
   if ((millis() - infoDisplayTime > 5000) && infoDisplayShown)
   {
     infoDisplay = 0;

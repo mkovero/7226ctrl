@@ -18,7 +18,7 @@ byte wantedGear = 100;
 const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
 double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double Kd = 0; //100, 1 Pid Derivative Gain.
-boolean garageShift, garageShiftMove = false;
+boolean garageShift, garageShiftMove, configMode = false;
 double garageTime, lastShift, lastInput;
 
 /*
@@ -522,13 +522,19 @@ void radioControl()
       hornOn();
       readData = 0;
     }
+    else if (readData == 101) {
+      configMode = true;
+    }
+    else if (readData == 201) {
+      configMode = false;
+    }
     else if (readData == 150)
     {
-      if (page < 5)
+      if (page < 6)
       {
         page++;
       }
-      else if (page > 5)
+      else if (page > 6)
       {
         page = 1;
       }
@@ -542,7 +548,7 @@ void radioControl()
       }
       else if (page < 1)
       {
-        page = 5;
+        page = 6;
       }
       readData = 0;
     }

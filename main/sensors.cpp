@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
@@ -64,10 +65,10 @@ void pollsensors(Task *me)
     detachInterrupt(n3pin);
     detachInterrupt(rpmPin);
     detachInterrupt(speedPin);
-//#ifndef MANUAL
+    //#ifndef MANUAL
     detachInterrupt(fuelInPin);
     detachInterrupt(fuelOutPin);
-//#endif
+    //#endif
     float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
 
     if (n2SpeedPulses >= n2PulsesPerRev)
@@ -117,8 +118,8 @@ void pollsensors(Task *me)
 
     fuelUsed = fuelIn - fuelOut;
     fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
-   // fuelIn = 0;
-   // fuelOut = 0;
+    // fuelIn = 0;
+    // fuelOut = 0;
 
     gearSlip = getGearSlip();
     evalGearVal = evaluateGear();
@@ -134,10 +135,10 @@ void pollsensors(Task *me)
     attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
-//#ifndef MANUAL
+    //#ifndef MANUAL
     attachInterrupt(digitalPinToInterrupt(fuelInPin), fuelOutInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(fuelOutPin), fuelInInterrupt, RISING);
-//#endif
+    //#endif
   }
 }
 
@@ -218,6 +219,27 @@ int tpsRead()
   }
   tpsPercentValue = 80;
   return tpsPercentValue;
+}
+
+void tpsInit(int action)
+{
+  switch (action)
+  {
+  case 0:
+  {
+    int tpsVoltage = analogRead(tpsPin) * 3.30;
+    EEPROM.write(10, tpsVoltage);
+    break;
+  }
+  case 1:
+  {
+    int tpsVoltage = analogRead(tpsPin) * 3.30;
+    EEPROM.write(11, tpsVoltage);
+    break;
+  }
+  default:
+    break;
+  }
 }
 
 int rpmRead()
@@ -375,13 +397,13 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
 //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 int atfRead()
 {
- 
+
   float tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
   filterOneLowpass.input(tempRead);
 
   int R2 = 230 / (refRead / (float)filterOneLowpass.output() - 1.0);
-  int  atfTemp = readTempMap(atfSensorMap, R2);
+  int atfTemp = readTempMap(atfSensorMap, R2);
 
   if (wantedGear == 6 || wantedGear == 8)
   {

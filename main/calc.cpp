@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 
 // Macro for sizeof for better support with 2d arrays.
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))
@@ -11,8 +12,9 @@ boolean ShiftDebugEnabled = false;
 // Mapping throttle position sensor voltage to percentage
 int readTPSVoltage(int voltage)
 {
-
-  int result = map(voltage, 1900, 800, 0, 100);
+  int minLimit = EEPROM.read(10);
+  int maxLimit = EEPROM.read(11);
+  int result = map(voltage, minLimit, maxLimit, 0, 100);
   return result;
 }
 
@@ -90,7 +92,7 @@ int readTempMap(const int theMap[23][2], int y)
       break;
     }
   }
-  
+
   int curY = pgm_read_dword_near(&theMap[yidx][0]);              // valittu Y
   int mapValue = pgm_read_dword_near(&theMap[yidx][1]);          // valittu X
   int prevXMapValue = pgm_read_dword_near(&theMap[yidx - 1][1]); // edellinen X
