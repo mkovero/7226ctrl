@@ -30,7 +30,7 @@ function scaleData(line) {
   line[5] = (line[5]/100) * scaleFactor
   line[6] = (line[6]/700) * scaleFactor 
   line[7] = (line[7]/700) * scaleFactor 
-  line[8] = (line[8]/100/160) * scaleFactor 
+  line[8] = (line[8]/100000) * scaleFactor
 }
 
 setInterval(() => {

@@ -103,7 +103,7 @@ export default class StreamGraph extends Component {
     
     return (
       <div>
-        <svg id="chart" width="720" height="1280"></svg>
+        <svg id="chart" width="1480" height="1480"></svg>
       </div>
     );
   }
