@@ -20,7 +20,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <SwipeableViews>
+        <SwipeableViews className="swipecontainer">
           <ValueGauges data={this.state.currData} />
           <StreamGraph data={this.state.currData} />
         </SwipeableViews>
