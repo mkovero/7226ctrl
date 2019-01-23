@@ -21,7 +21,7 @@ export default class ValueGauges extends Component {
     
     return (
       <div>
-        <table className="Stats">
+        {/* <table className="Stats">
           <tr><td>Vehicle speed:</td><td>{this.props.data[0]}</td></tr>
           <tr><td>RPM:</td><td>{this.props.data[1]}</td></tr>
           <tr><td>TPS:</td><td>{this.props.data[2]}</td></tr>
@@ -31,11 +31,23 @@ export default class ValueGauges extends Component {
           <tr><td>Boost Sensor:</td><td>{this.props.data[6]}</td></tr>
           <tr><td>Exhaust temp:</td><td>{this.props.data[7]}</td></tr>
           <tr><td>Battery voltage:</td><td>{this.props.data[8]}</td></tr>
-        </table>
+        </table> */}
         <ReactSpeedometer
           value={this.props.data[0]}
           minValue={0}
           maxValue={300}
+          segments={15}
+          needleColor="steelblue"
+          needleTransitionDuration={4000}
+          needleTransition="easeElastic"
+          startColor="#33CC33"
+          endColor="#FF471A"
+          ringWidth={10}
+        />
+        <ReactSpeedometer
+          value={this.props.data[1]}
+          minValue={0}
+          maxValue={7000}
           segments={15}
           needleColor="steelblue"
           needleTransitionDuration={4000}
