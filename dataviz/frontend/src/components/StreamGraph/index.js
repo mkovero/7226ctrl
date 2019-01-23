@@ -14,15 +14,15 @@ const data = new Array(n).fill(null).map(() => new Array(m).fill(0));
 var y;
 
 const colors = [
-    "#B02C5C",
-    "#962E40",
-    "#FF5E35",
-    "#5E1742",
-    "#DB2B30",
-    "#8F1D2C",
-    "#5A142A",
-    "#400D2A",
-    "#140A25",
+    "rgb(192,174,0)",
+    "rgb(192,155,0)",
+    "rgb(192,135,0)",
+    "rgb(192,106,0)",
+    "rgb(192,0,0)",
+    "rgb(192,106,0)",
+    "rgb(192,135,0)",
+    "rgb(192,155,0)",
+    "rgb(192,174,0)",
 ]
 
 function streamGraph() {
