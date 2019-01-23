@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ValueGauges from './components/ValueGauges';
 import StreamGraph from './components/StreamGraph';
+import SwipeableViews from 'react-swipeable-views';
 import './App.css';
 
 class App extends Component {
@@ -19,8 +20,10 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        {/* <ValueGauges data={this.state.currData} /> */}
-        <StreamGraph data={this.state.currData} />
+        <SwipeableViews>
+          <ValueGauges data={this.state.currData} />
+          <StreamGraph data={this.state.currData} />
+        </SwipeableViews>
       </div>
     );
   }
