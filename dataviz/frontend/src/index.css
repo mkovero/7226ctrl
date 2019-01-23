@@ -11,3 +11,15 @@ body {
   position: fixed;
   margin-left: -720px
 }
+
+.Stats {
+  margin-left: auto;
+  margin-right: auto;
+}
+.Stats td:nth-child(1) {
+  text-align: left;
+}
+
+.Stats td:nth-child(2) {
+  text-align: right;
+}
