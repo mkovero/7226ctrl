@@ -13,6 +13,18 @@ const data = new Array(n).fill(null).map(() => new Array(m).fill(0));
 
 var y;
 
+const colors = [
+    "#B02C5C",
+    "#962E40",
+    "#FF5E35",
+    "#5E1742",
+    "#DB2B30",
+    "#8F1D2C",
+    "#5A142A",
+    "#400D2A",
+    "#140A25",
+]
+
 function streamGraph() {
 
     var stack_ = stack().keys(range(n)).offset(stackOffsetSilhouette),
@@ -43,7 +55,7 @@ function streamGraph() {
         .data(layers)
         .enter().append("path")
             .attr("d", area_)
-            .attr("fill", function() { return z(Math.random()); });
+            .attr("fill", (d, i) => colors[i]);
 
     function stackMax(layer) {
         return max(layer, function(d) { return d[1]; });
@@ -54,10 +66,8 @@ function streamGraph() {
     }
 
     function transition(newData) {
-        //console.log("Transition called");
         if (newData) {
             newData.forEach((value, idx) => {
-                //console.log(typeof value);
                 data[idx].push(value);
                 data[idx].shift();
             });
