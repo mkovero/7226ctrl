@@ -44,18 +44,35 @@ export default class ValueGauges extends Component {
           startColor="#33CC33"
           endColor="#FF471A"
           ringWidth={10}
+          currentValueText="Speed"
         />
         <ReactSpeedometer
-          value={this.props.data[1]}
+          height={200}
+          value={this.props.data[1] / 1000}
           minValue={0}
-          maxValue={7000}
-          segments={15}
+          maxValue={7}
+          segments={7}
           needleColor="steelblue"
           needleTransitionDuration={4000}
           needleTransition="easeElastic"
           startColor="#33CC33"
           endColor="#FF471A"
           ringWidth={10}
+          currentValueText="KRPM"
+        />
+        <ReactSpeedometer
+          height={200}
+          value={this.props.data[6] / 100}
+          minValue={0}
+          maxValue={3}
+          segments={6}
+          needleColor="steelblue"
+          needleTransitionDuration={4000}
+          needleTransition="easeElastic"
+          startColor="#33CC33"
+          endColor="#FF471A"
+          ringWidth={10}
+          currentValueText="Boost"
         />
         </div>
     );
