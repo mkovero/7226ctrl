@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactSpeedometer from "react-d3-speedometer"
 
 export default class ValueGauges extends Component {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class ValueGauges extends Component {
   render() {
     
     return (
+      <div>
         <table className="Stats">
           <tr><td>Vehicle speed:</td><td>{this.props.data[0]}</td></tr>
           <tr><td>RPM:</td><td>{this.props.data[1]}</td></tr>
@@ -30,6 +32,19 @@ export default class ValueGauges extends Component {
           <tr><td>Exhaust temp:</td><td>{this.props.data[7]}</td></tr>
           <tr><td>Battery voltage:</td><td>{this.props.data[8]}</td></tr>
         </table>
+        <ReactSpeedometer
+          value={this.props.data[0]}
+          minValue={0}
+          maxValue={300}
+          segments={15}
+          needleColor="steelblue"
+          needleTransitionDuration={4000}
+          needleTransition="easeElastic"
+          startColor="#33CC33"
+          endColor="#FF471A"
+          ringWidth={10}
+        />
+      </div>
     );
   }
 }
