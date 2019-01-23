@@ -22,7 +22,7 @@ class App extends Component {
       <div className="App">
         <SwipeableViews className="swipecontainer">
           <ValueGauges data={this.state.currData} />
-          {/* <StreamGraph data={this.state.currData} /> */}
+          <StreamGraph data={this.state.currData} />
         </SwipeableViews>
       </div>
     );

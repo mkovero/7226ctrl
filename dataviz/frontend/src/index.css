@@ -6,7 +6,7 @@ body {
   color: #c7c7c7;
 }
 
-#chart {
+#streamChart {
   transform: rotate(90deg);
   position: fixed;
   margin-left: -720px
@@ -16,6 +16,7 @@ body {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 50px;
+  margin-top: 30px;
 }
 .Stats td:nth-child(1) {
   text-align: left;

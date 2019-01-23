@@ -30,7 +30,7 @@ function streamGraph() {
     var stack_ = stack().keys(range(n)).offset(stackOffsetSilhouette),
         layers = stack_(transpose(data));
 
-    var svg = select("svg");
+    var svg = select("#streamChart");
 
     const   width = +svg.attr("width"),
             height = +svg.attr("height");
@@ -51,9 +51,10 @@ function streamGraph() {
         .y0(function(d) { return y(d[0]); })
         .y1(function(d) { return y(d[1]); });
 
-    svg.selectAll("path")
+    svg.selectAll(".streamPath")
         .data(layers)
         .enter().append("path")
+            .attr("class", "streamPath")
             .attr("d", area_)
             .attr("fill", (d, i) => colors[i]);
 
@@ -81,7 +82,7 @@ function streamGraph() {
             .y1(function(d) { return y(d[1]); })
             .curve(curveNatural);
 
-        selectAll("path")
+        selectAll(".streamPath")
             .data(d)
             .attr("d", area_);
 }
@@ -131,7 +132,7 @@ export default class StreamGraph extends Component {
     
     return (
       <div>
-        <svg id="chart" width="1480" height="1480"></svg>
+        <svg id="streamChart" width="1480" height="1480"></svg>
       </div>
     );
   }
