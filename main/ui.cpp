@@ -463,12 +463,12 @@ void datalog(Task *me)
 {
   if (datalogger)
   {
-    struct SensorVals sensor = readSensors();
+   struct SensorVals sensor = readSensors();
 
-    /*if (debugEnabled)
+    if (debugEnabled)
     {
       debugEnabled = false;
-    }*/
+    }
     Serial.print(sensor.curSpeed);
     Serial.print(F(";"));
     Serial.print(sensor.curRPM);

@@ -330,7 +330,7 @@ void polltrans(Task *me)
   //Raw value for pwm control (0-255) for SPC solenoid, see page 9: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf
   // "Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle" <- 102/255 = 0.4
   // MPC = varying with load, SPC constant 33%
-  int mpcVal = readMap(mpcNormalMap, sensor.curLoad, sensor.curAtfTemp);
+  //int mpcVal = readMap(mpcNormalMap, sensor.curLoad, sensor.curAtfTemp);
 
   if (!shiftBlocker)
   {
@@ -342,12 +342,13 @@ void polltrans(Task *me)
       garageTime = millis();
     }
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
-    /* if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
+     if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
     {
-      int mpcSetVal = (100 - mpcVal) * 2.55;
+     // int mpcSetVal = (100 - mpcVal) * 2.55;
+     int mpcSetVal = 102;
       analogWrite(mpc, mpcSetVal);
     }
-*/
+
     if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 1000))
     {
       analogWrite(spc, 0);
@@ -359,7 +360,7 @@ void polltrans(Task *me)
     if (wantedGear > 5 && garageShiftMove && stick)
     {
       analogWrite(y5, 255);
-      delay(500);
+     // delay(500);
     }
     if (!garageShiftMove)
     {
