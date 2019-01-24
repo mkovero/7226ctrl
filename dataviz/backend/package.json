@@ -9,7 +9,7 @@
   "author": "Jami Karvanen",
   "license": "ISC",
   "dependencies": {
-    "serialport": "^7.1.0",
+    "serialport": "6.2.2",
     "ws": "^6.1.2"
   }
 }

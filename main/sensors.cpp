@@ -232,21 +232,31 @@ void tpsInit(int action)
   case 0:
   {
     int curValue = EEPROM.read(10);
-    int tpsVoltage = analogRead(tpsPin) * 3.30;
-    if (curValue != tpsVoltage)
-    {
-      EEPROM.write(10, tpsVoltage);
-    }
+    int tpsVoltage = analogRead(tpsPin) * 3.0;
+   //if (curValue != tpsVoltage)
+   //{
+     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
+     byte highByte = ((tpsVoltage >> 8) & 0xFF);
+     EEPROM.write(10, lowByte);
+     EEPROM.write(11, highByte);
+      Serial.print("Written voltage val 10:");
+      Serial.println(tpsVoltage);
+    //}
     break;
   }
   case 1:
   {
-    int curValue = EEPROM.read(11);
-    int tpsVoltage = analogRead(tpsPin) * 3.30;
-    if (curValue != tpsVoltage)
-    {
-      EEPROM.write(11, tpsVoltage);
-    }
+    int curValue = EEPROM.read(20);
+    int tpsVoltage = analogRead(tpsPin) * 3.0;
+  // if (curValue != tpsVoltage)
+   //{
+     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
+     byte highByte = ((tpsVoltage >> 8) & 0xFF);
+     EEPROM.write(20, lowByte);
+     EEPROM.write(21, highByte);
+      Serial.print("Written voltage val 20:");
+      Serial.println(tpsVoltage);
+  //  }
     break;
   }
   default:
@@ -335,7 +345,7 @@ int boostRead()
     //reading MAP/boost
     float refRead = analogRead(refPin);
     float refBoost = refRead / 1023 * 3.3;
-    float boostVoltage = analogRead(boostPin) * 3.3;
+    float boostVoltage = analogRead(boostPin) * 3.0;
     boostValue = readBoostVoltage(boostVoltage);
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
   }
@@ -412,13 +422,13 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   {
     trueLoad = 100;
   }
+  trueLoad = trueLoad + 20;
 
   // trueLoad = trueLoad + 50;
   if (trueLoad > 100)
   {
     trueLoad = 100;
   }
-  //trueLoad = 80;
   return trueLoad;
 }
 
@@ -445,11 +455,11 @@ int atfRead()
 
   int atfTemp = readTempMap(atfSensorMap, R2);
 
-  if (wantedGear == 6 || wantedGear == 8)
+ if (wantedGear == 6 || wantedGear == 8)
   {
     atfTemp = oilRead();
   }
-
+  atfTemp = atfTemp;
   return atfTemp;
 }
 
