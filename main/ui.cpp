@@ -329,13 +329,14 @@ void draw(int wantedGear)
   {
     if (configMode)
     {
-      u8g2.setFont(u8g2_font_fub14_tf);
+      int tps = analogRead(tpsPin) * 3.0;
+    u8g2.setFont(u8g2_font_5x8_tr);
       u8g2.setCursor(20, 28);
-      u8g2.print("Don't press throttle and press next");
+      u8g2.print("Don't press throttle");
       u8g2.setCursor(60, 28);
       u8g2.print(F(" : "));
-      u8g2.setCursor(90, 28);
-      u8g2.print(sensor.curTps);
+      u8g2.setCursor(90, 48);
+      u8g2.print(tps);
     }
     else
     {
@@ -351,13 +352,14 @@ void draw(int wantedGear)
         tpsInit(0);
         tpsInitPhase1 = true;
       }
-      u8g2.setFont(u8g2_font_fub14_tf);
+      int tps = analogRead(tpsPin) * 3.0;
+    u8g2.setFont(u8g2_font_5x8_tr);
       u8g2.setCursor(20, 28);
-      u8g2.print("Press throttle fully and press next");
+      u8g2.print("Press throttle all the way");
       u8g2.setCursor(60, 28);
       u8g2.print(F(" : "));
-      u8g2.setCursor(90, 28);
-      u8g2.print(sensor.curTps);
+      u8g2.setCursor(90, 48);
+      u8g2.print(tps);
     }
     else
     {
@@ -368,12 +370,12 @@ void draw(int wantedGear)
   {
     if (configMode)
     {
-      if (!tpsInitPhase2)
+          if (!tpsInitPhase2)
       {
         tpsInit(1);
         tpsInitPhase2 = true;
       }
-      u8g2.setFont(u8g2_font_fub14_tf);
+    u8g2.setFont(u8g2_font_5x8_tr);
       u8g2.setCursor(20, 28);
       u8g2.print("TPS reset done");
       u8g2.setCursor(60, 28);

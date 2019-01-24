@@ -12,8 +12,12 @@ boolean ShiftDebugEnabled = false;
 // Mapping throttle position sensor voltage to percentage
 int readTPSVoltage(int voltage)
 {
-  int minLimit = EEPROM.read(10);
-  int maxLimit = EEPROM.read(11);
+  byte minLowByte = EEPROM.read(10);
+  byte minHighByte = EEPROM.read(11);
+  byte maxLowByte = EEPROM.read(20);
+  byte maxHighByte = EEPROM.read(21);
+  int minLimit = ((minLowByte << 0) & 0xFF) + ((minHighByte << 8) & 0xFF00);
+  int maxLimit = ((maxLowByte << 0) & 0xFF) + ((maxHighByte << 8) & 0xFF00);
   int result = map(voltage, minLimit, maxLimit, 0, 100);
   return result;
 }
@@ -98,7 +102,7 @@ int readTempMap(const int theMap[23][2], int y)
   int prevXMapValue = pgm_read_dword_near(&theMap[yidx - 1][1]); // edellinen X
   int prevYMapValue = pgm_read_dword_near(&theMap[yidx - 1][0]); // edellinen Y
 
-  int betweenL1 = ((curY - y) / (curY - prevYMapValue)) * (mapValue - prevXMapValue) + prevXMapValue;
+  float betweenL1 = ((float(curY) - y) / (curY - prevYMapValue)) * (mapValue - prevXMapValue) + prevXMapValue;
   // valittu Y - annettu luku = xyz -> (xyz / (valittu Y - edellinen Y)) * (valittu X - edellinen X) + edellinen x
 
   return betweenL1;

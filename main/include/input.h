@@ -37,4 +37,5 @@ extern boolean stick;
 extern boolean autoGear;
 extern boolean configMode;
 extern double lastShiftPoint;
+extern boolean tpsInitPhase1, tpsInitPhase2;
 extern byte page;

@@ -531,11 +531,11 @@ void radioControl()
     }
     else if (readData == 150)
     {
-      if (page < 6)
+      if (page < 7)
       {
         page++;
       }
-      else if (page > 6)
+      else if (page > 7)
       {
         page = 1;
       }
@@ -549,7 +549,7 @@ void radioControl()
       }
       else if (page < 1)
       {
-        page = 6;
+        page = 7;
       }
       readData = 0;
     }
