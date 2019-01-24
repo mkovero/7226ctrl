@@ -300,7 +300,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   filterOneLowpass2.input(tempRead);
   //avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
   //avgOilRef = (avgOilRef * 9 + refRead) / 10;
-  int R2 = 4700 / (refRead / (float)filterOneLowpass2.output() - 1.0);
+  int R2 = 4700 / (1023 / (float)filterOneLowpass2.output() - 1.0);
   float logR2 = log(R2);
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
@@ -312,6 +312,18 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   else {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
   }*/
+
+
+  /*
+  float tempRead = analogRead(oilPin);
+  float refRead = analogRead(refPin);
+  float refTemp = refRead / 1023 * 3.3;
+  filterOneLowpass2.input(tempRead);
+
+  int R2 = 4700 / (1023 / (float)filterOneLowpass.output() - 1.0);
+
+  */
+
   return oilTemp;
 }
 
@@ -419,7 +431,18 @@ int atfRead()
   float refTemp = refRead / 1023 * 3.3;
   filterOneLowpass.input(tempRead);
 
-  int R2 = 230 / (refRead / (float)filterOneLowpass.output() - 1.0);
+  int R2 = 230 / (refTemp / (float)filterOneLowpass.output() - 1.0);
+
+  if (R2 < 564)
+  {
+    R2 = 564;
+  }
+
+  if (R2 > 2479)
+  {
+    R2 = 2479;
+  }
+
   int atfTemp = readTempMap(atfSensorMap, R2);
 
   if (wantedGear == 6 || wantedGear == 8)

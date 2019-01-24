@@ -70,15 +70,7 @@ int readMap(const int theMap[14][12], int x, int y)
 }
 int readTempMap(const int theMap[23][2], int y)
 {
-  if (y < 564)
-  {
-    y = 564;
-  }
 
-  if (y > 2479)
-  {
-    y = 2479;
-  }
   int yidx = 0; // by default near first element
   int yelements = 23;
 
