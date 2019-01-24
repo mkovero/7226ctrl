@@ -59,7 +59,7 @@ void pollsensors(Task *me)
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
 
-  if (millis() - lastSensorTime >= 1000)
+  if (millis() - lastSensorTime >= 100)
   {
     detachInterrupt(n2pin); // Detach interrupts for calculation
     detachInterrupt(n3pin);
@@ -233,14 +233,14 @@ void tpsInit(int action)
   {
     int curValue = EEPROM.read(10);
     int tpsVoltage = analogRead(tpsPin) * 3.0;
-   //if (curValue != tpsVoltage)
-   //{
-     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
-     byte highByte = ((tpsVoltage >> 8) & 0xFF);
-     EEPROM.write(10, lowByte);
-     EEPROM.write(11, highByte);
-      Serial.print("Written voltage val 10:");
-      Serial.println(tpsVoltage);
+    //if (curValue != tpsVoltage)
+    //{
+    byte lowByte = ((tpsVoltage >> 0) & 0xFF);
+    byte highByte = ((tpsVoltage >> 8) & 0xFF);
+    EEPROM.write(10, lowByte);
+    EEPROM.write(11, highByte);
+    Serial.print("Written voltage val 10:");
+    Serial.println(tpsVoltage);
     //}
     break;
   }
@@ -248,15 +248,15 @@ void tpsInit(int action)
   {
     int curValue = EEPROM.read(20);
     int tpsVoltage = analogRead(tpsPin) * 3.0;
-  // if (curValue != tpsVoltage)
-   //{
-     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
-     byte highByte = ((tpsVoltage >> 8) & 0xFF);
-     EEPROM.write(20, lowByte);
-     EEPROM.write(21, highByte);
-      Serial.print("Written voltage val 20:");
-      Serial.println(tpsVoltage);
-  //  }
+    // if (curValue != tpsVoltage)
+    //{
+    byte lowByte = ((tpsVoltage >> 0) & 0xFF);
+    byte highByte = ((tpsVoltage >> 8) & 0xFF);
+    EEPROM.write(20, lowByte);
+    EEPROM.write(21, highByte);
+    Serial.print("Written voltage val 20:");
+    Serial.println(tpsVoltage);
+    //  }
     break;
   }
   default:
@@ -322,7 +322,6 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   else {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
   }*/
-
 
   /*
   float tempRead = analogRead(oilPin);
@@ -455,7 +454,7 @@ int atfRead()
 
   int atfTemp = readTempMap(atfSensorMap, R2);
 
- if (wantedGear == 6 || wantedGear == 8)
+  if (wantedGear == 6 || wantedGear == 8)
   {
     atfTemp = oilRead();
   }

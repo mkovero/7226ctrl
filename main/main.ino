@@ -42,7 +42,7 @@ Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
 Task pollData(33, datalog);              // 200ms to update datalogging
 Task pollStick(100, pollstick);           // 100ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
-Task pollSensors(100, pollsensors);       // 100ms to update sensor values*/
+Task pollSensors(80, pollsensors);       // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
 Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
 Task pollBoostControl(100, boostControl); // 100ms for boost control*/
