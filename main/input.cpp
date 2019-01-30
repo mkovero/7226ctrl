@@ -436,6 +436,10 @@ void polltrans(Task *me)
         wrongGearPoint = 0;
       }
     }
+    if (evalGear & sensor.curSpeed < 10)
+    {
+      gear = evaluateGear();
+    }
   }
 }
 
