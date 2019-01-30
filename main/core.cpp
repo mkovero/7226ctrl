@@ -59,7 +59,8 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     postShiftDone = false; // Reset previous states
     preShiftDone = false;
     shiftDone = false;
-
+    shiftConfirmed = false;
+    
     spcPercentVal = spcVal;
     mpcPercentVal = mpcVal;
     cSolenoidEnabled = cSolenoid;

@@ -18,7 +18,7 @@ byte wantedGear = 100;
 const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
 double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double Kd = 0; //100, 1 Pid Derivative Gain.
-boolean garageShift, garageShiftMove, configMode,tpsInitPhase1,tpsInitPhase2 = false;
+boolean garageShift, garageShiftMove, configMode, tpsInitPhase1, tpsInitPhase2 = false;
 double garageTime, lastShift, lastInput;
 
 /*
@@ -342,10 +342,10 @@ void polltrans(Task *me)
       garageTime = millis();
     }
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
-     if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
+    if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
     {
-     // int mpcSetVal = (100 - mpcVal) * 2.55;
-     int mpcSetVal = 102;
+      // int mpcSetVal = (100 - mpcVal) * 2.55;
+      int mpcSetVal = 102;
       analogWrite(mpc, mpcSetVal);
     }
 
@@ -360,7 +360,7 @@ void polltrans(Task *me)
     if (wantedGear > 5 && garageShiftMove && stick)
     {
       analogWrite(y5, 255);
-     // delay(500);
+      // delay(500);
     }
     if (!garageShiftMove)
     {
@@ -385,36 +385,80 @@ void polltrans(Task *me)
       analogWrite(y3, 0);
       ignition = false;
     }
-    if (evalGear && !shiftBlocker && sensor.curSpeed > 10)
+    if (evalGear && !shiftBlocker && millis() - lastShiftPoint > 5000 & wrongGearPoint < 5 & !shiftConfirmed)
     {
       int evaluatedGear = evaluateGear();
+      if (millis() - lastShiftPoint > 5100)
+      {
+        if (evaluatedGear != gear)
+        {
+          wrongGearPoint++;
+        }
+      }
+      if (millis() - lastShiftPoint > 5500)
+      {
+        if (evaluatedGear != gear)
+        {
+          wrongGearPoint++;
+        }
+      }
+      if (millis() - lastShiftPoint > 6000)
+      {
+        if (evaluatedGear != gear)
+        {
+          wrongGearPoint++;
+        }
+      }
+      if (millis() - lastShiftPoint > 6500)
+      {
+        if (evaluatedGear != gear)
+        {
+          wrongGearPoint++;
+        }
+      }
+      if (millis() - lastShiftPoint > 7000)
+      {
+        if (evaluatedGear != gear)
+        {
+          wrongGearPoint++;
+        }
+        if (wrongGearPoint < 3)
+        {
+          shiftConfirmed = true;
+        }
+      }
+    }
+    if (wrongGearPoint >= 3)
+    {
       if (evaluatedGear < 6 && wantedGear < 6)
       {
         gear = evaluateGear();
+        wrongGearPoint = 0;
       }
     }
   }
+}
 
-  if (radioEnabled)
-  {
-    radioControl();
-  }
-  if (manual)
-  {
-    pollkeys();
-  }
-  if (horn && (millis() - hornPressTime > 300))
-  {
-    hornOff();
-  }
-  if (sensor.curRPM > 0)
-  {
-    carRunning = true;
-  }
-  else
-  {
-    carRunning = false;
-  }
+if (radioEnabled)
+{
+  radioControl();
+}
+if (manual)
+{
+  pollkeys();
+}
+if (horn && (millis() - hornPressTime > 300))
+{
+  hornOff();
+}
+if (sensor.curRPM > 0)
+{
+  carRunning = true;
+}
+else
+{
+  carRunning = false;
+}
 }
 
 int adaptSPC(int mapId, int xVal, int yVal)
@@ -523,11 +567,13 @@ void radioControl()
       hornOn();
       readData = 0;
     }
-    else if (readData == 101) {
+    else if (readData == 101)
+    {
       configMode = true;
-      tpsInitPhase1,tpsInitPhase2 = false;
+      tpsInitPhase1, tpsInitPhase2 = false;
     }
-    else if (readData == 201) {
+    else if (readData == 201)
+    {
       configMode = false;
     }
     else if (readData == 150)
