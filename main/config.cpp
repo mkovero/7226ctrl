@@ -81,7 +81,7 @@ boolean adaptive = false;
 // Battery monitor
 boolean batteryMonitor = true;
 // Exhaust pressure sensor
-boolean exhaustPresSensor = false;
+boolean exhaustPresSensor = true;
 // Default power mode
 boolean truePower = false;
 // torque converter lock

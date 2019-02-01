@@ -50,7 +50,7 @@ Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
 
 void setup()
 {
-  delay(1000);
+  delay(5000);
 
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
@@ -115,8 +115,8 @@ void setup()
   *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 #else*/
-  pinMode(fuelInPin, INPUT);  // Fuel flow meter in
-  pinMode(fuelOutPin, INPUT); // Fuel flow meter out
+ // pinMode(fuelInPin, INPUT);  // Fuel flow meter in
+ // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
  // *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
  // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 //#endif
@@ -135,17 +135,17 @@ void setup()
   *portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
-#ifdef ASPC
+/*#ifdef ASPC
   pinMode(aSpcUpSwitch, INPUT);
   pinMode(aSpcDownSwitch, INPUT);
   *portConfigRegister(aSpcUpSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(aSpcDownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-#else
+#else*/
   pinMode(exhaustPresPin, INPUT);
   pinMode(exhaustTempPin, INPUT);
-  *portConfigRegister(exhaustPresPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(exhaustTempPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-#endif
+ // *portConfigRegister(exhaustPresPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+ // *portConfigRegister(exhaustTempPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+//#endif
 
   // Make sure solenoids are all off.
   analogWrite(y3, 255); // 1-2/4-5 Solenoid is pulsed during ignition crank.
@@ -163,7 +163,7 @@ void setup()
 
   digitalWrite(rpmPin, HIGH); // pull-up
   digitalWrite(SPIcs, LOW);
-
+  
   attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, FALLING);
   attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);

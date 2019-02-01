@@ -227,7 +227,7 @@ void draw(int wantedGear)
   }
   else if (page == 2 && infoDisplay == 0)
   {
-    float boostBar;
+    /*float boostBar;
     u8g2.drawFrame(5, 8, 115, 24);
     if (sensor.curBoostLim > 0)
     {
@@ -238,19 +238,21 @@ void draw(int wantedGear)
       boostBar = sensor.curBoost / config.boostSpring;
     }
     float boostBox = 100 * boostBar * 115;
-    u8g2.drawBox(5, 8, boostBox, 24);
+    u8g2.drawBox(5, 8, boostBox, 24);*/
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(20, 28);
     u8g2.print(sensor.curBoost);
-    u8g2.setCursor(60, 28);
+    u8g2.setCursor(50, 28);
     u8g2.print(F(" / "));
     u8g2.setCursor(90, 28);
-    u8g2.print(sensor.curBoostLim);
-    if (sensor.curBoostLim < 1)
+    u8g2.print(sensor.curExPres);
+    u8g2.setCursor(50, 56);
+    u8g2.print(sensor.curPresDiff);
+   /* if (sensor.curBoostLim < 1)
     {
       u8g2.setCursor(10, 56);
       u8g2.print(F("LOW TEMP"));
-    }
+    }*/
   }
   else if (page == 3 && infoDisplay == 0)
   {
