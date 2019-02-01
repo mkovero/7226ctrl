@@ -337,7 +337,7 @@ void polltrans(Task *me)
     // Pulsed constantly while idling in Park or Neutral at approximately 33% Duty cycle.
     if (wantedGear == 6 || wantedGear == 8)
     {
-      analogWrite(spc, 85);
+      analogWrite(spc, 20);
       garageShift = true;
       garageTime = millis();
     }
