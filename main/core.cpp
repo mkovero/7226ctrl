@@ -242,7 +242,7 @@ void gearchangeUp(int newGear)
       }
       if (!sensors)
       {
-        switchGearStart(y3, 100, 100);
+        switchGearStart(y3, 35, 31);
       }
       if (sensors)
       {
@@ -260,7 +260,7 @@ void gearchangeUp(int newGear)
       }
       if (!sensors)
       {
-        switchGearStart(y4, 100, 100);
+        switchGearStart(y4, 31, 31);
       }
       if (sensors)
       {
@@ -278,7 +278,7 @@ void gearchangeUp(int newGear)
       }
       if (!sensors)
       {
-        switchGearStart(y5, 100, 100);
+        switchGearStart(y5, 43, 43);
       }
       if (sensors)
       {
@@ -296,7 +296,7 @@ void gearchangeUp(int newGear)
       }
       if (!sensors)
       {
-        switchGearStart(y3, 100, 100);
+        switchGearStart(y3, 47, 39);
       }
       if (sensors)
       {
@@ -343,7 +343,7 @@ void gearchangeDown(int newGear)
       }
       if (!sensors)
       {
-        switchGearStart(y3, 100, 100);
+        switchGearStart(y3, 15, 15);
       }
       if (sensors)
       {
@@ -361,7 +361,7 @@ void gearchangeDown(int newGear)
       }
       if (!sensors)
       {
-        switchGearStart(y4, 100, 100);
+        switchGearStart(y4, 70, 70);
       }
       if (sensors)
       {
@@ -379,7 +379,7 @@ void gearchangeDown(int newGear)
       }
       if (!sensors)
       {
-        switchGearStart(y5, 100, 100);
+        switchGearStart(y5, 43, 39);
       }
       if (sensors)
       {
@@ -397,7 +397,7 @@ void gearchangeDown(int newGear)
       }
       if (!sensors)
       {
-        switchGearStart(y3, 100, 100);
+        switchGearStart(y3, 47, 47);
       }
       if (sensors)
       {
