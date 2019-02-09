@@ -357,7 +357,7 @@ void polltrans(Task *me)
 
     // 3-4 Shift solenoid is pulsed continuously while in Park and during selector lever movement (Garage Shifts).
     // Testing whether we actually need this.
-    if (wantedGear > 5 && garageShiftMove && stick)
+    if (wantedGear > 5 && garageShiftMove && stickCtrl)
     {
       analogWrite(y5, 255);
       // delay(500);

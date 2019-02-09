@@ -240,11 +240,11 @@ void gearchangeUp(int newGear)
         Serial.print(F("-"));
         Serial.println(sensor.curAtfTemp);
       }
-      if (!sensors)
+      if (!tpsSensor)
       {
         switchGearStart(y3, 35, 31);
       }
-      if (sensors)
+      if (tpsSensor)
       {
         lastMapVal = 100;
         switchGearStart(y3, readPercentualMap(spcMap12, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap12, sensor.curLoad, sensor.curAtfTemp));
@@ -258,11 +258,11 @@ void gearchangeUp(int newGear)
         Serial.print(F("-"));
         Serial.println(sensor.curAtfTemp);
       }
-      if (!sensors)
+      if (!tpsSensor)
       {
         switchGearStart(y4, 31, 31);
       }
-      if (sensors)
+      if (tpsSensor)
       {
         lastMapVal = 130;
         switchGearStart(y4, readPercentualMap(spcMap23, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap23, sensor.curLoad, sensor.curAtfTemp));
@@ -276,11 +276,11 @@ void gearchangeUp(int newGear)
         Serial.print(F("-"));
         Serial.println(sensor.curAtfTemp);
       }
-      if (!sensors)
+      if (!tpsSensor)
       {
         switchGearStart(y5, 43, 43);
       }
-      if (sensors)
+      if (tpsSensor)
       {
         lastMapVal = 160;
         switchGearStart(y5, readPercentualMap(spcMap34, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap34, sensor.curLoad, sensor.curAtfTemp));
@@ -294,11 +294,11 @@ void gearchangeUp(int newGear)
         Serial.print(F("-"));
         Serial.println(sensor.curAtfTemp);
       }
-      if (!sensors)
+      if (!tpsSensor)
       {
         switchGearStart(y3, 47, 39);
       }
-      if (sensors)
+      if (tpsSensor)
       {
         lastMapVal = 190;
         switchGearStart(y3, readPercentualMap(spcMap45, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap45, sensor.curLoad, sensor.curAtfTemp));
@@ -341,11 +341,11 @@ void gearchangeDown(int newGear)
         Serial.print(F("-"));
         Serial.println(sensor.curAtfTemp);
       }
-      if (!sensors)
+      if (!tpsSensor)
       {
         switchGearStart(y3, 15, 15);
       }
-      if (sensors)
+      if (tpsSensor)
       {
         lastMapVal = 210;
         switchGearStart(y3, readPercentualMap(spcMap21, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap21, sensor.curLoad, sensor.curAtfTemp));
@@ -359,11 +359,11 @@ void gearchangeDown(int newGear)
         Serial.print(F("-"));
         Serial.println(sensor.curAtfTemp);
       }
-      if (!sensors)
+      if (!tpsSensor)
       {
         switchGearStart(y4, 70, 70);
       }
-      if (sensors)
+      if (tpsSensor)
       {
         lastMapVal = 240;
         switchGearStart(y4, readPercentualMap(spcMap32, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap32, sensor.curLoad, sensor.curAtfTemp));
@@ -377,11 +377,11 @@ void gearchangeDown(int newGear)
         Serial.print(F("-"));
         Serial.println(sensor.curAtfTemp);
       }
-      if (!sensors)
+      if (!tpsSensor)
       {
         switchGearStart(y5, 43, 39);
       }
-      if (sensors)
+      if (tpsSensor)
       {
         lastMapVal = 270;
         switchGearStart(y5, readPercentualMap(spcMap43, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap43, sensor.curLoad, sensor.curAtfTemp));
@@ -395,11 +395,11 @@ void gearchangeDown(int newGear)
         Serial.print(F("-"));
         Serial.println(sensor.curAtfTemp);
       }
-      if (!sensors)
+      if (!tpsSensor)
       {
         switchGearStart(y3, 47, 47);
       }
-      if (sensors)
+      if (tpsSensor)
       {
         lastMapVal = 300;
         switchGearStart(y3, readPercentualMap(spcMap54, sensor.curLoad, sensor.curAtfTemp), readPercentualMap(mpcMap54, sensor.curLoad, sensor.curAtfTemp));
