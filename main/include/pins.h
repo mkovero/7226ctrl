@@ -36,21 +36,16 @@
 // Switches
 #define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey // DIN5
 
-#ifdef MANUAL
+/*#ifdef MANUAL
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6
 #define gupSwitch 24 // <-> NC // DIN7
 #else
 #define fuelInPin 31 // ex. 23 <-> NC // DIN6
 #define fuelOutPin 32 // <-> NC // DIN7
-#endif
+#endif*/
 
-#ifdef ASPC
-#define aSpcUpSwitch 32 // ex 18 <-> missing grey? // DIN13
-#define aSpcDownSwitch 31 // ex 17 <-> missing grey? // DIN12
-#else
-#define exhaustPresPin 23
+#define exhaustPresPin A9
 #define exhaustTempPin 24
-#endif
 
 // Car sensor input pins, black
 #define tpsPin A3 // voltage div 5/3 <-> black <-> blue-black-blue = 1kohm/1.8kohm div // ANAIN3

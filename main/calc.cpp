@@ -1,11 +1,19 @@
 #include <Arduino.h>
 #include <EEPROM.h>
+#include "include/pins.h"
 
 // Macro for sizeof for better support with 2d arrays.
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))
 int lastXval, lastYval;
 int maxBoostPressure = 700; // Max pressure on boost sensor
 boolean ShiftDebugEnabled = false;
+int initBVoltage = analogRead(boostPin) * 5.0;
+int initEVoltage = analogRead(exhaustPresPin) * 5.0;
+
+/*if ( wantedGear == 8 ) {
+ initBVoltage = analogRead(boostPin) * 5.0;
+ initEVoltage = analogRead(exhaustPresPin) * 5.0;
+}*/
 
 // Calculation helpers
 
@@ -26,9 +34,17 @@ int readTPSVoltage(int voltage)
 int readBoostVoltage(int voltage)
 {
 
-  int result = map(voltage, 490, 3100, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
+  int result = map(voltage, initBVoltage, 3100, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
   return result;
 }
+
+int readExPresVoltage(int voltage)
+{
+
+  int result = map(voltage, initEVoltage, 5000, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
+  return result;
+}
+
 // Mapping battery voltage to actual voltage
 int readBatVoltage(int voltage)
 {
@@ -129,6 +145,7 @@ int readTempMapInverted(const int theMap[14][2], int y)
   // 1700 - 1200 = (500/(1700-1170))*(40-30)+30 // inverted
   return betweenL1;
 }
+
 
 int readPercentualMap(const int theMap[14][12], int x, int y)
 {

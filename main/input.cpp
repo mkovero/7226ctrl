@@ -20,7 +20,7 @@ double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target 
 const double Kd = 0; //100, 1 Pid Derivative Gain.
 boolean garageShift, garageShiftMove, configMode, tpsInitPhase1, tpsInitPhase2 = false;
 double garageTime, lastShift, lastInput;
-
+int lockVal=0;
 /*
 const double Kp = 200; 
 double Ki = 100;      
@@ -337,7 +337,7 @@ void polltrans(Task *me)
     // Pulsed constantly while idling in Park or Neutral at approximately 33% Duty cycle.
     if (wantedGear == 6 || wantedGear == 8)
     {
-      analogWrite(spc, 85);
+      analogWrite(spc, 20);
       garageShift = true;
       garageTime = millis();
     }
@@ -346,7 +346,7 @@ void polltrans(Task *me)
     {
       // int mpcSetVal = (100 - mpcVal) * 2.55;
       int mpcSetVal = 102;
-      analogWrite(mpc, mpcSetVal);
+    //  analogWrite(mpc, mpcSetVal);
     }
 
     if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 1000))
@@ -370,13 +370,25 @@ void polltrans(Task *me)
     if (tccLock)
     {
       // Enable torque converter lock when tps is less than 40%, current speed is more than 80km/h and gear is within allowed range.
-      if (sensor.curTps < 40 && sensor.curSpeed > 80 && gear >= config.firstTccGear && gear > 1)
+      if (sensor.curTps < 40 && sensor.curSpeed > 30 && gear >= config.firstTccGear && gear > 1 && sensor.curRPM < 2500)
       {
-        analogWrite(tcc, 255);
+        if (lockVal <= 255)
+        {
+          lockVal=lockVal+85;
+          analogWrite(tcc, lockVal);
+        } else {
+          analogWrite(tcc, 255);
+        }
       }
       else
       {
-        analogWrite(tcc, 0);
+        if (lockVal >= 85)
+        {
+          lockVal=lockVal-85;
+          analogWrite(tcc, lockVal);
+        } else {
+          analogWrite(tcc, 0);
+        }
       }
     }
     // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
@@ -430,6 +442,7 @@ void polltrans(Task *me)
     }
     if (wrongGearPoint >= 3)
     {
+      int evaluatedGear = evaluateGear();
       if (evaluatedGear < 6 && wantedGear < 6)
       {
         gear = evaluateGear();
@@ -438,10 +451,9 @@ void polltrans(Task *me)
     }
     if (evalGear & sensor.curSpeed < 10)
     {
-      gear = evaluateGear();
+     // gear = evaluateGear();
     }
   }
-}
 
 if (radioEnabled)
 {
