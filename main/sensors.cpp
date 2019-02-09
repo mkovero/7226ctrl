@@ -20,6 +20,8 @@ int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff
 float alpha = 0.7, gearSlip;
 FilterOnePole filterOneLowpass(LOWPASS, 1);  // for atfTemp
 FilterOnePole filterOneLowpass2(LOWPASS, 1); // for oilTemp
+FilterOnePole boostSensorFilter(LOWPASS, 1); // for oilTemp
+FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -302,7 +304,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   return oilTemp;
   */
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
- /* float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
+  float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
   float tempRead = analogRead(oilPin);
   tempRead = analogRead(oilPin);
   float refRead = analogRead(refPin);
@@ -315,6 +317,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
   // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
   float oilTemp = T - 273.15 - 50;
+  return oilTemp;
   /* if (wantedGear == 6 || wantedGear == 8)
   {
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
@@ -323,7 +326,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
   }*/
 
-  
+  /*
   float tempRead = analogRead(oilPin);
   float refRead = analogRead(refPin);
   float refTemp = refRead / 1023 * 3.0;
@@ -335,7 +338,7 @@ a[3] = -9.456539654701360e-07 <- this can be c4
 
   
 
-  return tempRead;
+  return oilTemp;*/
 }
 
 int boostRead()
@@ -347,7 +350,8 @@ int boostRead()
     float refRead = analogRead(refPin);
     float refBoost = refRead / 1023 * 3.3;
     float boostVoltage = analogRead(boostPin) * 5.0;
-    boostValue = readBoostVoltage(boostVoltage);
+    boostSensorFilter.input(boostVoltage);
+    boostValue = readBoostVoltage(boostSensorFilter.output());
     avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
         if ( avgBoostValue < 0 ) { 
      avgBoostValue = 0; 
@@ -369,7 +373,8 @@ int exhaustPressureRead()
  {
     //reading exhaust pressure
      exhaustPresVol = analogRead(exhaustPresPin) * 5.0;
-    exhaustPresVal = readExPresVoltage(exhaustPresVol);
+    exhaustPressureFilter.input(exhaustPresVol);
+    exhaustPresVal = readExPresVoltage(exhaustPressureFilter.output());
     avgExhaustPresVal = (avgExhaustPresVal * 5 + exhaustPresVal) / 10;
     /*if (avgExhaustPresVal < 0)
     {
@@ -431,7 +436,7 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
   {
     trueLoad = 100;
   }
-  trueLoad = trueLoad + 20;
+  trueLoad = trueLoad + 30;
 
   // trueLoad = trueLoad + 50;
   if (trueLoad > 100)
@@ -469,7 +474,7 @@ int atfRead()
     atfTemp = oilRead();
   }
   atfTemp = atfTemp + 40;
-  return tempRead;
+  return atfTemp;
 }
 
 int exhaustTempRead()

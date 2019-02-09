@@ -221,9 +221,9 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 40);
     u8g2.print(sensor.curTps);
     u8g2.setCursor(100, 50);
-    u8g2.print(F("Load:"));
+    u8g2.print(F("Blim:"));
     u8g2.setCursor(100, 60);
-    u8g2.print(sensor.curLoad);
+    u8g2.print(sensor.curBoostLim);
   }
   else if (page == 2 && infoDisplay == 0)
   {

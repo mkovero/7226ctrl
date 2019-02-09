@@ -10,6 +10,11 @@ boolean ShiftDebugEnabled = false;
 int initBVoltage = analogRead(boostPin) * 5.0;
 int initEVoltage = analogRead(exhaustPresPin) * 5.0;
 
+/*if ( wantedGear == 8 ) {
+ initBVoltage = analogRead(boostPin) * 5.0;
+ initEVoltage = analogRead(exhaustPresPin) * 5.0;
+}*/
+
 // Calculation helpers
 
 // Mapping throttle position sensor voltage to percentage
@@ -141,33 +146,6 @@ int readTempMapInverted(const int theMap[14][2], int y)
   return betweenL1;
 }
 
-int readTempMapInverted(const int theMap[14][2], int y)
-{
-
-  int yidx = 0; // by default near first element
-  int yelements = 23;
-
-  for (int i = 1; i < yelements; i++)
-  {
-    int curVal = pgm_read_dword_near(&theMap[i][0]);
-
-    if (y <= curVal)
-    {
-      yidx = i;
-      break;
-    }
-  }
-
-  int curY = pgm_read_dword_near(&theMap[yidx][0]);              // valittu Y
-  int mapValue = pgm_read_dword_near(&theMap[yidx][1]);          // valittu X
-  int prevXMapValue = pgm_read_dword_near(&theMap[yidx - 1][1]); // edellinen X
-  int prevYMapValue = pgm_read_dword_near(&theMap[yidx - 1][0]); // edellinen Y
-
-  float betweenL1 = ((float(curY) - y) / (curY - prevYMapValue)) * (prevXMapValue - mapValue) + mapValue;
-  // valittu Y - annettu luku = xyz -> (xyz / (valittu Y - edellinen Y)) * (valittu X - edellinen X) + edellinen x
-
-  return betweenL1;
-}
 
 int readPercentualMap(const int theMap[14][12], int x, int y)
 {

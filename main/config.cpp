@@ -40,7 +40,7 @@ boolean boostLimit = true;
 boolean drive = false;
 
 // Datalogging (enabling this disables debug)
-boolean datalogger = true;
+boolean datalogger = false;
 
 // Old style w124 speed meter controlling
 boolean w124speedo = true;
@@ -85,7 +85,7 @@ boolean exhaustPresSensor = true;
 // Default power mode
 boolean truePower = false;
 // torque converter lock
-boolean tccLock = true;
+boolean tccLock = false;
 
 boolean carRunning = false;
 
@@ -108,7 +108,7 @@ struct ConfigParam readConfig()
   config.maxSlip = 0.5; // Maximum allowed slip before error
   config.stallSpeed = 2200; // torque converter stall speed
   config.batteryLimit = 11500; // battery voltage limit in 11.5v
-  config.firstTccGear = 5; // first gear when tcc is used.
+  config.firstTccGear = 2; // first gear when tcc is used.
   config.triggerWheelTeeth = 6; // number of teeth in trigger wheel for RPM calculation
   config.tpsAgre = 2; // 1-10 how aggressive slope tps has
   return config;

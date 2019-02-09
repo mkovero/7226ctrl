@@ -34,7 +34,7 @@ int lastMapVal;
 int shiftLoad = 0;
 int shiftAtfTemp = 0;
 int wrongGearPoint = 0;
-boolean preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
+boolean shiftConfirmed, preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
 double lastShiftPoint;
 
 // Gear shift logic
@@ -198,7 +198,7 @@ void switchGearStop()
   if (debugEnabled)
   {
     Serial.print(F("[switchGearStop->switchGearStop] End of gear change current-solenoid: "));
-    Serial.print(gear);
+    Serial.print(pendingGear);
     Serial.print(F("-"));
     Serial.print(newGear);
     Serial.print(F("-"));
@@ -538,7 +538,7 @@ int evaluateGear()
     incomingShaftSpeed = n2Speed;
     //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
   }
-  if (n3Speed == 0 && prevGear != 4)
+  if (n3Speed == 0 && sensor.curSpeed < 10)
   {
     measuredGear = 1; // If we're near standstill and there is no N3 info, we can assume that we're on 1.
   }
