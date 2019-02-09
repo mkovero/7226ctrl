@@ -12,7 +12,7 @@
 using namespace std;
 
 // Internals
-unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog, fuelIn, fuelOut, fuelUsed, fuelUsedAvg;
+unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog, fuelIn, fuelOut, fuelUsed, fuelUsedAvg, vehicleTravelRevs, vehicleTravelDiff;
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 
 // sensor smoothing
@@ -95,6 +95,7 @@ void pollsensors(Task *me)
 
     if (vehicleSpeedPulses >= config.rearDiffTeeth)
     {
+      vehicleTravelRevs = vehicleSpeedPulses / config.rearDiffTeeth;
       vehicleSpeedRevs = vehicleSpeedPulses / config.rearDiffTeeth / elapsedTime * 1000 * 60;
       vehicleSpeedPulses = 0;
     }
@@ -162,6 +163,7 @@ int speedRead()
     // speed based on diff abs sensor
     vehicleSpeedDiff = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
     speedValue = vehicleSpeedDiff;
+    vehicleTravelDiff = tireCircumference * vehicleTravelRevs / 1000000;
   }
   if (rpmSpeed && diffSpeed)
   {
@@ -495,7 +497,7 @@ struct SensorVals readSensors()
   sensor.curExTemp = exhaustTempRead();
   sensor.curBoost = boostRead();
   sensor.curExPres = exhaustPressureRead();
-  sensor.curPresDiff = sensor.curExPres / sensor.curBoost;
+  sensor.curPresDiff = float(sensor.curExPres) / sensor.curBoost;
   sensor.curBoostLim = boostLimitRead(sensor.curOilTemp);
   sensor.curTps = tpsRead();
   sensor.curRPM = rpmRead();

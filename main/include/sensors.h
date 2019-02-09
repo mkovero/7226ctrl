@@ -2,9 +2,9 @@
 
 struct SensorVals
 {
-    int curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, curPresDiff, fuelUsed, fuelUsedAvg;
+    int curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, fuelUsed, fuelUsedAvg;
     byte curTps, curLoad, curSpeed;
-    float curSlip, curRatio;
+    float curSlip, curRatio, curPresDiff;
 };
 
 void N2SpeedInterrupt();
