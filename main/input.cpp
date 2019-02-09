@@ -20,7 +20,7 @@ double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target 
 const double Kd = 0; //100, 1 Pid Derivative Gain.
 boolean garageShift, garageShiftMove, configMode, tpsInitPhase1, tpsInitPhase2 = false;
 double garageTime, lastShift, lastInput;
-int lockVal=0;
+int lockVal = 0;
 /*
 const double Kp = 200; 
 double Ki = 100;      
@@ -298,7 +298,12 @@ void polltrans(Task *me)
 
   if (shiftBlocker)
   {
-    shiftDelay = readPercentualMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
+    if (tpsSensor)
+    {
+      shiftDelay = readPercentualMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
+    } else {
+      shiftDelay = 800;
+    }
     shiftDuration = millis() - shiftStartTime;
     if (shiftDuration > shiftDelay && shiftDone)
     {
@@ -346,7 +351,7 @@ void polltrans(Task *me)
     {
       // int mpcSetVal = (100 - mpcVal) * 2.55;
       int mpcSetVal = 102;
-    //  analogWrite(mpc, mpcSetVal);
+      //  analogWrite(mpc, mpcSetVal);
     }
 
     if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 1000))
@@ -374,9 +379,11 @@ void polltrans(Task *me)
       {
         if (lockVal <= 255)
         {
-          lockVal=lockVal+85;
+          lockVal = lockVal + 85;
           analogWrite(tcc, lockVal);
-        } else {
+        }
+        else
+        {
           analogWrite(tcc, 255);
         }
       }
@@ -384,9 +391,11 @@ void polltrans(Task *me)
       {
         if (lockVal >= 85)
         {
-          lockVal=lockVal-85;
+          lockVal = lockVal - 85;
           analogWrite(tcc, lockVal);
-        } else {
+        }
+        else
+        {
           analogWrite(tcc, 0);
         }
       }
@@ -451,30 +460,30 @@ void polltrans(Task *me)
     }
     if (evalGear & sensor.curSpeed < 10)
     {
-     // gear = evaluateGear();
+      // gear = evaluateGear();
     }
   }
 
-if (radioEnabled)
-{
-  radioControl();
-}
-if (manual)
-{
-  pollkeys();
-}
-if (horn && (millis() - hornPressTime > 300))
-{
-  hornOff();
-}
-if (sensor.curRPM > 0)
-{
-  carRunning = true;
-}
-else
-{
-  carRunning = false;
-}
+  if (radioEnabled)
+  {
+    radioControl();
+  }
+  if (manual)
+  {
+    pollkeys();
+  }
+  if (horn && (millis() - hornPressTime > 300))
+  {
+    hornOff();
+  }
+  if (sensor.curRPM > 0)
+  {
+    carRunning = true;
+  }
+  else
+  {
+    carRunning = false;
+  }
 }
 
 int adaptSPC(int mapId, int xVal, int yVal)

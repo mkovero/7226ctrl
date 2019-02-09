@@ -121,7 +121,7 @@ int readTempMapInverted(const int theMap[14][2], int y)
 {
 
   int yidx = 0; // by default near first element
-  int yelements = 23;
+  int yelements = 14;
 
   for (int i = 1; i < yelements; i++)
   {
