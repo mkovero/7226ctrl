@@ -465,6 +465,7 @@ void updateDisplay(Task *me)
 
 void datalog(Task *me)
 {
+  const double counter = 0;
   if (datalogger)
   {
    struct SensorVals sensor = readSensors();
@@ -473,6 +474,8 @@ void datalog(Task *me)
     {
       debugEnabled = false;
     }
+    Serial.print(counter);
+    Serial.print(F(";"));
     Serial.print(sensor.curSpeed);
     Serial.print(F(";"));
     Serial.print(sensor.curRPM);
@@ -507,4 +510,5 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.println(sensor.curBattery);
   }
+  counter++;
 }
