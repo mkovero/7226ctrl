@@ -475,7 +475,7 @@ int atfRead()
   {
     atfTemp = oilRead();
   }
-  atfTemp = atfTemp + 40;
+  atfTemp = atfTemp;
   return atfTemp;
 }
 
