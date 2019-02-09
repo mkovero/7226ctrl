@@ -34,5 +34,5 @@ extern int vehicleSpeedRevs;
 extern boolean speedFault;
 extern boolean adaptive;
 extern boolean evalGear;
-extern int shiftLoad, shiftAtfTemp;
-extern boolean preShift, postShift, preShiftDone, postShiftDone, shiftDone, batteryFault, slipFault, carRunning;
+extern int shiftLoad, shiftAtfTemp, wrongGearPoint;
+extern boolean shiftConfirmed, lastShiftPoint, preShift, postShift, preShiftDone, postShiftDone, shiftDone, batteryFault, slipFault, carRunning;

@@ -14,7 +14,7 @@
 // poll -> evaluateGear
 
 // Obvious internals
-byte gear = 2; // Start on gear 2
+byte gear,prevGear = 2; // Start on gear 2
 byte newGear = 2;
 byte pendingGear = 2;
 float ratio;
@@ -33,6 +33,7 @@ int cSolenoid = 0; // Change solenoid pin to be controlled.
 int lastMapVal;
 int shiftLoad = 0;
 int shiftAtfTemp = 0;
+int wrongGearPoint = 0;
 boolean preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
 double lastShiftPoint;
 
@@ -59,6 +60,7 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
     postShiftDone = false; // Reset previous states
     preShiftDone = false;
     shiftDone = false;
+    shiftConfirmed = false;
 
     spcPercentVal = spcVal;
     mpcPercentVal = mpcVal;
@@ -177,6 +179,7 @@ void doPostShift()
   shiftPending = false;
   shiftBlocker = false;
   lastShiftPoint = millis();
+  wrongGearPoint = 0;
 }
 
 // End of gear change phase
@@ -187,6 +190,7 @@ void switchGearStop()
   analogWrite(mpc, 0);              // mpc off
   pinMode(n2pin, INPUT_PULLUP);    // N2 sensor
   pinMode(n3pin, INPUT_PULLUP);    // N3 sensor
+  prevGear = gear;
   gear = pendingGear; // we can happily say we're on new gear
 
   shiftStopTime = millis();
@@ -534,7 +538,7 @@ int evaluateGear()
     incomingShaftSpeed = n2Speed;
     //when gear is 2, 3 or 4, n3 speed is not zero, and then incoming shaft speed (=turbine speed) equals to n2 speed)
   }
-  if (n3Speed == 0 && sensor.curSpeed < 20)
+  if (n3Speed == 0 && prevGear != 4)
   {
     measuredGear = 1; // If we're near standstill and there is no N3 info, we can assume that we're on 1.
   }

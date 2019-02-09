@@ -107,7 +107,37 @@ int readTempMap(const int theMap[23][2], int y)
 
   float betweenL1 = ((float(curY) - y) / (curY - prevYMapValue)) * (mapValue - prevXMapValue) + prevXMapValue;
   // valittu Y - annettu luku = xyz -> (xyz / (valittu Y - edellinen Y)) * (valittu X - edellinen X) + edellinen x
+  // 1700 - 1200 = (500/(1700-1170))*(30-40)+40
+  // 1700 - 1200 = (500/(1700-1170))*(40-30)+30 // inverted
+  return betweenL1;
+}
 
+int readTempMapInverted(const int theMap[14][2], int y)
+{
+
+  int yidx = 0; // by default near first element
+  int yelements = 23;
+
+  for (int i = 1; i < yelements; i++)
+  {
+    int curVal = pgm_read_dword_near(&theMap[i][0]);
+
+    if (y <= curVal)
+    {
+      yidx = i;
+      break;
+    }
+  }
+
+  int curY = pgm_read_dword_near(&theMap[yidx][0]);              // valittu Y
+  int mapValue = pgm_read_dword_near(&theMap[yidx][1]);          // valittu X
+  int prevXMapValue = pgm_read_dword_near(&theMap[yidx - 1][1]); // edellinen X
+  int prevYMapValue = pgm_read_dword_near(&theMap[yidx - 1][0]); // edellinen Y
+
+  float betweenL1 = ((float(curY) - y) / (curY - prevYMapValue)) * (prevXMapValue - mapValue) + mapValue;
+  // valittu Y - annettu luku = xyz -> (xyz / (valittu Y - edellinen Y)) * (valittu X - edellinen X) + edellinen x
+  // 1700 - 1200 = (500/(1700-1170))*(30-40)+40
+  // 1700 - 1200 = (500/(1700-1170))*(40-30)+30 // inverted
   return betweenL1;
 }
 
