@@ -6,8 +6,39 @@ body {
   color: #c7c7c7;
 }
 
-#chart {
+#streamChart {
   transform: rotate(90deg);
   position: fixed;
-  margin-left: -550px
+  margin-left: -720px
+}
+
+.Stats {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 50px;
+  margin-top: 30px;
+}
+.Stats td:nth-child(1) {
+  text-align: left;
+}
+
+.Stats td:nth-child(2) {
+  text-align: right;
+}
+
+
+#power-gauge g.arc {
+  fill: steelblue;
+}
+
+#power-gauge g.pointer {
+  fill: #e85116;
+  stroke: #b64011;
+}
+
+#power-gauge g.label text {
+  text-anchor: middle;
+  font-size: 14px;
+  font-weight: bold;
+  fill: #666;
 }
