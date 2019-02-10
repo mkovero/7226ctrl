@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import ReactSpeedometer from 'react-d3-speedometer'
-import './styles.css'
+import ReactSpeedometer from 'react-d3-speedometer';
+import { scaleLinear } from 'd3-scale';
+import './styles.css';
+let BarChart = require('react-d3-components').BarChart;
 
 export default class Meters extends Component {
   constructor(props) {
@@ -83,9 +85,23 @@ export default class Meters extends Component {
               ringWidth={10}
               currentValueText="Boost"
             />
-            </div>
           </div>
+          <BarChart
+            yAxis={{tickArguments: [10]}}
+            yScale={scaleLinear().domain([200, 0]).range([0, 400 - 70])}
+            data={[{
+              label: 'Temperatures',
+              values: [
+                {x: 'Oil', y: this.props.data[3]},
+                {x: 'ATF', y: this.props.data[4]}
+              ]
+          }]}
+            width={400}
+            height={400}
+            margin={{top: 10, bottom: 50, left: 50, right: 10}}
+          />
         </div>
+      </div>
     );
   }
 }
