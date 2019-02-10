@@ -27,4 +27,4 @@ setInterval(() => {
   if (ws && ws.readyState === 1) {
     ws.send(JSON.stringify(line))
   }
-}, 200)
+}, 30)
