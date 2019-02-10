@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ValueGauges from './components/ValueGauges';
+import Meters from './components/Meters';
 import StreamGraph from './components/StreamGraph';
 import SwipeableViews from 'react-swipeable-views';
 import './App.css';
@@ -21,7 +21,7 @@ class App extends Component {
     return (
       <div className="App">
         <SwipeableViews className="swipecontainer">
-          <ValueGauges data={this.state.currData} />
+          <Meters data={this.state.currData} />
           <StreamGraph data={this.state.currData} />
         </SwipeableViews>
       </div>

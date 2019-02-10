@@ -4,7 +4,7 @@ import { scaleLinear } from 'd3-scale';
 import { interpolateCool } from 'd3-scale-chromatic';
 import { stack, stackOffsetSilhouette, area, curveNatural } from 'd3-shape';
 import { range, max, min, transpose } from 'd3-array';
-import { transition } from 'd3-transition';
+import './styles.css';
 
 // nopeus;rpm;tps;vaihde;oiltemp;atftemp;load;boost;express;boostlim;pressdif;n2;n3;evalgear;ratio;slip;battery 
 var n = 9, // number of layers

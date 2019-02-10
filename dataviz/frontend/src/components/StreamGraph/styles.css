@@ -1,0 +1,5 @@
+#streamChart {
+    transform: rotate(90deg);
+    position: fixed;
+    margin-left: -720px
+}
