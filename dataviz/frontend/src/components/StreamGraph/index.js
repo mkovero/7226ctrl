@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { select, selectAll } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
-import { interpolateCool } from 'd3-scale-chromatic';
 import { stack, stackOffsetSilhouette, area, curveNatural } from 'd3-shape';
 import { range, max, min, transpose } from 'd3-array';
 import './styles.css';
@@ -43,8 +42,6 @@ function streamGraph() {
         //.domain([min(layers, stackMin), max(layers, stackMax)])
         .domain([-7000, 7000])
         .range([height, 0])
-
-    var z = interpolateCool;
 
     var area_ = area()
         .x(function(d, i) { return x(i); })
