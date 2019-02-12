@@ -1,18 +1,19 @@
 #include <Arduino.h>
 
-#define INPUT_SIZE 128
+#define INPUT_SIZE 256
 long serialTimeout = 120000;
 long lastActiveConfig;
-boolean configMode, configSet, featureSet = false;
+boolean configMode,configSet,featureSet = false;
 int myVersion = 20190211;
-int asset, value = 0;
-
+int asset,value = 0;
+float fvalue = 0.00;
 char input[INPUT_SIZE + 1];
+
 /*
 // Stick control
 boolean stickCtrl = false;
 // External radio control
-boolean radioEnabled = true;
+boolean radioEnabled = true; 
 // Manual microswitch control?
 boolean manual = true;
 // Full automatic mode
@@ -21,6 +22,7 @@ boolean fullAuto = false;
 boolean tccLock = true;
 // gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
 boolean evalGear = true;
+
 
 // Do we have TPS?
 boolean tpsSensor = true;
@@ -43,9 +45,9 @@ boolean fuelPumps = true;
 boolean horn = false;
 
 // calculate vehicleSpeed from engine RPM
-boolean rpmSpeed = true;
+boolean rpmSpeed = true; 
 // calculate vehicleSpeed from diff abs sensor
-boolean diffSpeed = true;
+boolean diffSpeed = true; 
 
 // Adaptive pressure
 boolean adaptive = false;
@@ -58,40 +60,34 @@ boolean truePower = false;
 boolean debugEnabled = true;
 // Datalogging (enabling this disables debug)
 boolean datalogger = true;
-
-struct ConfigParam
-{
-    int boostMax, boostDrop, boostSpring, fuelMaxRPM, tireWidth, tireProfile, tireInches, maxRPM, nextShiftDelay, stallSpeed, maxSlip, batteryLimit, firstTccGear, rearDiffTeeth, triggerWheelTeeth, tpsAgre;
-    float diffRatio;
-};
-
-struct ConfigParam readConfig()
-{
-    struct ConfigParam config;
-    config.boostMax = 700;    // boost sensor max kpa
-    config.boostDrop = 50;    // kpa to drop on shifts
-    config.boostSpring = 120; // kpa for wastegate spring pressure
-    config.fuelMaxRPM = 2000; // RPM limit to turn on fuel pumps
-    config.maxRPM = 7000;     // Max engine RPM
-    config.tireWidth = 195;
-    config.tireProfile = 65;
-    config.tireInches = 15;
-    config.diffRatio = 3.27;
-    config.rearDiffTeeth = 29;    // number of teeth in diff
-    config.nextShiftDelay = 2000; // ms. to wait before next shift to avoid accidental overshifting.
-    config.maxSlip = 0.5;         // Maximum allowed slip before error
-    config.stallSpeed = 2200;     // torque converter stall speed
-    config.batteryLimit = 11500;  // battery voltage limit in 11.5v
-    config.firstTccGear = 2;      // first gear when tcc is used.
-    config.triggerWheelTeeth = 6; // number of teeth in trigger wheel for RPM calculation
-    config.tpsAgre = 2;           // 1-10 how aggressive slope tps has
-    return config;
-}
 */
+
+typedef struct
+{
+    int boostMax; 
+    int boostDrop;
+    int boostSpring; 
+    int fuelMaxRPM; 
+    int maxRPM; 
+    int tireWidth; 
+    int tireProfile;
+    int tireInches;
+    float diffRatio;
+    int rearDiffTeeth;
+    int nextShiftDelay;
+    float maxSlip;
+    int stallSpeed;
+    int batteryLimit;
+    int firstTccGear;
+    int triggerWheelTeeth;
+    int tpsAgre;
+} ConfigParam;
+
+ConfigParam config = { 700,50,120,2000,7000,195,65,15,3.27,29,2000,0.5,2200,11500,2,6,2 };
 
 void pollConfigMode()
 {
-    int key = 0;
+      int key = 0;
 
     if (!configMode)
     {
@@ -109,33 +105,34 @@ void pollConfigMode()
             input[key] = 0;
 
             char *command = strtok(input, ";");
-            while (command != 0)
+        while (command != 0)
+        {
+            char *separator = strchr(command, ':');
+            if (separator != 0)
             {
-                char *separator = strchr(command, ':');
-                if (separator != 0)
-                {
-                    *separator = 0;
-                    int asset = atoi(command);
-                    ++separator;
-                    int value = atoi(separator);
-                    // Serial.print(asset);
-                    // Serial.print(value);
-
-                    if (asset == 13371337)
+                *separator = 0;
+                int asset = atoi(command);
+                ++separator;
+                int value = atoi(separator);
+               // Serial.print(asset);
+               // Serial.print(value);
+        
+            if (asset == 13371337)
+            {
+                   Serial.print("69696969:");
+                    Serial.println(myVersion);
+                    configMode = true;
+                    lastActiveConfig = millis();
+                    if (debugEnabled)
                     {
-                        Serial.print("69696969:");
-                        Serial.println(myVersion);
-                        configMode = true;
-                        lastActiveConfig = millis();
-                        if (debugEnabled)
-                        {
-                            Serial.println("Serial connection accepted");
-                        }
+                        Serial.println("Serial connection accepted");
                     }
-                }
-
-                command = strtok(0, ";");
+               
             }
+                    }
+
+            command = strtok(0, ";");
+        }
         }
     }
     else
@@ -146,74 +143,71 @@ void pollConfigMode()
             if (debugEnabled)
             {
                 Serial.println("Serial timed out");
-            }
-            else
-            {
+            } else {
                 serialConfig();
             }
         }
     }
 }
 
-void getFeatures()
-{
-    Serial.print("60000:60000;");
-    Serial.print("1:");
-    Serial.print(int(stickCtrl));
-    Serial.print(";");
-    Serial.print("2:");
-    Serial.print(int(radioEnabled));
-    Serial.print(";");
-    Serial.print("3:");
-    Serial.print(int(manual));
-    Serial.print(";");
-    Serial.print("4:");
-    Serial.print(int(fullAuto));
-    Serial.print(";");
-    Serial.print("5:");
-    Serial.print(int(tccLock));
-    Serial.print(";");
-    Serial.print("6:");
-    Serial.print(int(evalGear));
-    Serial.print(";");
-    Serial.print("7:");
-    Serial.print(int(tpsSensor));
-    Serial.print(";");
-    Serial.print("8:");
-    Serial.print(int(boostSensor));
-    Serial.print(";");
-    Serial.print("9:");
-    Serial.print(int(exhaustPresSensor));
-    Serial.print(";");
-    Serial.print("10:");
-    Serial.print(int(w124speedo));
-    Serial.print(";");
-    Serial.print("11:");
-    Serial.print(int(w124rpm));
-    Serial.print(";");
-    Serial.print("12:");
-    Serial.print(int(fuelPumpControl));
-    Serial.print(";");
-    Serial.print("13:");
-    Serial.print(int(rpmSpeed));
-    Serial.print(";");
-    Serial.print("14:");
-    Serial.print(int(diffSpeed));
-    Serial.print(";");
-    Serial.print("15:");
-    Serial.print(int(adaptive));
-    Serial.print(";");
-    Serial.print("16:");
-    Serial.print(int(batteryMonitor));
-    Serial.print(";");
-    Serial.print("17:");
-    Serial.print(int(truePower));
-    Serial.print(";");
-    Serial.print("18:");
-    Serial.print(int(debugEnabled));
-    Serial.print(";");
-    Serial.print("19:");
-    Serial.println(int(datalogger));
+void getFeatures() {
+Serial.print("60000:60000;");
+Serial.print("1:");
+Serial.print(int(stickCtrl));
+Serial.print(";");
+Serial.print("2:");
+Serial.print(int(radioEnabled));
+Serial.print(";");
+Serial.print("3:");
+Serial.print(int(manual));
+Serial.print(";");
+Serial.print("4:");
+Serial.print(int(fullAuto));
+Serial.print(";");
+Serial.print("5:");
+Serial.print(int(tccLock));
+Serial.print(";");
+Serial.print("6:");
+Serial.print(int(evalGear));
+Serial.print(";");
+Serial.print("7:");
+Serial.print(int(tpsSensor));
+Serial.print(";");
+Serial.print("8:");
+Serial.print(int(boostSensor));
+Serial.print(";");
+Serial.print("9:");
+Serial.print(int(exhaustPresSensor));
+Serial.print(";");
+Serial.print("10:");
+Serial.print(int(w124speedo));
+Serial.print(";");
+Serial.print("11:");
+Serial.print(int(w124rpm));
+Serial.print(";");
+Serial.print("12:");
+Serial.print(int(fuelPumpControl));
+Serial.print(";");
+Serial.print("13:");
+Serial.print(int(rpmSpeed));
+Serial.print(";");
+Serial.print("14:");
+Serial.print(int(diffSpeed));
+Serial.print(";");
+Serial.print("15:");
+Serial.print(int(adaptive));
+Serial.print(";");
+Serial.print("16:");
+Serial.print(int(batteryMonitor));
+Serial.print(";");
+Serial.print("17:");
+Serial.print(int(truePower));
+Serial.print(";");
+Serial.print("18:");
+Serial.print(int(debugEnabled));
+Serial.print(";");
+Serial.print("19:");
+Serial.println(int(datalogger));
 }
 
 void setFeatures(int asset, int value)
@@ -222,206 +216,204 @@ void setFeatures(int asset, int value)
     switch (asset)
     {
     case 1:
-        stickCtrl = boolean(value);
-        break;
+         stickCtrl = boolean(value);
+         break;
     case 2:
-        radioEnabled = boolean(value);
+         radioEnabled = boolean(value);
         break;
     case 3:
-        manual = boolean(value);
+         manual = boolean(value);
         break;
-    case 4:
-        fullAuto = boolean(value);
+            case 4:
+         fullAuto = boolean(value);
         break;
-    case 5:
-        tccLock = boolean(value);
+            case 5:
+         tccLock = boolean(value);
         break;
-    case 6:
-        evalGear = boolean(value);
+            case 6:
+         evalGear = boolean(value);
         break;
-    case 7:
-        tpsSensor = boolean(value);
+            case 7:
+         tpsSensor = boolean(value);
         break;
-    case 8:
-        boostSensor = boolean(value);
+            case 8:
+         boostSensor = boolean(value);
         break;
-    case 9:
-        exhaustPresSensor = boolean(value);
+            case 9:
+         exhaustPresSensor = boolean(value);
         break;
-    case 10:
-        w124speedo = boolean(value);
+            case 10:
+         w124speedo = boolean(value);
         break;
-    case 11:
-        w124rpm = boolean(value);
+            case 11:
+         w124rpm = boolean(value);
         break;
-    case 12:
-        fuelPumpControl = boolean(value);
+            case 12:
+         fuelPumpControl = boolean(value);
         break;
-    case 13:
-        rpmSpeed = boolean(value);
+            case 13:
+         rpmSpeed = boolean(value);
         break;
-    case 14:
-        diffSpeed = boolean(value);
+            case 14:
+         diffSpeed = boolean(value);
         break;
-    case 15:
-        adaptive = boolean(value);
+            case 15:
+         adaptive = boolean(value);
         break;
-    case 16:
-        batteryMonitor = boolean(value);
+            case 16:
+         batteryMonitor = boolean(value);
         break;
-    case 17:
-        truePower = boolean(value);
+            case 17:
+         truePower = boolean(value);
         break;
-    case 18:
-        debugEnabled = boolean(value);
+            case 18:
+         debugEnabled = boolean(value);
         break;
-    case 19:
-        datalogger = boolean(value);
-        break;
+            case 19:
+         datalogger = boolean(value);
+        break;        
     default:
         break;
     }
-    if (debugEnabled)
+      /*    if (debugEnabled) {
+          Serial.print(asset);
+          Serial.print(":");
+          Serial.println(value);
+         }*/
+}
+void setConfigFloat(int asset, float value, ConfigParam* config) {
+      lastActiveConfig = millis();
+    
+  switch (asset)
     {
-        Serial.print(asset);
-        Serial.print(":");
-        Serial.println(value);
+        case 58:
+         config->diffRatio = value;
+
+        break;
+         case 61:
+         config->maxSlip = value;
+
+        break;
+        default:
+        break;
     }
 }
-void setConfigFloat(int asset, float value)
-{
+
+void setConfig(int asset, int value, ConfigParam* config) {
     lastActiveConfig = millis();
-    struct ConfigParam config = readConfig();
-
-    switch (asset)
-    {
-    case 58:
-        config.diffRatio = value;
-        break;
-    case 61:
-        config.maxSlip = value;
-        break;
-    }
-}
-
-void setConfig(int asset, int value)
-{
-    lastActiveConfig = millis();
-    struct ConfigParam config = readConfig();
-
+ 
     switch (asset)
     {
     case 50:
-        config.boostMax = value;
-        break;
+         config->boostMax = value;
+         break;
     case 51:
-        config.boostDrop = value;
+         config->boostDrop = value;
         break;
     case 52:
-        config.boostSpring = value;
+         config->boostSpring = value;
         break;
-    case 53:
-        config.fuelMaxRPM = value;
+            case 53:
+         config->fuelMaxRPM = value;
         break;
-    case 54:
-        config.maxRPM = value;
+            case 54:
+         config->maxRPM = value;
         break;
-    case 55:
-        config.tireWidth = value;
+            case 55:
+         config->tireWidth = value;
         break;
-    case 56:
-        config.tireProfile = value;
+            case 56:
+         config->tireProfile = value;
         break;
-    case 57:
-        config.tireInches = value;
+            case 57:
+         config->tireInches = value;
         break;
-    case 59:
-        config.rearDiffTeeth = value;
+            case 59:
+         config->rearDiffTeeth = value;
         break;
-    case 60:
-        config.nextShiftDelay = value;
+            case 60:
+         config->nextShiftDelay = value;
         break;
-    case 62:
-        config.stallSpeed = value;
+            case 62:
+         config->stallSpeed = value;
         break;
-    case 63:
-        config.batteryLimit = value;
+            case 63:
+         config->batteryLimit = value;
         break;
-    case 64:
-        config.firstTccGear = value;
+            case 64:
+         config->firstTccGear = value;
         break;
-    case 65:
-        config.triggerWheelTeeth = value;
+            case 65:
+         config->triggerWheelTeeth = value;
         break;
-    case 66:
-        config.tpsAgre = value;
+            case 66:
+         config->tpsAgre = value;
         break;
+   
     default:
         break;
     }
-    if (debugEnabled)
-    {
-        Serial.print(asset);
-        Serial.print(":");
-        Serial.println(value);
-    }
+         /* if (debugEnabled) {
+          Serial.print(asset);
+          Serial.print(":");
+          Serial.println(value);
+         }*/
 }
 
-void getConfig()
-{
-    struct ConfigParam config = readConfig();
+void getConfig(ConfigParam* config) {
     Serial.print("50000:50000;");
-    Serial.print("50:");
-    Serial.print(config.boostMax);
-    Serial.print(";");
-    Serial.print("51:");
-    Serial.print(config.boostDrop);
-    Serial.print(";");
-    Serial.print("52:");
-    Serial.print(config.boostSpring);
-    Serial.print(";");
-    Serial.print("53:");
-    Serial.print(config.fuelMaxRPM);
-    Serial.print(";");
-    Serial.print("54:");
-    Serial.print(config.maxRPM);
-    Serial.print(";");
-    Serial.print("55:");
-    Serial.print(config.tireWidth);
-    Serial.print(";");
-    Serial.print("56:");
-    Serial.print(config.tireProfile);
-    Serial.print(";");
-    Serial.print("57:");
-    Serial.print(config.tireInches);
-    Serial.print(";");
-    Serial.print("58:");
-    Serial.print(config.diffRatio);
-    Serial.print(";");
-    Serial.print("59:");
-    Serial.print(config.rearDiffTeeth);
-    Serial.print(";");
-    Serial.print("60:");
-    Serial.print(config.nextShiftDelay);
-    Serial.print(";");
-    Serial.print("61:");
-    Serial.print(config.maxSlip);
-    Serial.print(";");
-    Serial.print("62:");
-    Serial.print(config.stallSpeed);
-    Serial.print(";");
-    Serial.print("63:");
-    Serial.print(config.batteryLimit);
-    Serial.print(";");
-    Serial.print("64:");
-    Serial.print(config.firstTccGear);
-    Serial.print(";");
-    Serial.print("65:");
-    Serial.print(config.triggerWheelTeeth);
-    Serial.print(";");
-    Serial.print("66:");
-    Serial.println(config.tpsAgre);
+Serial.print("50:");
+Serial.print(config->boostMax);
+Serial.print(";");
+Serial.print("51:");
+Serial.print(config->boostDrop);
+Serial.print(";");
+Serial.print("52:");
+Serial.print(config->boostSpring);
+Serial.print(";");
+Serial.print("53:");
+Serial.print(config->fuelMaxRPM);
+Serial.print(";");
+Serial.print("54:");
+Serial.print(config->maxRPM);
+Serial.print(";");
+Serial.print("55:");
+Serial.print(config->tireWidth);
+Serial.print(";");
+Serial.print("56:");
+Serial.print(config->tireProfile);
+Serial.print(";");
+Serial.print("57:");
+Serial.print(config->tireInches);
+Serial.print(";");
+Serial.print("58:");
+Serial.print(config->diffRatio);
+Serial.print(";");
+Serial.print("59:");
+Serial.print(config->rearDiffTeeth);
+Serial.print(";");
+Serial.print("60:");
+Serial.print(config->nextShiftDelay);
+Serial.print(";");
+Serial.print("61:");
+Serial.print(config->maxSlip);
+Serial.print(";");
+Serial.print("62:");
+Serial.print(config->stallSpeed);
+Serial.print(";");
+Serial.print("63:");
+Serial.print(config->batteryLimit);
+Serial.print(";");
+Serial.print("64:");
+Serial.print(config->firstTccGear);
+Serial.print(";");
+Serial.print("65:");
+Serial.print(config->triggerWheelTeeth);
+Serial.print(";");
+Serial.print("66:");
+Serial.println(config->tpsAgre);
 }
+
 void serialConfig()
 {
     int key = 0;
@@ -451,43 +443,54 @@ void serialConfig()
                 *separator = 0;
                 int asset = atoi(command);
                 ++separator;
+           
                 int value = atoi(separator);
-                if (asset == 7777)
-                {
-                    Serial.println("Ending communication..");
-                    configMode = false;
-                }
-                else if (asset == 8989)
-                {
-                    getFeatures();
-                    getConfig();
-                }
-                else if (asset == 60000)
-                {
-                    configSet = false;
-                    featureSet = true;
-                }
-                else if (asset == 50000)
-                {
-                    featureSet = false;
-                    configSet = true;
-                }
-                if (featureSet)
-                {
+            
+                
+            
+                if ( asset == 7777 ) {
+                  Serial.println("Ending communication..");
+                  configMode = false;
+                } else if ( asset == 8989 ) {
+                  getFeatures();
+                  getConfig(&config);
+                } else if ( asset == 60000) {
+                  configSet = false; featureSet = true;
+                } else if ( asset == 50000) {
+                  featureSet = false; configSet = true;
+                } 
+                if (featureSet) {
                     setFeatures(asset, value);
                 }
-                if (configSet && (asset == 58 || 61))
-                {
-                    float value = atof(separator);
-                    setConfigFloat(asset, value);
-                }
-                if (configSet && (asset != 58 || 61))
-                {
-                    setConfig(asset, value);
+
+                if (configSet) {
+                  if (asset == 58 || asset == 61) {
+                   float fvalue = atof(separator);
+                   setConfigFloat(asset, fvalue, &config);
+                  // Serial.print(asset);
+                  } else {
+                   setConfig(asset, value, &config);
+                  }
                 }
             }
-
             command = strtok(0, ";");
         }
+        Serial.println("69696969");
     }
 }
+/*
+void setup() {
+  // put your setup code here, to run once:
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+pollConfigMode();
+if (configMode) {
+  serialConfig();
+}
+//delay(1000);
+}
+
+*/
