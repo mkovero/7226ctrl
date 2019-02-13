@@ -31,6 +31,7 @@
 #include "include/core.h"
 #include "include/input.h"
 #include "include/ui.h"
+#include "include/serial_config.h"
 #include <EEPROM.h>
 #include <SoftTimer.h>
 #include <SPI.h>
@@ -47,6 +48,7 @@ Task pollTrans(50, polltrans);            // 50ms to check transmission state (t
 Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
 Task pollBoostControl(100, boostControl); // 100ms for boost control*/
 Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
+Task pollSerialWatch(100, serialWatch);
 
 void setup()
 {
@@ -189,4 +191,5 @@ void setup()
   SoftTimer.add(&pollTrans);
   SoftTimer.add(&pollFuelControl);
   SoftTimer.add(&pollBoostControl);
+  SoftTimer.add(&pollSerialWatch);
 }

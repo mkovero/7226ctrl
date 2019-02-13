@@ -3,6 +3,7 @@
 
 // Environment configuration
 
+boolean trans = true;
 // Stick control
 boolean stickCtrl = false;
 // External radio control
@@ -54,28 +55,25 @@ boolean debugEnabled = true;
 // Datalogging (enabling this disables debug)
 boolean datalogger = true;
 
-struct ConfigParam readConfig()
-{
-  struct ConfigParam config;
-  config.boostMax = 700; // boost sensor max kpa
-  config.boostDrop = 50; // kpa to drop on shifts
-  config.boostSpring = 120; // kpa for wastegate spring pressure
-  config.fuelMaxRPM = 2000; // RPM limit to turn on fuel pumps
-  config.maxRPM = 7000; // Max engine RPM
-  config.tireWidth = 195;
-  config.tireProfile = 65;
-  config.tireInches = 15;
-  config.diffRatio = 3.27;
-  config.rearDiffTeeth = 29; // number of teeth in diff
-  config.nextShiftDelay = 2000; // ms. to wait before next shift to avoid accidental overshifting.
-  config.maxSlip = 0.5; // Maximum allowed slip before error
-  config.stallSpeed = 2200; // torque converter stall speed
-  config.batteryLimit = 11500; // battery voltage limit in 11.5v
-  config.firstTccGear = 2; // first gear when tcc is used.
-  config.triggerWheelTeeth = 6; // number of teeth in trigger wheel for RPM calculation
-  config.tpsAgre = 2; // 1-10 how aggressive slope tps has
-  return config;
-}
+struct ConfigParam config = {
+  .boostMax = 700, // boost sensor max kpa
+  .boostDrop = 50, // kpa to drop on shifts
+  .boostSpring = 120, // kpa for wastegate spring pressure
+  .fuelMaxRPM = 2000, // RPM limit to turn on fuel pumps
+  .maxRPM = 7000, // Max engine RPM
+  .tireWidth = 195,
+  .tireProfile = 65,
+  .tireInches = 15,
+  .rearDiffTeeth = 29, // number of teeth in diff
+  .nextShiftDelay = 2000, // ms. to wait before next shift to avoid accidental overshifting.
+  .stallSpeed = 2200, // torque converter stall speed
+  .batteryLimit = 11500, // battery voltage limit in 11.5v
+  .firstTccGear = 2, // first gear when tcc is used.
+  .triggerWheelTeeth = 6, // number of teeth in trigger wheel for RPM calculation
+  .tpsAgre = 2, // 1-10 how aggressive slope tps has
+  .diffRatio = 3.27,
+  .maxSlip = 0.5 // Maximum allowed slip before error
+};
 
 // End of environment conf
 

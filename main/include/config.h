@@ -1,7 +1,8 @@
+
 struct ConfigParam
 {
-    int boostMax, boostDrop, boostSpring, fuelMaxRPM, tireWidth, tireProfile, tireInches, maxRPM, nextShiftDelay, stallSpeed, maxSlip, batteryLimit, firstTccGear, rearDiffTeeth, triggerWheelTeeth, tpsAgre;
-    float diffRatio;
+    int boostMax, boostDrop, boostSpring, fuelMaxRPM, maxRPM, tireWidth, tireProfile, tireInches, rearDiffTeeth, nextShiftDelay, stallSpeed, batteryLimit, firstTccGear, triggerWheelTeeth, tpsAgre;
+    float diffRatio, maxSlip;
 };
 
-struct ConfigParam readConfig();
+extern struct ConfigParam config;

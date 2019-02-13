@@ -18,7 +18,7 @@ byte wantedGear = 100;
 const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
 double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double Kd = 0; //100, 1 Pid Derivative Gain.
-boolean garageShift, garageShiftMove, configMode, tpsInitPhase1, tpsInitPhase2 = false;
+boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase2 = false;
 double garageTime, lastShift, lastInput;
 int lockVal = 0;
 /*
@@ -209,7 +209,6 @@ void boostControl(Task *me)
   if (boostLimit)
   {
     struct SensorVals sensor = readSensors();
-    struct ConfigParam config = readConfig();
     pidBoost = sensor.curBoost;
     pidBoostLim = sensor.curBoostLim;
     myPID.setBangBang(100, 50);
@@ -261,7 +260,6 @@ void fuelControl(Task *me)
   if (fuelPumpControl)
   {
     struct SensorVals sensor = readSensors();
-    struct ConfigParam config = readConfig();
 
     if ((sensor.curRPM > config.fuelMaxRPM || millis() < 5000) && !fuelPumps)
     {
@@ -293,7 +291,6 @@ void fuelControl(Task *me)
 void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
-  struct ConfigParam config = readConfig();
   unsigned int shiftDelay = 2000;
 
   if (shiftBlocker)
@@ -594,12 +591,12 @@ void radioControl()
     }
     else if (readData == 101)
     {
-      configMode = true;
+      tpsConfigMode = true;
       tpsInitPhase1, tpsInitPhase2 = false;
     }
     else if (readData == 201)
     {
-      configMode = false;
+      tpsConfigMode = false;
     }
     else if (readData == 150)
     {

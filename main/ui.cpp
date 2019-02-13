@@ -48,7 +48,6 @@ typedef u8g2_uint_t u8g_uint_t;
 void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
-  struct ConfigParam config = readConfig();
   static int maxSpeed, maxBoost, maxExPres, maxOilTemp, maxAtfTemp, maxRPM, maxPresDiff;
   static int infoDisplay = 1;
   static double infoDisplayTime;
@@ -329,7 +328,7 @@ void draw(int wantedGear)
   }
   else if (page == 5 && infoDisplay == 0)
   {
-    if (configMode)
+    if (tpsConfigMode)
     {
       int tps = analogRead(tpsPin) * 3.0;
     u8g2.setFont(u8g2_font_5x8_tr);
@@ -347,7 +346,7 @@ void draw(int wantedGear)
   }
   else if (page == 6 && infoDisplay == 0)
   {
-    if (configMode)
+    if (tpsConfigMode)
     {
       if (!tpsInitPhase1)
       {
@@ -370,7 +369,7 @@ void draw(int wantedGear)
   }
   else if (page == 7 && infoDisplay == 0)
   {
-    if (configMode)
+    if (tpsConfigMode)
     {
           if (!tpsInitPhase2)
       {
@@ -432,7 +431,6 @@ void draw(int wantedGear)
 void rpmMeterUpdate()
 {
   struct SensorVals sensor = readSensors();
-  struct ConfigParam config = readConfig();
 
   int rpmPWM = map(sensor.curRPM, 0, config.maxRPM, 0, 255);
   analogWrite(rpmMeter, rpmPWM);
@@ -465,7 +463,7 @@ void updateDisplay(Task *me)
 
 void datalog(Task *me)
 {
-  const double counter = 0;
+  static long counter = 0;
   if (datalogger)
   {
    struct SensorVals sensor = readSensors();

@@ -42,7 +42,6 @@ double lastShiftPoint;
 // Send PWM signal to defined solenoid in transmission conductor plate.
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 {
-  struct ConfigParam config = readConfig();
   delaySinceLast = millis() - shiftStopTime;
 
   if (debugEnabled)
@@ -80,7 +79,6 @@ void switchGearStart(int cSolenoid, int spcVal, int mpcVal)
 
 void doPreShift()
 {
-  struct ConfigParam config = readConfig();
   struct SensorVals sensor = readSensors();
 
   // Things to do before actual shift, example is for waiting boost to settle to the target. (boostControl should let it drop in this scenario).
@@ -424,7 +422,6 @@ void decideGear(Task *me)
   int moreGear = gear + 1;
   int lessGear = gear - 1;
   struct SensorVals sensor = readSensors();
-  struct ConfigParam config = readConfig();
 
   // Determine speed related downshift and upshift here.
   int autoGear = readMap(gearMap, sensor.curTps, sensor.curSpeed);
@@ -620,7 +617,6 @@ int gearFromRatio(float inputRatio)
 float getGearSlip()
 {
   struct SensorVals sensor = readSensors();
-  struct ConfigParam config = readConfig();
   static float maxRatio[5] = {0.00, 0.00, 0.00, 0.00, 0.00}, minRatio[5] = {0.00, 0.00, 0.00, 0.00, 0.00};
   float slip;
 
@@ -640,7 +636,6 @@ float getGearSlip()
 void faultMon(Task *me)
 {
   struct SensorVals sensor = readSensors();
-  struct ConfigParam config = readConfig();
 
   if (sensor.curSlip > config.maxSlip && sensor.curRPM > config.stallSpeed)
   {

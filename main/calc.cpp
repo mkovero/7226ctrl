@@ -33,15 +33,15 @@ int readTPSVoltage(int voltage)
 // Mapping boost sensor voltage to percentage
 int readBoostVoltage(int voltage)
 {
-
-  int result = map(voltage, initBVoltage, 3100, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
+  int result = voltage * 700/2.95;
+  //int result = map(voltage, initBVoltage, 3100, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
   return result;
 }
 
 int readExPresVoltage(int voltage)
 {
-
-  int result = map(voltage, initEVoltage, 5000, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
+  int result = voltage * 700/4.6;
+  //int result = map(voltage, initEVoltage, 5000, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
   return result;
 }
 

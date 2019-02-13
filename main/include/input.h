@@ -35,7 +35,7 @@ extern boolean truePower;
 extern boolean tccLock;
 extern boolean stick;
 extern boolean autoGear;
-extern boolean configMode;
+extern boolean tpsConfigMode;
 extern double lastShiftPoint;
 extern boolean tpsInitPhase1, tpsInitPhase2;
 extern byte page;
