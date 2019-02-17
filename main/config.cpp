@@ -1,59 +1,9 @@
 #include <Arduino.h>
 #include "include/config.h"
 
-// Environment configuration
-
-boolean trans = true;
-// Stick control
-boolean stickCtrl = false;
-// External radio control
-boolean radioEnabled = true; 
-// Manual microswitch control?
-boolean manual = true;
-// Full automatic mode
-boolean fullAuto = false;
-// torque converter lock
-boolean tccLock = true;
-// gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
-boolean evalGear = true;
-
-
-// Do we have TPS?
-boolean tpsSensor = true;
-// Do we have boost sensor?
-boolean boostSensor = true;
-// Exhaust pressure sensor
-boolean exhaustPresSensor = false;
-
-// Old style w124 speed meter controlling
-boolean w124speedo = true;
-// Old style w124 rpm meter pwm
-boolean w124rpm = true;
-// Boost control
-boolean boostLimit = true;
-// control fuel pumps (turn off below certain rpm)
-boolean fuelPumpControl = false;
-// Initial state of fuel pumps
-boolean fuelPumps = true;
-// Initial state of horn
-boolean horn = false;
-
-// calculate vehicleSpeed from engine RPM
-boolean rpmSpeed = true; 
-// calculate vehicleSpeed from diff abs sensor
-boolean diffSpeed = true; 
-
-// Adaptive pressure
-boolean adaptive = false;
-// Battery monitor
-boolean batteryMonitor = true;
-
-// Default power mode
-boolean truePower = false;
-// Output to serial console
-boolean debugEnabled = true;
-// Datalogging (enabling this disables debug)
-boolean datalogger = true;
+// Environment configuration, THIS IS DEPRECATED, CONFIG NOW RESIDES IN EEPROM AND IS VIRGIN INITIALIZED FROM serial_config.cpp.
+boolean trans,stickCtrl,radioEnabled,manual,fullAuto,tccLock,evalGear,tpsSensor,boostSensor,exhaustPresSensor,w124speedo,w124rpm,boostLimit = false;
+boolean fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batterymonitor, truePower, debugEnabled, datallogger = false;
 
 struct ConfigParam config = {
   .boostMax = 700, // boost sensor max kpa
@@ -92,3 +42,7 @@ boolean speedFault = false;
 boolean batteryFault = false;
 // fault mode for excess slip
 boolean slipFault = false;
+// Initial state of fuel pumps
+boolean fuelPumps = true;
+// Initial state of horn
+boolean horn = false;

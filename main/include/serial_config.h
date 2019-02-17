@@ -28,6 +28,7 @@ extern boolean datalogger;
 extern boolean w124speedo;
 extern boolean w124rpm;
 extern struct ConfigParam config;
+void initConfig();
 void pollConfigMode();
 void getFeatures();
 void setFeatures(int asset, int value);
