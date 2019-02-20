@@ -194,9 +194,9 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 40);
     u8g2.print(sensor.curTps);
     u8g2.setCursor(100, 50);
-    u8g2.print(F("Blim:"));
+    u8g2.print(F("ExTemp:"));
     u8g2.setCursor(100, 60);
-    u8g2.print(sensor.curBoostLim);
+    u8g2.print(sensor.curExTemp);
   }
   else if (page == 2 && infoDisplay == 0)
   {
