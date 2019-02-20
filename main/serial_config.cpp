@@ -63,6 +63,7 @@ boolean debugEnabled = true;
 // Datalogging (enabling this disables debug)
 boolean datalogger = true;
 
+boolean exhaustTempSensor = false; (20)
 struct ConfigParam
 {
     int boostMax, boostDrop, boostSpring, fuelMaxRPM, maxRPM, tireWidth, tireProfile, tireInches, rearDiffTeeth, nextShiftDelay, stallSpeed, batteryLimit, firstTccGear, triggerWheelTeeth, tpsAgre;
@@ -116,6 +117,7 @@ void initConfig()
         setFeatures(17, 1);
         setFeatures(18, 1);
         setFeatures(19, 1);
+        setFeatures(20, 0);
         setConfig(50, 700);
         setConfig(51, 50);
         setConfig(52, 120);
@@ -263,6 +265,9 @@ void getFeatures()
     Serial.print(";");
     Serial.print("19:");
     Serial.println(int(datalogger));
+    Serial.print(";");
+    Serial.print("20:");
+    Serial.println(int(exhaustTempSensor));
 }
 
 void setFeatures(int asset, int value)
@@ -343,6 +348,9 @@ void setFeatures(int asset, int value)
         break;
     case 19:
         datalogger = boolean(value);
+        break;
+    case 20:
+        exhaustTempSensor = boolean(value);
         break;
     default:
         break;

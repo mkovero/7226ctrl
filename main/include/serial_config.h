@@ -27,6 +27,7 @@ extern boolean exhaustPresSensor;
 extern boolean datalogger;
 extern boolean w124speedo;
 extern boolean w124rpm;
+extern boolean exhaustTempSensor;
 extern struct ConfigParam config;
 void initConfig();
 void pollConfigMode();

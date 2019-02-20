@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <SPI.h>
+#include "Adafruit_MAX31855.h"
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
@@ -481,15 +483,13 @@ int atfRead()
 
 int exhaustTempRead()
 {
-  // this is just placeholder pending for actual sensor installation.
-  float c1 = 23.99266925e-03, c2 = -37.31821417e-04, c3 = 155.6950843e-07;
-  float tempRead = analogRead(exhaustTempPin);
-  tempRead = tempRead; // Voltage compensation
-  int R2 = 216 / (1023.0 / (float)tempRead - 1.0);
-  float logR2 = log(R2);
-  float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
-  float exTemp = T - 273.15 + 165;
-  return exTemp;
+  static double exhaustTemp = 0;
+  if (exhaustTempSensor)
+  {
+    Adafruit_MAX31855 kTC(13, 10, 12);
+    exhaustTemp = kTC.readCelsius();
+  }
+  return exhaustTemp;
 }
 
 int freeMemory()

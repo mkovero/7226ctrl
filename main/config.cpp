@@ -3,7 +3,7 @@
 
 // Environment configuration, THIS IS DEPRECATED, CONFIG NOW RESIDES IN EEPROM AND IS VIRGIN INITIALIZED FROM serial_config.cpp.
 boolean trans,stickCtrl,radioEnabled,manual,fullAuto,tccLock,evalGear,tpsSensor,boostSensor,exhaustPresSensor,w124speedo,w124rpm,boostLimit = false;
-boolean fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batterymonitor, truePower, debugEnabled, datallogger = false;
+boolean fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batteryMonitor, truePower, debugEnabled, datalogger, exhaustTempSensor = false;
 
 struct ConfigParam config = {
   .boostMax = 700, // boost sensor max kpa

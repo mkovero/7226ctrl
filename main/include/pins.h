@@ -45,7 +45,7 @@
 #endif*/
 
 #define exhaustPresPin A9
-#define exhaustTempPin 24
+#define exhaustTempPin 12
 
 // Car sensor input pins, black
 #define tpsPin A3 // voltage div 5/3 <-> black <-> blue-black-blue = 1kohm/1.8kohm div // ANAIN3
@@ -57,5 +57,5 @@
 #define speedPin 21 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
 #define rpmPin 20 // voltage div 12/3 <-> black <-> whitebluewhite = 1kohm/380ohm div // DIN12
 #define batteryPin A21 // car battery monitor
-//#define refPin A22 // sensor voltage ref
-#define refPin A13 // using this in exhaustTempPin for now.
+#define refPin A22 // sensor voltage ref
+//#define refPin A13 // using this in exhaustTempPin for now.
