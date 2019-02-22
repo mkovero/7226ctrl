@@ -135,13 +135,13 @@ void initConfig()
         setConfig(64, 5);
         setConfig(65, 6);
         setConfig(66, 2);
-        setConfig(67, 1.00);
+        setConfigFloat(67, 1.00);
         EEPROM.put(4090, 69);
         Serial.println("Virgin init");
     }
     else
     {
-        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
         int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 67};
         int configF[] = {58, 61};
 
@@ -384,7 +384,9 @@ void setConfigFloat(int asset, float value)
         break;
     case 61:
         config.maxSlip = value;
-
+        break;
+    case 67:
+        config.transSloppy = value;
         break;
     default:
         break;
@@ -454,9 +456,6 @@ void setConfig(int asset, int value)
         break;
     case 66:
         config.tpsAgre = value;
-        break;
-    case 67:
-        config.transSloppy = value;
         break;
     default:
         break;
@@ -585,7 +584,7 @@ void serialConfig()
 
                 if (configSet)
                 {
-                    if (asset == 58 || asset == 61)
+                    if (asset == 58 || asset == 61 || asset == 67)
                     {
                         float fvalue = atof(separator);
                         setConfigFloat(asset, fvalue);
