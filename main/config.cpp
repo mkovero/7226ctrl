@@ -22,7 +22,8 @@ struct ConfigParam config = {
   .triggerWheelTeeth = 6, // number of teeth in trigger wheel for RPM calculation
   .tpsAgre = 2, // 1-10 how aggressive slope tps has
   .diffRatio = 3.27,
-  .maxSlip = 0.5 // Maximum allowed slip before error
+  .maxSlip = 0.5, // Maximum allowed slip before error
+  .transSloppy = 1.2 // multiplier for pressures coping with old transmissions
 };
 
 // End of environment conf

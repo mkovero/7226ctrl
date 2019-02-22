@@ -135,13 +135,14 @@ void initConfig()
         setConfig(64, 5);
         setConfig(65, 6);
         setConfig(66, 2);
-        EEPROM.write(4090, 69);
+        setConfig(67, 1.00);
+        EEPROM.put(4090, 69);
         Serial.println("Virgin init");
     }
     else
     {
         int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66};
+        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 67};
         int configF[] = {58, 61};
 
         for (int i = 0; i < sizeof features / sizeof features[0]; i++)
@@ -159,7 +160,8 @@ void initConfig()
         for (int i = 0; i < sizeof configF / sizeof configF[0]; i++)
         {
             asset = configF[i] * 10;
-            float configVal = EEPROM.read(asset);
+            float configVal;
+            EEPROM.get(asset, configVal);
             setConfigFloat(configF[i], configVal);
         }
     }
@@ -273,21 +275,17 @@ void getFeatures()
 void setFeatures(int asset, int value)
 {
     lastActiveConfig = millis();
-    if (debugEnabled)
-    {
-        Serial.print("Setting feature: ");
-        Serial.print(asset);
-        Serial.print(":");
-        Serial.println(value);
-    }
     if (asset > 0 && asset < 40)
     {
-        int assetLocation = asset * 10;
-        int assetRead = EEPROM.read(assetLocation);
-        if (assetRead != value)
+        if (debugEnabled)
         {
-            EEPROM.write(assetLocation, value);
+            Serial.print("Setting feature: ");
+            Serial.print(asset);
+            Serial.print(":");
+            Serial.println(value);
         }
+        int assetLocation = asset * 10;
+        EEPROM.put(assetLocation, value);
     }
 
     switch (asset)
@@ -364,21 +362,18 @@ void setFeatures(int asset, int value)
 void setConfigFloat(int asset, float value)
 {
     lastActiveConfig = millis();
-    if (debugEnabled)
-    {
-        Serial.print("Setting configF: ");
-        Serial.print(asset);
-        Serial.print(":");
-        Serial.println(value);
-    }
+
     if (asset > 49 && asset < 70)
     {
-        int assetLocation = asset * 10;
-        float assetRead = EEPROM.read(assetLocation);
-        if (assetRead != value)
+        if (debugEnabled)
         {
-            EEPROM.write(assetLocation, fvalue);
+            Serial.print("Setting configF: ");
+            Serial.print(asset);
+            Serial.print(":");
+            Serial.println(value);
         }
+        int assetLocation = asset * 10;
+        EEPROM.put(assetLocation, value);
     }
 
     switch (asset)
@@ -399,21 +394,18 @@ void setConfigFloat(int asset, float value)
 void setConfig(int asset, int value)
 {
     lastActiveConfig = millis();
-    if (debugEnabled)
-    {
-        Serial.print("Setting config: ");
-        Serial.print(asset);
-        Serial.print(":");
-        Serial.println(value);
-    }
+
     if (asset > 49 && asset < 70)
     {
-        int assetLocation = asset * 10;
-        int assetRead = EEPROM.read(assetLocation);
-        if (assetRead != value)
+        if (debugEnabled)
         {
-            EEPROM.write(assetLocation, value);
+            Serial.print("Setting config: ");
+            Serial.print(asset);
+            Serial.print(":");
+            Serial.println(value);
         }
+        int assetLocation = asset * 10;
+        EEPROM.put(assetLocation, value);
     }
 
     switch (asset)
@@ -463,7 +455,9 @@ void setConfig(int asset, int value)
     case 66:
         config.tpsAgre = value;
         break;
-
+    case 67:
+        config.transSloppy = value;
+        break;
     default:
         break;
     }
@@ -526,7 +520,10 @@ void getConfig()
     Serial.print(config.triggerWheelTeeth);
     Serial.print(";");
     Serial.print("66:");
-    Serial.println(config.tpsAgre);
+    Serial.print(config.tpsAgre);
+    Serial.print(";");
+    Serial.print("67:");
+    Serial.println(config.transSloppy);   
 }
 
 void serialConfig()
