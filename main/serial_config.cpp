@@ -584,7 +584,7 @@ void serialConfig()
 
                 if (configSet)
                 {
-                    if (asset == 58 || asset == 61 || asset == 67)
+                    if (asset == 58 || asset == 61 || asset == 67)
                     {
                         float fvalue = atof(separator);
                         setConfigFloat(asset, fvalue);

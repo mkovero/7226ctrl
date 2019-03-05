@@ -9,6 +9,7 @@
 #include "include/ui.h"
 #include "include/config.h"
 #include "include/core.h"
+#include "include/serial_config.h"
 #include <Filters.h>
 #include <SoftTimer.h>
 using namespace std;
