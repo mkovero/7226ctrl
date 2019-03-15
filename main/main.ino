@@ -52,7 +52,7 @@ Task pollSerialWatch(100, serialWatch);
 
 void setup()
 {
-  delay(5000);
+  //delay(5000);
   initConfig();
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
@@ -101,8 +101,8 @@ void setup()
   pinMode(rpmPin, INPUT);
   pinMode(batteryPin, INPUT);
 
-  *portConfigRegister(boostPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+//  *portConfigRegister(boostPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+//  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;

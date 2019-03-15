@@ -12,7 +12,7 @@
 #define TEENSY // we're running this on TEENSY
 
 
-#define y3 36 // FMT3, orange<->brown/red // DOUT3
+#define y3 16 // FMT3, orange<->brown/red // DOUT3
 #define y4 35 // orange <-> brown/grey // DOUT2
 #define y5 8 //ex 14, orange <-> brown/black // DOUT1
 #define mpc 38 // red <-> brown/pink // DOUT5 // FMT3
@@ -48,13 +48,13 @@
 #define exhaustTempPin 12
 
 // Car sensor input pins, black
-#define tpsPin A3 // voltage div 5/3 <-> black <-> blue-black-blue = 1kohm/1.8kohm div // ANAIN3, boost? A3->A11
+#define tpsPin A10 // voltage div 5/3 <-> black <-> blue-black-blue = 1kohm/1.8kohm div // ANAIN3, boost? A3->A11
 #define atfPin A1 // voltage div 5/3 <-> black <-> pink = 1kohm/1.8kohm div // ANAIN2
-#define boostPin A2 // voltage div 5/3 <-> black <-> blue-brown-blue = 1kohm/1.8kohm div // ANAIN4, tps? A2->A10
+#define boostPin A11 // voltage div 5/3 <-> black <-> blue-brown-blue = 1kohm/1.8kohm div // ANAIN4, tps? A2->A10
 #define oilPin A0 // voltage div 12/3 <-> black <-> white-pink-white = 1kohm/380ohm div // ANAIN1
 #define n2pin 18 // voltage div 5/3 <-> black <-> whiteredwhite = 1kohm/1.8kohm div // DIN14
 #define n3pin 19 // voltage div 5/3 <-> black <-> brownredwhite = 1kohm/1.8kohm div // DIN15
-#define speedPin 21 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
+#define speedPin 25 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
 #define rpmPin 20 // voltage div 12/3 <-> black <-> whitebluewhite = 1kohm/380ohm div // DIN12
 #define batteryPin A21 // car battery monitor
 #define refPin A22 // sensor voltage ref ?

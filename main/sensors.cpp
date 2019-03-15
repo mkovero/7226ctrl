@@ -14,9 +14,12 @@
 #include <SoftTimer.h>
 using namespace std;
 
+
 // Internals
 unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog, fuelIn, fuelOut, fuelUsed, fuelUsedAvg, vehicleTravelRevs, vehicleTravelDiff;
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
+int boostSensorOffset = analogRead(boostPin);
+int exhaustSensorOffset = analogRead(exhaustPresPin);
 
 // sensor smoothing
 int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal, avgAtfRef, avgOilRef;
@@ -25,7 +28,7 @@ FilterOnePole filterOneLowpass(LOWPASS, 1);      // for atfTemp
 FilterOnePole filterOneLowpass2(LOWPASS, 1);     // for oilTemp
 FilterOnePole boostSensorFilter(LOWPASS, 1);     // for oilTemp
 FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
-Adafruit_MAX31855 kTC(13, 10, 12);
+Adafruit_MAX31855 kTC(13, 9, 39);
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -121,6 +124,7 @@ void pollsensors(Task *me)
       rpmRevs = 0;
       rpmPulse = 0;
     }
+
 
     //fuelUsed = fuelIn - fuelOut;
     //fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
@@ -350,26 +354,18 @@ a[3] = -9.456539654701360e-07 <- this can be c4
 int boostRead()
 {
   int boostValue = 0;
+  float boostVoltage = 0;
   if (boostSensor)
   {
     //reading MAP/boost
-    float refRead = analogRead(refPin);
-    float refBoost = refRead / 1023 * 3.3;
-    float boostVoltage = analogRead(boostPin) * 5.0;
-    boostSensorFilter.input(boostVoltage);
-    boostValue = readBoostVoltage(boostSensorFilter.output());
-    avgBoostValue = (avgBoostValue * 5 + boostValue) / 10;
-    if (avgBoostValue < 0)
-    {
-      avgBoostValue = 0;
-    }
-    else if (boostValue < -40)
-    {
-      avgBoostValue = 555;
-    };
+    int refRead = analogRead(refPin);
+    boostVoltage = ( analogRead(boostPin) - boostSensorOffset ) * ( 3.3 / refRead );
+    boostValue =  boostVoltage * 700/2.95;
+    boostSensorFilter.input(boostValue);
+    boostValue = boostSensorFilter.output();
   }
 
-  return avgBoostValue;
+  return boostValue;
 }
 
 int exhaustPressureRead()
@@ -379,17 +375,14 @@ int exhaustPressureRead()
   if (exhaustPresSensor)
   {
     //reading exhaust pressure
-    exhaustPresVol = analogRead(exhaustPresPin) * 5.0;
-    exhaustPressureFilter.input(exhaustPresVol);
-    exhaustPresVal = readExPresVoltage(exhaustPressureFilter.output());
-    avgExhaustPresVal = (avgExhaustPresVal * 5 + exhaustPresVal) / 10;
-    /*if (avgExhaustPresVal < 0)
-    {
-      avgExhaustPresVal = 0;
-    }*/
+    int refRead = analogRead(refPin);
+    exhaustPresVol = ( analogRead(exhaustPresPin) - exhaustSensorOffset ) * ( 3.3 / refRead );
+    exhaustPresVal =  exhaustPresVol * 700/2.95;
+    exhaustPressureFilter.input(exhaustPresVal);
+    exhaustPresVal = exhaustPressureFilter.output();
   }
 
-  return avgExhaustPresVal;
+  return exhaustPresVal;
 }
 
 int batteryRead()
@@ -406,8 +399,9 @@ int batteryRead()
 
 int boostLimitRead(int oilTemp)
 {
-  int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
-  return allowedBoostPressure;
+//  int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
+//  return allowedBoostPressure;
+    return 150;
 }
 
 int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
@@ -488,7 +482,8 @@ int exhaustTempRead()
   static double exhaustTemp = 0;
   if (exhaustTempSensor)
   {
-    exhaustTemp = kTC.readCelsius();
+   
+    exhaustTemp = kTC.readInternal();
   }
   return exhaustTemp;
 }

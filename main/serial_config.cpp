@@ -266,7 +266,7 @@ void getFeatures()
     Serial.print(int(debugEnabled));
     Serial.print(";");
     Serial.print("19:");
-    Serial.println(int(datalogger));
+    Serial.print(int(datalogger));
     Serial.print(";");
     Serial.print("20:");
     Serial.println(int(exhaustTempSensor));

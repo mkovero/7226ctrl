@@ -11,7 +11,7 @@
 #include "include/input.h"
 #include <SoftTimer.h>
 
-U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 9, 5);
+U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 17, 5);
 // 9 moves to A10/
 // UI STAGE
 // Control for what user sees and how gearbox is used with
@@ -480,7 +480,11 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(sensor.curSlip);
     Serial.print(F(";"));
-    Serial.println(sensor.curBattery);
+    Serial.print(sensor.curBattery);
+    Serial.print(F(";"));
+    Serial.print(boostPWM);
+    Serial.print(F(";"));
+    Serial.println(sensor.curExTemp);
   }
   counter++;
 }
