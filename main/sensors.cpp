@@ -286,6 +286,12 @@ int rpmRead()
   return rpmRevs;
 }
 
+int lambdaRead() {
+  // placeholder, most likely analogread if there is enough resolution
+
+  return 100;
+
+}
 int oilRead()
 {
   // wip
@@ -482,8 +488,7 @@ int exhaustTempRead()
   static double exhaustTemp = 0;
   if (exhaustTempSensor)
   {
-   
-    exhaustTemp = kTC.readInternal();
+        exhaustTemp = kTC.readInternal();
   }
   return exhaustTemp;
 }
@@ -521,5 +526,6 @@ struct SensorVals readSensors()
   sensor.curEvalGear = evalGearVal;
   sensor.fuelUsed = fuelUsed;
   sensor.fuelUsedAvg = fuelUsedAvg;
+  sensor.curLambda = lambdaRead();
   return sensor;
 }

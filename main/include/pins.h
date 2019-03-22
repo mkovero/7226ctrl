@@ -12,7 +12,7 @@
 #define TEENSY // we're running this on TEENSY
 
 
-#define y3 16 // FMT3, orange<->brown/red // DOUT3
+#define y3 16 // FMT3, orange<->brown/red // DOUT3, I need to use 16 as testing instead of 36.
 #define y4 35 // orange <-> brown/grey // DOUT2
 #define y5 8 //ex 14, orange <-> brown/black // DOUT1
 #define mpc 38 // red <-> brown/pink // DOUT5 // FMT3
@@ -25,6 +25,8 @@
 #define hornPin 12 // Horn
 #define SPIcs 10
 // END OUTPUT PINS
+#define injectionPin 36 // should be 16.
+
 
 // INPUT PINS
 // Stick input
@@ -59,3 +61,6 @@
 #define batteryPin A21 // car battery monitor
 #define refPin A22 // sensor voltage ref ?
 //#define refPin A13 // using this in exhaustTempPin for now.
+
+#define exhaustTemperatureCS 9
+#define displayCS 10
