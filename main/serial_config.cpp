@@ -118,6 +118,8 @@ void initConfig()
         setFeatures(18, 1);
         setFeatures(19, 1);
         setFeatures(20, 0);
+        setFeatures(21, 0);
+        setFeatures(22, 0);
         setConfig(50, 700);
         setConfig(51, 50);
         setConfig(52, 120);
@@ -141,7 +143,7 @@ void initConfig()
     }
     else
     {
-        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
         int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66};
         int configF[] = {58, 61, 67};
 
@@ -271,7 +273,13 @@ void getFeatures()
     Serial.print(int(datalogger));
     Serial.print(";");
     Serial.print("20:");
-    Serial.println(int(exhaustTempSensor));
+    Serial.print(int(exhaustTempSensor));
+    Serial.print(";");
+    Serial.print("21:");
+    Serial.print(int(boostLimit));
+    Serial.print(";");
+    Serial.print("22:");
+    Serial.println(int(boostLimitShift));
 }
 
 void setFeatures(int asset, int value)
@@ -351,6 +359,12 @@ void setFeatures(int asset, int value)
         break;
     case 20:
         exhaustTempSensor = boolean(value);
+        break;
+    case 21:
+        boostLimit = boolean(value);
+        break;
+    case 22:
+        boostLimitShift = boolean(value);
         break;
     default:
         break;
@@ -524,7 +538,7 @@ void getConfig()
     Serial.print(config.tpsAgre);
     Serial.print(";");
     Serial.print("67:");
-    Serial.println(config.transSloppy);   
+    Serial.println(config.transSloppy);
 }
 
 void serialConfig()
@@ -583,7 +597,7 @@ void serialConfig()
                 {
                     moreGearPunch(prevGear);
                 }
-                else if (asset == 550) 
+                else if (asset == 550)
                 {
                     lessGearPunch(prevGear);
                 }

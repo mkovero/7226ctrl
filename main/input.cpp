@@ -214,7 +214,7 @@ void boostControl(Task *me)
     myPID.setBangBang(100, 50);
     myPID.setTimeStep(100);
 
-    if (shiftBlocker && !slipFault)
+    if (shiftBlocker && !slipFault && boostLimitShift)
     {
       // During the shift
       if (preShift && sensor.curBoostLim > config.boostDrop)

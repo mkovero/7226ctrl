@@ -2,7 +2,7 @@
 #include "include/config.h"
 
 // Environment configuration, THIS IS DEPRECATED, CONFIG NOW RESIDES IN EEPROM AND IS VIRGIN INITIALIZED FROM serial_config.cpp.
-boolean stickCtrl,radioEnabled,manual,fullAuto,tccLock,evalGear,tpsSensor,boostSensor,exhaustPresSensor,w124speedo,w124rpm = false;
+boolean boostLimit,boostLimitShift,stickCtrl,radioEnabled,manual,fullAuto,tccLock,evalGear,tpsSensor,boostSensor,exhaustPresSensor,w124speedo,w124rpm = false;
 boolean fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batteryMonitor, truePower, debugEnabled, datalogger, exhaustTempSensor = false;
 
 struct ConfigParam config = {
@@ -31,7 +31,6 @@ struct ConfigParam config = {
 // Do not change any of these.
 // Default for blocking gear switches (do not change.)
 boolean trans = true;
-boolean boostLimit = true;
 boolean shiftBlocker = false;
 boolean shiftPending = false;
 // everything starts with ignition (do not change.)
