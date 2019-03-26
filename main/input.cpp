@@ -237,7 +237,7 @@ void boostControl(Task *me)
     if (sensor.curBoostLim > 0 && !slipFault && truePower)
     {
       myPID.run();
-      //   analogWrite(boostCtrl, boostPWM);
+      analogWrite(boostCtrl, boostPWM);
       //  if (debugEnabled) { Serial.print("BoostPWM = "); Serial.println(boostPWM); }
     }
     else

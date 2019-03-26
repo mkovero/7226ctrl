@@ -11,7 +11,7 @@
 #include "include/input.h"
 #include <SoftTimer.h>
 
-U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 17, 5);
+U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
 // 9 moves to A10/
 // UI STAGE
 // Control for what user sees and how gearbox is used with
@@ -155,7 +155,7 @@ void draw(int wantedGear)
     if (truePower)
     {
       u8g2.setCursor(45, 60);
-      u8g2.print(F("km/h (++)"));
+      u8g2.print(F("km/h"));
     }
     else
     {
@@ -420,7 +420,6 @@ void updateSpeedo()
 // Display update
 void updateDisplay(Task *me)
 {
-
   u8g2.clearBuffer();
   draw(wantedGear);
   u8g2.sendBuffer();

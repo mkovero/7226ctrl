@@ -32,6 +32,7 @@
 #include "include/input.h"
 #include "include/ui.h"
 #include "include/serial_config.h"
+
 #include <EEPROM.h>
 #include <SoftTimer.h>
 #include <SPI.h>
@@ -49,11 +50,11 @@ Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
 Task pollBoostControl(100, boostControl); // 100ms for boost control*/
 Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
 Task pollSerialWatch(100, serialWatch);
-
 void setup()
 {
   //delay(5000);
   initConfig();
+
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
@@ -73,7 +74,8 @@ void setup()
       Serial.println("Radio initialized.");
     }
   }
-  U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 9, 5);
+  
+U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 17, 5);
   u8g2.begin();
 
   // Solenoid outputs
@@ -87,7 +89,6 @@ void setup()
   pinMode(boostCtrl, OUTPUT);
   pinMode(speedoCtrl, OUTPUT);
   pinMode(fuelPumpCtrl, OUTPUT);
-  pinMode(SPIcs, OUTPUT);
   pinMode(hornPin, OUTPUT);
 
   // Sensor input
@@ -164,7 +165,6 @@ void setup()
   }
 
   digitalWrite(rpmPin, HIGH); // pull-up
-  digitalWrite(SPIcs, LOW);
   
   attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, FALLING);
   attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);

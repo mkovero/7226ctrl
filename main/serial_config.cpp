@@ -142,27 +142,29 @@ void initConfig()
     else
     {
         int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
-        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 67};
-        int configF[] = {58, 61};
+        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66};
+        int configF[] = {58, 61, 67};
 
         for (int i = 0; i < sizeof features / sizeof features[0]; i++)
         {
             asset = features[i] * 10;
-            byte configVal = EEPROM.read(asset);
-            setFeatures(features[i], configVal);
+            byte featureVal; 
+            EEPROM.get(asset,featureVal);
+            setFeatures(features[i], featureVal);
         }
         for (int i = 0; i < sizeof config / sizeof config[0]; i++)
         {
             asset = config[i] * 10;
-            int configVal = EEPROM.read(asset);
+            int configVal; 
+            EEPROM.get(asset,configVal);
             setConfig(config[i], configVal);
         }
         for (int i = 0; i < sizeof configF / sizeof configF[0]; i++)
         {
             asset = configF[i] * 10;
-            float configVal;
-            EEPROM.get(asset, configVal);
-            setConfigFloat(configF[i], configVal);
+            float configFVal;
+            EEPROM.get(asset, configFVal);
+            setConfigFloat(configF[i], configFVal);
         }
     }
 }
