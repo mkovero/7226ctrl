@@ -142,8 +142,8 @@ void initConfig()
     else
     {
         int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
-        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 67};
-        int configF[] = {58, 61};
+        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66};
+        int configF[] = {58, 61, 67};
 
         for (int i = 0; i < sizeof features / sizeof features[0]; i++)
         {
@@ -578,6 +578,14 @@ void serialConfig()
                 {
                     featureSet = false;
                     configSet = true;
+                }
+                else if (asset == 440)
+                {
+                    moreGearPunch(prevGear);
+                }
+                else if (asset == 550) 
+                {
+                    lessGearPunch(prevGear);
                 }
                 if (featureSet)
                 {

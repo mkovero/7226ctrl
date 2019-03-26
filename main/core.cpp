@@ -14,11 +14,10 @@
 // poll -> evaluateGear
 
 // Obvious internals
-byte gear,prevGear = 2; // Start on gear 2
+byte gear, prevGear = 2; // Start on gear 2
 byte newGear = 2;
 byte pendingGear = 2;
 float ratio;
-
 // Shift pressure defaults
 int spcPercentVal = 100;
 int mpcPercentVal = 100;
@@ -146,8 +145,8 @@ void doShift()
 
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   // pinmode change is due the fact how n2/n3 speed sensors change during the shift.
-  pinMode(n2pin, INPUT);    // N2 sensor
-  pinMode(n3pin, INPUT);    // N3 sensor
+  pinMode(n2pin, INPUT); // N2 sensor
+  pinMode(n3pin, INPUT); // N3 sensor
   analogWrite(tcc, 0);
   analogWrite(spc, spcSetVal);
   analogWrite(mpc, mpcSetVal);
@@ -186,8 +185,8 @@ void switchGearStop()
   analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
   analogWrite(spc, 0);              // spc off
   analogWrite(mpc, 0);              // mpc off
-  pinMode(n2pin, INPUT_PULLUP);    // N2 sensor
-  pinMode(n3pin, INPUT_PULLUP);    // N3 sensor
+  pinMode(n2pin, INPUT_PULLUP);     // N2 sensor
+  pinMode(n3pin, INPUT_PULLUP);     // N3 sensor
   prevGear = gear;
   gear = pendingGear; // we can happily say we're on new gear
 
