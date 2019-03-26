@@ -423,7 +423,7 @@ void updateDisplay(Task *me)
   u8g2.clearBuffer();
   draw(wantedGear);
   u8g2.sendBuffer();
-
+  
   if (w124rpm)
   {
     rpmMeterUpdate();

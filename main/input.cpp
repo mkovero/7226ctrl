@@ -298,7 +298,9 @@ void polltrans(Task *me)
     if (tpsSensor)
     {
       shiftDelay = readPercentualMap(shiftTimeMap, spcPercentVal, sensor.curAtfTemp);
-    } else {
+    }
+    else
+    {
       shiftDelay = 800;
     }
     shiftDuration = millis() - shiftStartTime;
@@ -549,6 +551,25 @@ int adaptSPC(int mapId, int xVal, int yVal)
   }
 #endif
   return current;
+}
+
+void injectionControl(Task *me)
+{
+  struct SensorVals sensor = readSensors();
+  int fuelRequire = sensor.curLoad / sensor.curLambda; // eg. 100% load / 100% lambda = 1x fueling, 100% load / 10% lambda = 10x fueling
+  int fuelAmount = readMap(injectionMap, fuelRequire, sensor.curRPM);
+  fuelAmount = fuelAmount * 2.55;
+  analogWrite(injectionPin, fuelAmount);
+
+  if (debugEnabled)
+  {
+    Serial.print("Fueling quantity with load/lambda: ")
+    Serial.print(sensor.curLoad);
+    Serial.print("/");
+    Serial.print(sensor.curLambda);
+    Serial.print(" is ");
+    Serial.print(fuelAmount);
+  }
 }
 
 void radioControl()

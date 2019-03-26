@@ -148,15 +148,15 @@ void initConfig()
         for (int i = 0; i < sizeof features / sizeof features[0]; i++)
         {
             asset = features[i] * 10;
-            byte featureVal; 
-            EEPROM.get(asset,featureVal);
+            byte featureVal;
+            EEPROM.get(asset, featureVal);
             setFeatures(features[i], featureVal);
         }
         for (int i = 0; i < sizeof config / sizeof config[0]; i++)
         {
             asset = config[i] * 10;
-            int configVal; 
-            EEPROM.get(asset,configVal);
+            int configVal;
+            EEPROM.get(asset, configVal);
             setConfig(config[i], configVal);
         }
         for (int i = 0; i < sizeof configF / sizeof configF[0]; i++)
@@ -578,6 +578,14 @@ void serialConfig()
                 {
                     featureSet = false;
                     configSet = true;
+                }
+                else if (asset == 440)
+                {
+                    moreGearPunch(prevGear);
+                }
+                else if (asset == 550) 
+                {
+                    lessGearPunch(prevGear);
                 }
                 if (featureSet)
                 {

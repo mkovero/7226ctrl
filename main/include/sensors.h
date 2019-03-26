@@ -2,7 +2,7 @@
 
 struct SensorVals
 {
-    int curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, fuelUsed, fuelUsedAvg;
+    int curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, fuelUsed, fuelUsedAvg, curLambda;
     byte curTps, curLoad, curSpeed;
     float curSlip, curRatio, curPresDiff;
 };
@@ -18,6 +18,7 @@ int speedRead();
 int tpsRead();
 void tpsInit(int action);
 int rpmRead();
+int lambdaRead();
 int boostRead();
 int exhaustPressureRead();
 int exhaustTempRead();
