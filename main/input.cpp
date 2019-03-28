@@ -14,22 +14,27 @@ byte wantedGear = 100;
 
 // INPUT
 
-// Pid tuning parameters
-const double Kp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
-double Ki = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
-const double Kd = 0; //100, 1 Pid Derivative Gain.
-boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase2 = false;
-double garageTime, lastShift, lastInput;
-int lockVal = 0;
-/*
-const double Kp = 200; 
-double Ki = 100;      
-const double Kd = 25; //This is not necessarily good idea.
-*/
-double pidBoost, boostPWM, pidBoostLim, hornPressTime;
-
+// Pid tuning parameters, for boostCtrl
+const double boostKp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
+double boostKi = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
+const double boostKd = 0; //100, 1 Pid Derivative Gain.
+double pidBoost, boostPWM, pidBoostLim;
 //Load PID controller
-AutoPID myPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, Kp, Ki, Kd);
+AutoPID boostPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, boostKp, boostKi, boostKd);
+
+#ifdef ECU
+// Pid tuning parameters, for injectionCtrl
+const double injectKp = 7; //80,21 Pid Proporional Gain. Initial ramp up, Lower if over
+double injectKi = 20;      //40,7 Pid Integral Gain. Overall change while near Target
+const double injectKd = 0; //100, 1 Pid Derivative Gain.
+double pidInject, injectPWM, pidInjectLim;
+//Load PID controller
+AutoPID injectPID(&pidInject, &pidInjectLim, &injectPWM, 0, 255, injectKp, injectKi, injectKd);
+#endif
+
+boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase2 = false;
+double garageTime, lastShift, lastInput, hornPressTime;
+int lockVal = 0;
 
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
@@ -211,8 +216,8 @@ void boostControl(Task *me)
     struct SensorVals sensor = readSensors();
     pidBoost = sensor.curBoost;
     pidBoostLim = sensor.curBoostLim;
-    myPID.setBangBang(100, 50);
-    myPID.setTimeStep(100);
+    boostPID.setBangBang(100, 50);
+    boostPID.setTimeStep(100);
 
     if (shiftBlocker && !slipFault && boostLimitShift)
     {
@@ -225,18 +230,18 @@ void boostControl(Task *me)
       {
         pidBoostLim = 0;
       }
-      Ki = 5; // New integral gain value; we want change of pressure to be aggressive here.
+      boostKi = 5; // New integral gain value; we want change of pressure to be aggressive here.
     }
     else
     {
       pidBoostLim = sensor.curBoostLim;
-      Ki = 20; // New integral gain value; we want change of pressure to be more modest.
+      boostKi = 20; // New integral gain value; we want change of pressure to be more modest.
     }
 
     // Just a sanity check to make sure PID library is not doing anything stupid.
     if (sensor.curBoostLim > 0 && !slipFault && truePower)
     {
-      myPID.run();
+      boostPID.run();
       analogWrite(boostCtrl, boostPWM);
       //  if (debugEnabled) { Serial.print("BoostPWM = "); Serial.println(boostPWM); }
     }
@@ -555,21 +560,26 @@ int adaptSPC(int mapId, int xVal, int yVal)
 
 void injectionControl(Task *me)
 {
+#ifdef ECU
   struct SensorVals sensor = readSensors();
   int fuelRequire = sensor.curLoad / sensor.curLambda; // eg. 100% load / 100% lambda = 1x fueling, 100% load / 10% lambda = 10x fueling
   int fuelAmount = readMap(injectionMap, fuelRequire, sensor.curRPM);
   fuelAmount = fuelAmount * 2.55;
-  analogWrite(injectionPin, fuelAmount);
-
+  injectPID.setBangBang(100, 50);
+  injectPID.setTimeStep(100);
+  // Read injectionpump travel
+  injectPID.run();
+  analogWrite(injectionPin, injectPWM);
   if (debugEnabled)
   {
     Serial.print("Fueling quantity with load/lambda: ")
-    Serial.print(sensor.curLoad);
+        Serial.print(sensor.curLoad);
     Serial.print("/");
     Serial.print(sensor.curLambda);
     Serial.print(" is ");
     Serial.print(fuelAmount);
   }
+#endif
 }
 
 void radioControl()

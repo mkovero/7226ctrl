@@ -18,6 +18,31 @@ int initEVoltage = analogRead(exhaustPresPin) * 5.0;
 
 // Calculation helpers
 
+int pressureNormalization(int givenPressure)
+{
+  struct SensorVals sensor = readSensors();
+  int targetVoltage = 12000;
+  float pressureModifier = targetVoltage / sensor.curBattery;
+  if (sensor.curBattery < targetVoltage)
+  {
+    Serial.println("Battery voltage too low, target pressure cannot be reached.");
+  }
+
+  int normalizedPressure = pressureModifier * givenPressure;
+  if (normalizedPressure > 100)
+  {
+    normalizedPressure = 100;
+    Serial.println("Pressure high compensation reached. Low battery?")
+  }
+  else if (normalizedPressure < 0)
+  {
+    normalizedPressure = 0;
+    Serial.println("Pressure low compensation reached. Too high voltage?")
+  }
+
+  return normalizedPressure;
+}
+
 // Mapping throttle position sensor voltage to percentage
 int readTPSVoltage(int voltage)
 {
@@ -34,14 +59,14 @@ int readTPSVoltage(int voltage)
 // Mapping boost sensor voltage to percentage
 int readBoostVoltage(int voltage)
 {
-  int result = voltage * 700/2.95;
+  int result = voltage * 700 / 2.95;
   //int result = map(voltage, initBVoltage, 3100, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
   return result;
 }
 
 int readExPresVoltage(int voltage)
 {
-  int result = voltage * 700/4.6;
+  int result = voltage * 700 / 4.6;
   //int result = map(voltage, initEVoltage, 5000, 0, 3000); // NXP MPX5700AP (range 0-700kPa)
   return result;
 }
@@ -146,7 +171,6 @@ int readTempMapInverted(const int theMap[14][2], int y)
   // 1700 - 1200 = (500/(1700-1170))*(40-30)+30 // inverted
   return betweenL1;
 }
-
 
 int readPercentualMap(const int theMap[14][12], int x, int y)
 {
@@ -289,8 +313,14 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
     }
   }
   calculatedPoint = calculatedPoint * config.transSloppy;
-  if ( calculatedPoint > 100 ) { calculatedPoint = 100; }
-  if ( calculatedPoint < 1 ) { calculatedPoint = 0; }
+  if (calculatedPoint > 100)
+  {
+    calculatedPoint = 100;
+  }
+  if (calculatedPoint < 1)
+  {
+    calculatedPoint = 0;
+  }
   return calculatedPoint;
 }
 
