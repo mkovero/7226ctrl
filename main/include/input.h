@@ -40,3 +40,4 @@ extern double lastShiftPoint;
 extern boolean tpsInitPhase1, tpsInitPhase2;
 extern byte page;
 extern double boostPWM;
+extern boolean boostLimitShift;

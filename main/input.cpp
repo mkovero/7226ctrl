@@ -563,7 +563,7 @@ void injectionControl(Task *me)
 
   if (debugEnabled)
   {
-    Serial.print("Fueling quantity with load/lambda: ")
+    Serial.print("Fueling quantity with load/lambda: ");
     Serial.print(sensor.curLoad);
     Serial.print("/");
     Serial.print(sensor.curLambda);

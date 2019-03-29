@@ -595,11 +595,11 @@ void serialConfig()
                 }
                 else if (asset == 440)
                 {
-                    moreGearPunch(prevGear);
+                  //  moreGearPunch(prevGear);
                 }
                 else if (asset == 550)
                 {
-                    lessGearPunch(prevGear);
+                   // lessGearPunch(prevGear);
                 }
                 if (featureSet)
                 {

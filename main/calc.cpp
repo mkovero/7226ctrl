@@ -21,10 +21,10 @@ int initEVoltage = analogRead(exhaustPresPin) * 5.0;
 // Mapping throttle position sensor voltage to percentage
 int readTPSVoltage(int voltage)
 {
-  byte minLowByte = EEPROM.read(10);
-  byte minHighByte = EEPROM.read(11);
-  byte maxLowByte = EEPROM.read(20);
-  byte maxHighByte = EEPROM.read(21);
+  byte minLowByte = EEPROM.read(1000);
+  byte minHighByte = EEPROM.read(1100);
+  byte maxLowByte = EEPROM.read(2000);
+  byte maxHighByte = EEPROM.read(2100);
   int minLimit = ((minLowByte << 0) & 0xFF) + ((minHighByte << 8) & 0xFF00);
   int maxLimit = ((maxLowByte << 0) & 0xFF) + ((maxHighByte << 8) & 0xFF00);
   int result = map(voltage, minLimit, maxLimit, 0, 100);

@@ -241,30 +241,30 @@ void tpsInit(int action)
   {
   case 0:
   {
-    int curValue = EEPROM.read(10);
+    int curValue = EEPROM.read(100);
     int tpsVoltage = analogRead(tpsPin) * 3.0;
     //if (curValue != tpsVoltage)
     //{
     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
     byte highByte = ((tpsVoltage >> 8) & 0xFF);
-    EEPROM.write(10, lowByte);
-    EEPROM.write(11, highByte);
-    Serial.print("Written voltage val 10:");
+    EEPROM.write(1000, lowByte);
+    EEPROM.write(1100, highByte);
+    Serial.print("Written voltage val 1000:");
     Serial.println(tpsVoltage);
     //}
     break;
   }
   case 1:
   {
-    int curValue = EEPROM.read(20);
+    int curValue = EEPROM.read(200);
     int tpsVoltage = analogRead(tpsPin) * 3.0;
     // if (curValue != tpsVoltage)
     //{
     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
     byte highByte = ((tpsVoltage >> 8) & 0xFF);
-    EEPROM.write(20, lowByte);
-    EEPROM.write(21, highByte);
-    Serial.print("Written voltage val 20:");
+    EEPROM.write(2000, lowByte);
+    EEPROM.write(2100, highByte);
+    Serial.print("Written voltage val 2000:");
     Serial.println(tpsVoltage);
     //  }
     break;
