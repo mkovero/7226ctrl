@@ -140,8 +140,12 @@ void doShift()
       Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit."));
     }
   }
-  spcSetVal = (100 - spcPercentVal) * 2.55; // these are calculated twice to make sure if there is changes they are noted.
-  mpcSetVal = (100 - mpcPercentVal) * 2.55;
+  spcPressureNormalized = pressureNormalization(spcPercentVal);
+  mpcPressureNormalized = pressureNormalization(mpcPercentVal);
+  onPressureNormalized = pressureNormalization(100);
+
+  spcSetVal = (100 - spcPressureNormalized) * 2.55; // these are calculated twice to make sure if there is changes they are noted.
+  mpcSetVal = (100 - mpcPressureNormalized) * 2.55;
 
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   // pinmode change is due the fact how n2/n3 speed sensors change during the shift.
@@ -150,7 +154,7 @@ void doShift()
   analogWrite(tcc, 0);
   analogWrite(spc, spcSetVal);
   analogWrite(mpc, mpcSetVal);
-  analogWrite(cSolenoidEnabled, 255); // Beginning of gear change
+  analogWrite(cSolenoidEnabled, onPressureNormalized); // Beginning of gear change
 
   if (debugEnabled)
   {
