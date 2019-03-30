@@ -55,8 +55,8 @@
 #define oilPin A0 // voltage div 12/3 <-> black <-> white-pink-white = 1kohm/380ohm div // ANAIN1
 #define n2pin 18 // voltage div 5/3 <-> black <-> whiteredwhite = 1kohm/1.8kohm div // DIN14
 #define n3pin 19 // voltage div 5/3 <-> black <-> brownredwhite = 1kohm/1.8kohm div // DIN15
-#define speedPin 25 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
-#define rpmPin 20 // voltage div 12/3 <-> black <-> whitebluewhite = 1kohm/380ohm div // DIN12
+#define speedPin 20 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
+#define rpmPin 25 // voltage div 12/3 <-> black <-> whitebluewhite = 1kohm/380ohm div // DIN12
 #define batteryPin A21 // car battery monitor
 #define refPin A22 // sensor voltage ref ?
 //#define refPin A13 // using this in exhaustTempPin for now.

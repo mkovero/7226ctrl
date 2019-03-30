@@ -2,6 +2,7 @@
 #include <EEPROM.h>
 #include "include/pins.h"
 #include "include/config.h"
+#include "include/sensors.h"
 
 // Macro for sizeof for better support with 2d arrays.
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))
@@ -29,17 +30,22 @@ int pressureNormalization(int givenPressure)
   }
 
   int normalizedPressure = pressureModifier * givenPressure;
-  if (normalizedPressure > 100)
+  if (normalizedPressure > 255)
   {
-    normalizedPressure = 100;
-    Serial.println("Pressure high compensation reached. Low battery?")
+    normalizedPressure = 255;
+    Serial.println("Pressure high compensation reached. Low battery?");
   }
   else if (normalizedPressure < 0)
   {
     normalizedPressure = 0;
-    Serial.println("Pressure low compensation reached. Too high voltage?")
+    Serial.println("Pressure low compensation reached. Too high voltage?");
   }
-
+  if (debugEnabled) {
+    Serial.print("Voltage compensated: ");
+    Serial.print(givenPressure);
+    Serial.print(" to ");
+    Serial.println(normalizedPressure);
+  }
   return normalizedPressure;
 }
 
@@ -312,15 +318,16 @@ int readPercentualMap(const int theMap[14][12], int x, int y)
       Serial.println(calculatedPoint);
     }
   }
-  calculatedPoint = calculatedPoint * config.transSloppy;
-  if (calculatedPoint > 100)
+  //calculatedPoint = calculatedPoint * config.transSloppy;
+  
+ /* if (calculatedPoint > 100)
   {
     calculatedPoint = 100;
   }
   if (calculatedPoint < 1)
   {
     calculatedPoint = 0;
-  }
+  }*/
   return calculatedPoint;
 }
 

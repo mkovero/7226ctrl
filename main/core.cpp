@@ -140,22 +140,23 @@ void doShift()
       Serial.println(F("[switchGearStart->switchGearStart] SPC low limit hit."));
     }
   }
-  spcPressureNormalized = pressureNormalization(spcPercentVal);
-  mpcPressureNormalized = pressureNormalization(mpcPercentVal);
-  onPressureNormalized = pressureNormalization(100);
 
-  spcSetVal = (100 - spcPressureNormalized) * 2.55; // these are calculated twice to make sure if there is changes they are noted.
-  mpcSetVal = (100 - mpcPressureNormalized) * 2.55;
-
+  spcSetVal = (100 - spcPercentVal) * 2.55; // these are calculated twice to make sure if there is changes they are noted.
+  mpcSetVal = (100 - mpcPercentVal) * 2.55;
+  int spcPressureNormalized = pressureNormalization(spcSetVal);
+  int mpcPressureNormalized = pressureNormalization(mpcSetVal);
+  int onPressureNormalized = pressureNormalization(100);
+  
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   // pinmode change is due the fact how n2/n3 speed sensors change during the shift.
   pinMode(n2pin, INPUT); // N2 sensor
   pinMode(n3pin, INPUT); // N3 sensor
   analogWrite(tcc, 0);
-  analogWrite(spc, spcSetVal);
-  analogWrite(mpc, mpcSetVal);
-  analogWrite(cSolenoidEnabled, onPressureNormalized); // Beginning of gear change
-
+  analogWrite(spc, spcPressureNormalized);
+  analogWrite(mpc, mpcPressureNormalized);
+  //analogWrite(cSolenoidEnabled, onPressureNormalized); // Beginning of gear change
+  digitalWrite(cSolenoidEnabled, HIGH);
+  
   if (debugEnabled)
   {
     Serial.print(F("[switchGearStart->doShift] spcPercentVal/mpcPercentVal "));
@@ -186,7 +187,8 @@ void doPostShift()
 // End of gear change phase
 void switchGearStop()
 {
-  analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
+ // analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
+  digitalWrite(cSolenoidEnabled, LOW);
   analogWrite(spc, 0);              // spc off
   analogWrite(mpc, 0);              // mpc off
   pinMode(n2pin, INPUT_PULLUP);     // N2 sensor
