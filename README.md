@@ -83,6 +83,7 @@ work by Markus Kovero (mui@mui.fi) with regards and big thanks to:
 - Liia Ahola for pcb tracing
 - Joosep Vahar for testing
 - Toni Lassila and Jan Blonski for ideas
+- Krzysztof Dymianiuk for enclosure solution and PCB design
 
 Schematics are for teensy, can be utilized with mega as well to some extent, tho mega support is going to be deprecated due obvious performance reasons.
 
