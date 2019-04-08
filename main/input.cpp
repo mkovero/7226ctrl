@@ -239,7 +239,7 @@ void boostControl(Task *me)
     }
 
     // Just a sanity check to make sure PID library is not doing anything stupid.
-    if (sensor.curBoostLim > 0 && !slipFault && truePower)
+    if (sensor.curBoostLim > 0 && truePower)
     {
       boostPID.run();
       analogWrite(boostCtrl, boostPWM);
