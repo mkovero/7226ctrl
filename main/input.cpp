@@ -250,6 +250,17 @@ void boostControl(Task *me)
       analogWrite(boostCtrl, 0);
     }
 
+    if (exhaustPresSensor)
+    {
+      if (sensor.curBoost > 150 && ((sensor.curExPres - sensor.curBoost) > 50))
+      {
+        analogWrite(boostCtrl, 0);
+        if (debugEnabled) {
+          Serial.println("Exhaust pressure 0.5bar greater than boost, overriding boost control for relief. ")
+        }
+      }
+    }
+
     /*if (debugEnabled)
     {
       Serial.print(F("boostControl (allowedBoostPressure/bootSensor):"));
