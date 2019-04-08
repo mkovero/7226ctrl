@@ -23,13 +23,13 @@ int pressureNormalization(int givenPressure)
 {
   struct SensorVals sensor = readSensors();
   int targetVoltage = 12000;
-  float pressureModifier = targetVoltage / sensor.curBattery;
+  float pressureModifier = float(targetVoltage) / sensor.curBattery;
   if (sensor.curBattery < targetVoltage)
   {
     Serial.println("Battery voltage too low, target pressure cannot be reached.");
   }
 
-  int normalizedPressure = pressureModifier * givenPressure;
+  int normalizedPressure = float(pressureModifier) * givenPressure;
   if (normalizedPressure > 255)
   {
     normalizedPressure = 255;
