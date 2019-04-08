@@ -41,19 +41,17 @@ Currently should work:
 - evaluateGear, make sure which gear is in (tested and works)
 - Torque converter lock based on default scenario (100% lock when on 5th gear, >80km/h and low load conditions)
 - percentual map reads preferably without floats (eg. value between point x and y).
-
-Implemented but needs real life testing:
-- adaptative shift pressure (works in lab)
-- External datalogging (format, method, works in lab)
-- w124 rpm meter (works in theory)
+- External datalogging (format, method)
 - Exhaust pressure sensor
 - Pressure ratio calculation (intake vs exhaust)
+- adaptative shift pressure (transloppy/maps)
+
+Implemented but needs real life testing:
+
+- w124 rpm meter (works in theory)
 
 Work in progress:
 - External datalogging (hardware implementation, visualization)
-
-Not started/pending:
-- PID controlled PWM for temperature stability
 
 Currently datalogged (custom intervals, default is once per second): 
 - vehicle speed
