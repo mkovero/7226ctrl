@@ -364,7 +364,7 @@ void gearchangeDown(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y4, 80, 80);
+          switchGearStart(y4, 28, 28);
         }
         if (tpsSensor)
         {
@@ -382,7 +382,7 @@ void gearchangeDown(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y5, 80, 80);
+          switchGearStart(y5, 65, 65);
         }
         if (tpsSensor)
         {
@@ -400,7 +400,7 @@ void gearchangeDown(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y3, 80, 80);
+          switchGearStart(y3, 65, 65);
         }
         if (tpsSensor)
         {
