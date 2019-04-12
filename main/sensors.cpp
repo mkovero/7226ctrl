@@ -213,7 +213,7 @@ int tpsRead()
   {
     float refRead = analogRead(refPin);
     float refTps = refRead / 1023 * 3.3;
-    float tpsVoltage = analogRead(tpsPin) * 3.0;
+    float tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
     tpsPercentValue = readTPSVoltage(tpsVoltage);
 
     tpsPercentValue = config.tpsAgre * tpsPercentValue;
@@ -242,7 +242,8 @@ void tpsInit(int action)
   case 0:
   {
     int curValue = EEPROM.read(100);
-    int tpsVoltage = analogRead(tpsPin) * 3.0;
+    float refRead = analogRead(refPin);
+    int tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
     //if (curValue != tpsVoltage)
     //{
     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
@@ -257,7 +258,8 @@ void tpsInit(int action)
   case 1:
   {
     int curValue = EEPROM.read(200);
-    int tpsVoltage = analogRead(tpsPin) * 3.0;
+    float refRead = analogRead(refPin);
+    int tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
     // if (curValue != tpsVoltage)
     //{
     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
