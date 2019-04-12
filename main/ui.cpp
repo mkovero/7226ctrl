@@ -294,11 +294,9 @@ void draw(int wantedGear)
 
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(20, 28);
-    u8g2.print(fuelIn);
+    u8g2.print(vehicleSpeedRevs);
     u8g2.setCursor(60, 28);
-    u8g2.print(F(" / "));
-    u8g2.setCursor(90, 28);
-    u8g2.print(fuelOut);
+
   }
   else if (page == 5 && infoDisplay == 0)
   {
