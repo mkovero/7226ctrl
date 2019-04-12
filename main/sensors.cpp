@@ -25,7 +25,7 @@ int exhaustSensorOffset = analogRead(exhaustPresPin);
 int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal, avgAtfRef, avgOilRef;
 float alpha = 0.7, gearSlip;
 FilterOnePole filterOneLowpass(LOWPASS, 1);      // for atfTemp
-FilterOnePole filterOneLowpass2(LOWPASS, 1);     // for oilTemp
+FilterOnePole filterOneLowpass2(LOWPASS, 5.0);     // for oilTemp
 FilterOnePole boostSensorFilter(LOWPASS, 1);     // for oilTemp
 FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
 
@@ -317,9 +317,9 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   if (!shiftBlocker)
   {
     float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
-    float tempRead = analogRead(oilPin);
-    tempRead = analogRead(oilPin);
     float refRead = analogRead(refPin);
+    float tempRead = analogRead(oilPin) * ( 3.3 / refRead );
+    tempRead = analogRead(oilPin) * ( 3.3 / refRead );
     float refTemp = refRead / 1023 * 3.3;
     filterOneLowpass2.input(tempRead);
     //avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
@@ -452,9 +452,8 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
 //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 int atfRead()
 {
-
-  float tempRead = analogRead(atfPin);
   float refRead = analogRead(refPin);
+  float tempRead = analogRead(atfPin) * ( 3.3 / refRead );
   float refTemp = refRead / 1023 * 3.3;
   filterOneLowpass.input(tempRead);
 
