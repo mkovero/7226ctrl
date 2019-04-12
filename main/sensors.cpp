@@ -404,7 +404,7 @@ int boostLimitRead(int oilTemp)
 {
 //  int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
 //  return allowedBoostPressure;
-    return 200;
+    return 300;
 }
 
 int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
