@@ -48,7 +48,7 @@ Task pollSensors(80, pollsensors);        // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
 Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
 Task pollBoostControl(100, boostControl); // 100ms for boost control*/
-Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
+//Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
 Task pollSerialWatch(100, serialWatch);
 
 
@@ -111,7 +111,7 @@ void setup()
 
   //  *portConfigRegister(boostPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
@@ -194,7 +194,7 @@ void setup()
   SoftTimer.add(&pollStick);
   SoftTimer.add(&pollGear);
   SoftTimer.add(&pollSensors);
-  SoftTimer.add(&pollTrans);
+ SoftTimer.add(&pollTrans);
   SoftTimer.add(&pollFuelControl);
   SoftTimer.add(&pollBoostControl);
   SoftTimer.add(&pollSerialWatch);

@@ -26,9 +26,11 @@ static const int atfSensorMap[23][2] PROGMEM {
 { 2276, 160 },
 { 2479, 170 }};
 
-static const int oilSensorMap[23][2] PROGMEM {
+static const int oilSensorMap[25][2] PROGMEM {
 {9999, -99  },   //temp
 //-----------------------------------------------------------------------
+{ 130, 120 },
+{ 145, 110  },
 { 185, 100  },
 { 245, 90  },
 { 325, 80  },
