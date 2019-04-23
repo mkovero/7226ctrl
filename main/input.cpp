@@ -7,6 +7,7 @@
 #include "include/eeprom.h"
 #include "include/input.h"
 #include "include/config.h"
+#include "include/ui.h"
 #include <SoftTimer.h>
 #include <AutoPID.h>
 
@@ -15,10 +16,12 @@ byte wantedGear = 100;
 // INPUT
 
 // Pid tuning parameters, for boostCtrl
-const double boostKp = 7; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
-double boostKi = 20;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
+const double boostKp = 21; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
+double boostKi = 7;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double boostKd = 0; //100, 1 Pid Derivative Gain.
 double pidBoost, boostPWM, pidBoostLim;
+int boostOverride = 150;
+
 //Load PID controller
 AutoPID boostPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, boostKp, boostKi, boostKd);
 
@@ -214,36 +217,20 @@ void boostControl(Task *me)
   if (boostLimit)
   {
     struct SensorVals sensor = readSensors();
-    pidBoost = sensor.curBoost;
-    pidBoostLim = sensor.curBoostLim;
-    boostPID.setBangBang(100, 50);
-    boostPID.setTimeStep(100);
-
-    if (shiftBlocker && boostLimitShift)
-    {
-      // During the shift
-      if (preShift && sensor.curBoostLim > config.boostDrop)
-      {
-        pidBoostLim = sensor.curBoostLim - config.boostDrop;
-      }
-      else
-      {
-        pidBoostLim = 0;
-      }
-      boostKi = 5; // New integral gain value; we want change of pressure to be aggressive here.
-    }
-    else
-    {
-      pidBoostLim = sensor.curBoostLim;
-      boostKi = 20; // New integral gain value; we want change of pressure to be more modest.
-    }
+    pidBoost = double(sensor.curBoost);
+    pidBoostLim = double(sensor.curBoostLim);
+  // pidBoost = double(sensor.curTps);
+  // pidBoostLim = double(50);
+    boostPID.setBangBang(100, 20);
+    boostPID.setTimeStep(50);
+    boostPID.run();
+    
 
     // Just a sanity check to make sure PID library is not doing anything stupid.
-    if (sensor.curBoostLim > 0 && truePower)
+    if (truePower)
     {
-      boostPID.run();
-      analogWrite(boostCtrl, boostPWM);
-      //  if (debugEnabled) { Serial.print("BoostPWM = "); Serial.println(boostPWM); }
+      analogWrite(boostCtrl, int(boostPWM));
+      // if (debugEnabled) { Serial.print("BoostPWM = "); Serial.println(boostPWM); }
     }
     else
     {
@@ -254,10 +241,9 @@ void boostControl(Task *me)
     {
       if (sensor.curBoost > 150 && ((sensor.curExPres - sensor.curBoost) > 50))
       {
-        analogWrite(boostCtrl, 0);
-        if (debugEnabled) {
+          analogWrite(boostCtrl, 0);
           Serial.println("Exhaust pressure 0.5bar greater than boost, overriding boost control for relief. ");
-        }
+        
       }
     }
 
@@ -633,12 +619,20 @@ void radioControl()
     }
     else if (readData == 101)
     {
-      tpsConfigMode = true;
-      tpsInitPhase1, tpsInitPhase2 = false;
+    /*  tpsConfigMode = true;
+      tpsInitPhase1, tpsInitPhase2 = false;*/
+    if (boostOverride < 300) {
+      boostOverride = boostOverride + 50;
+      infoBoost = false;
+    }
     }
     else if (readData == 201)
     {
-      tpsConfigMode = false;
+     /* tpsConfigMode = false;*/
+     if (boostOverride > 0) {
+       boostOverride = boostOverride - 50;
+       infoBoost = false;
+     }
     }
     else if (readData == 150)
     {
