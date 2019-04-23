@@ -11,6 +11,7 @@ extern boolean fullAuto;
 extern boolean datalogger;
 extern boolean w124speedo;
 extern boolean w124rpm;
+extern boolean infoBoost;
 extern byte wantedGear,page;
 extern int lastMapVal;
 extern boolean shiftPending,truePower;
