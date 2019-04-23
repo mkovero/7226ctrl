@@ -6,7 +6,7 @@
 #define INPUT_SIZE 256
 long serialTimeout = 120000;
 long lastActiveConfig;
-boolean configMode, configSet, featureSet = false;
+boolean configMode, configSet, featureSet, upGear, downGear = false;
 int myVersion = 20190211;
 int asset, value = 0;
 float fvalue = 0.00;
@@ -138,6 +138,15 @@ void initConfig()
         setConfig(65, 6);
         setConfig(66, 2);
         setConfigFloat(67, 1.00);
+        setUpGear(1, 35);
+        setUpGear(2, 72);
+        setUpGear(3, 80);
+        setUpGear(4, 80);
+        setDownGear(2, 35);
+        setDownGear(3, 17);
+        setDownGear(4, 65);
+        setDownGear(5, 65);
+
         EEPROM.put(4090, 69);
         Serial.println("Virgin init");
     }
@@ -146,6 +155,8 @@ void initConfig()
         int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
         int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66};
         int configF[] = {58, 61, 67};
+        int upGears[] = {1,2,3,4};
+        int downGears[] = {2,3,4,5};
 
         for (int i = 0; i < sizeof features / sizeof features[0]; i++)
         {
@@ -167,6 +178,20 @@ void initConfig()
             float configFVal;
             EEPROM.get(asset, configFVal);
             setConfigFloat(configF[i], configFVal);
+        }
+        for (int i = 0; i < sizeof upGears / sizeof upGears[0]; i++)
+        {
+            asset = upGears[i] * 99;
+            byte featureVal;
+            EEPROM.get(asset, featureVal);
+            setUpGear(upGears[i], featureVal);
+        }
+        for (int i = 0; i < sizeof downGears / sizeof downGears[0]; i++)
+        {
+            asset = downGears[i] * 97;
+            byte featureVal;
+            EEPROM.get(asset, featureVal);
+            setDownGear(downGears[i], featureVal);
         }
     }
 }
@@ -409,6 +434,109 @@ void setConfigFloat(int asset, float value)
     }
 }
 
+void setUpGear(int asset, int value)
+{
+    lastActiveConfig = millis();
+
+    if (asset > 0 && asset < 6)
+    {
+        if (debugEnabled)
+        {
+            Serial.print("Setting upGear: ");
+            Serial.print(asset);
+            Serial.print(":");
+            Serial.println(value);
+        }
+        int assetLocation = asset * 99;
+        EEPROM.put(assetLocation, value);
+    }
+
+    switch (asset)
+    {
+    case 1:
+        config.oneTotwo = value;
+        break;
+    case 2:
+        config.twoTothree = value;
+        break;
+    case 3:
+        config.threeTofour = value;
+        break;
+    case 4:
+        config.fourTofive = value;
+        break;
+    case 5:
+        break;
+    default:
+        break;
+    }
+}
+
+void setDownGear(int asset, int value)
+{
+    lastActiveConfig = millis();
+
+    if (asset > 0 && asset < 6)
+    {
+        if (debugEnabled)
+        {
+            Serial.print("Setting downGear: ");
+            Serial.print(asset);
+            Serial.print(":");
+            Serial.println(value);
+        }
+        int assetLocation = asset * 97;
+        EEPROM.put(assetLocation, value);
+    }
+
+    switch (asset)
+    {
+    case 1:
+        break;
+    case 2:
+        config.twoToone = value;
+        break;
+    case 3:
+        config.threeTotwo = value;
+        break;
+    case 4:
+        config.fourTothree = value;
+        break;
+    case 5:
+        config.fiveTofour = value;
+        break;
+    default:
+        break;
+    }
+}
+
+void getGears()
+{
+      Serial.print("440:440;");
+    Serial.print("1:");
+    Serial.print(config.oneTotwo);
+    Serial.print(";");
+    Serial.print("2:");
+    Serial.print(config.twoTothree);
+    Serial.print(";");
+    Serial.print("3:");
+    Serial.print(config.threeTofour);
+    Serial.print(";");
+    Serial.print("4:");
+    Serial.println(config.fourTofive);
+    Serial.print("550:550;");
+    Serial.print("2:");
+    Serial.print(config.twoToone);
+    Serial.print(";");
+    Serial.print("3:");
+    Serial.print(config.threeTotwo);
+    Serial.print(";");
+    Serial.print("4:");
+    Serial.print(config.fourTothree);
+    Serial.print(";");
+    Serial.print("5:");
+    Serial.println(config.fiveTofour);
+}
 void setConfig(int asset, int value)
 {
     lastActiveConfig = millis();
@@ -582,24 +710,35 @@ void serialConfig()
                 {
                     getFeatures();
                     getConfig();
+                    getGears();
                 }
                 else if (asset == 60000)
                 {
+                    downGear = false;
+                    upGear = false;
                     configSet = false;
                     featureSet = true;
                 }
                 else if (asset == 50000)
                 {
+                    downGear = false;
+                    upGear = false;
                     featureSet = false;
                     configSet = true;
                 }
                 else if (asset == 440)
                 {
-                  //  moreGearPunch(prevGear);
+                    configSet = false;
+                    featureSet = false;
+                    downGear = false;
+                    upGear = true;
                 }
                 else if (asset == 550)
                 {
-                   // lessGearPunch(prevGear);
+                    configSet = false;
+                    featureSet = false;
+                    upGear = false;
+                    downGear = true;
                 }
                 if (featureSet)
                 {
@@ -618,6 +757,14 @@ void serialConfig()
                     {
                         setConfig(asset, value);
                     }
+                }
+                if (upGear)
+                {
+                    setUpGear(asset, value);
+                }
+                if (downGear)
+                {
+                    setDownGear(asset, value);
                 }
             }
             command = strtok(0, ";");

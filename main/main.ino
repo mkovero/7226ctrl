@@ -40,7 +40,7 @@
 #include <AutoPID.h>
 
 // "Protothreading", we have time slots for different functions to be run.
-Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
+//Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
 Task pollData(33, datalog);               // 200ms to update datalogging
 Task pollStick(100, pollstick);           // 100ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
@@ -189,7 +189,7 @@ void setup()
   }
 
   // initialize timers
-  SoftTimer.add(&pollDisplay);
+ // SoftTimer.add(&pollDisplay);
   SoftTimer.add(&pollData);
   SoftTimer.add(&pollStick);
   SoftTimer.add(&pollGear);

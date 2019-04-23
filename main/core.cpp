@@ -245,7 +245,7 @@ void gearchangeUp(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y3, 35, 31);
+          switchGearStart(y3, config.oneTotwo, config.oneTotwo);
         }
         if (tpsSensor)
         {
@@ -263,7 +263,7 @@ void gearchangeUp(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y4, 80, 80);
+          switchGearStart(y4, config.twoTothree, config.twoTothree);
         }
         if (tpsSensor)
         {
@@ -281,7 +281,7 @@ void gearchangeUp(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y5, 80, 80);
+          switchGearStart(y5, config.threeTofour, config.threeTofour);
         }
         if (tpsSensor)
         {
@@ -299,7 +299,7 @@ void gearchangeUp(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y3, 80, 80);
+          switchGearStart(y3, config.fourTofive, config.fourTofive);
         }
         if (tpsSensor)
         {
@@ -346,7 +346,7 @@ void gearchangeDown(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y3, 15, 15);
+          switchGearStart(y3, config.twoToone, config.twoToone);
         }
         if (tpsSensor)
         {
@@ -364,7 +364,7 @@ void gearchangeDown(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y4, 28, 28);
+          switchGearStart(y4, config.threeTotwo, config.threeTotwo);
         }
         if (tpsSensor)
         {
@@ -382,7 +382,7 @@ void gearchangeDown(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y5, 65, 65);
+          switchGearStart(y5, config.fourTothree, config.fourTothree);
         }
         if (tpsSensor)
         {
@@ -400,7 +400,7 @@ void gearchangeDown(int newGear)
         }
         if (!tpsSensor)
         {
-          switchGearStart(y3, 65, 65);
+          switchGearStart(y3, config.fiveTofour, config.fiveTofour);
         }
         if (tpsSensor)
         {

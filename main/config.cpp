@@ -23,7 +23,15 @@ struct ConfigParam config = {
   .tpsAgre = 2, // 1-10 how aggressive slope tps has
   .diffRatio = 3.27,
   .maxSlip = 0.5, // Maximum allowed slip before error
-  .transSloppy = 1.2 // multiplier for pressures coping with old transmissions
+  .transSloppy = 1.2, // multiplier for pressures coping with old transmissions
+  .oneTotwo = 35,
+  .twoTothree = 72,
+  .threeTofour = 80,
+  .fourTofive = 80,
+  .fiveTofour = 65,
+  .fourTothree = 65,
+  .threeTotwo = 17,
+  .twoToone = 35
 };
 
 // End of environment conf
