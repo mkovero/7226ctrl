@@ -10,6 +10,7 @@
 #include "include/config.h"
 #include "include/core.h"
 #include "include/serial_config.h"
+#include "include/input.h"
 #include <Filters.h>
 #include <SoftTimer.h>
 using namespace std;
@@ -213,7 +214,7 @@ int tpsRead()
   {
     float refRead = analogRead(refPin);
     float refTps = refRead / 1023 * 3.3;
-    float tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
+    float tpsVoltage = analogRead(tpsPin);
     tpsPercentValue = readTPSVoltage(tpsVoltage);
 
     tpsPercentValue = config.tpsAgre * tpsPercentValue;
@@ -243,7 +244,7 @@ void tpsInit(int action)
   {
     int curValue = EEPROM.read(100);
     float refRead = analogRead(refPin);
-    int tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
+    int tpsVoltage = analogRead(tpsPin);
     //if (curValue != tpsVoltage)
     //{
     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
@@ -259,7 +260,7 @@ void tpsInit(int action)
   {
     int curValue = EEPROM.read(200);
     float refRead = analogRead(refPin);
-    int tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
+    int tpsVoltage = analogRead(tpsPin);
     // if (curValue != tpsVoltage)
     //{
     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
@@ -318,17 +319,19 @@ a[3] = -9.456539654701360e-07 <- this can be c4
   {
     float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
     float refRead = analogRead(refPin);
-    float tempRead = analogRead(oilPin) * ( 3.3 / refRead );
-    tempRead = analogRead(oilPin) * ( 3.3 / refRead );
+    float tempRead = analogRead(oilPin);
+    tempRead = analogRead(oilPin);
     float refTemp = refRead / 1023 * 3.3;
     filterOneLowpass2.input(tempRead);
     //avgOilTemp = (avgOilTemp * 9 + tempRead) / 10;
     //avgOilRef = (avgOilRef * 9 + refRead) / 10;
-    int R2 = 4700 / (1023 / (float)filterOneLowpass2.output() - 1.0);
+    int R2 = 18700 / (refRead / (float)filterOneLowpass2.output() - 1.0);
+    // 4700
     float logR2 = log(R2);
     float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
     // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
-    oilTemp = T - 273.15 - 50;
+    oilTemp = T - 273.15;
+    // -50
   }
   return oilTemp;
   /* if (wantedGear == 6 || wantedGear == 8)
@@ -404,7 +407,7 @@ int boostLimitRead(int oilTemp)
 {
 //  int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
 //  return allowedBoostPressure;
-    return 300;
+    return boostOverride;
 }
 
 int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
@@ -453,11 +456,11 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
 int atfRead()
 {
   float refRead = analogRead(refPin);
-  float tempRead = analogRead(atfPin) * ( 3.3 / refRead );
+  float tempRead = analogRead(atfPin);
   float refTemp = refRead / 1023 * 3.3;
   filterOneLowpass.input(tempRead);
 
-  int R2 = 230 / (1023 / tempRead - 1.0) + 300;
+  int R2 = 230 / (refRead / tempRead - 1.0) + 300;
 
   if (R2 < 564)
   {
