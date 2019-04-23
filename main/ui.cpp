@@ -18,6 +18,7 @@ U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
 //
 typedef u8g2_uint_t u8g_uint_t;
 //u8g2.begin();
+boolean infoBoost = false;
 
 void draw(int wantedGear)
 {
@@ -25,7 +26,7 @@ void draw(int wantedGear)
   static int maxSpeed, maxBoost, maxExPres, maxOilTemp, maxAtfTemp, maxRPM, maxPresDiff;
   static int infoDisplay = 1;
   static double infoDisplayTime;
-  static boolean infoDisplayShown, infoBoost, infoSpeed, infoSlip, infoBattery = false;
+  static boolean infoDisplayShown, infoSpeed, infoSlip, infoBattery = false;
 
   if (sensor.curOilTemp > maxOilTemp)
   {
@@ -78,7 +79,7 @@ void draw(int wantedGear)
       u8g2.setCursor(10, 40);
       u8g2.print(F("boostLimit"));
       u8g2.setCursor(10, 60);
-      u8g2.print(sensor.curBoostLim);
+      u8g2.print(boostOverride);
     }
     else if (infoDisplay == 3)
     {
