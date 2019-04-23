@@ -81,7 +81,7 @@ int readExPresVoltage(int voltage)
 int readBatVoltage(int voltage)
 {
 
-  int result = map(voltage, 0, 3375, 0, 15000); // 0-15V
+  int result = map(voltage, 0, 3075, 0, 15000); // 0-15V
   return result;
 }
 
