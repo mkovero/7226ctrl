@@ -219,7 +219,7 @@ void boostControl(Task *me)
     boostPID.setBangBang(100, 50);
     boostPID.setTimeStep(100);
 
-    if (shiftBlocker && boostLimitShift)
+    if (shiftBlocker && !slipFault && boostLimitShift)
     {
       // During the shift
       if (preShift && sensor.curBoostLim > config.boostDrop)
@@ -256,7 +256,7 @@ void boostControl(Task *me)
       {
         analogWrite(boostCtrl, 0);
         if (debugEnabled) {
-          Serial.println("Exhaust pressure 0.5bar greater than boost, overriding boost control for relief. ");
+          Serial.println("Exhaust pressure 0.5bar greater than boost, overriding boost control for relief. ")
         }
       }
     }

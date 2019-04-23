@@ -14,6 +14,7 @@
 #include <SoftTimer.h>
 using namespace std;
 
+
 // Internals
 unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog, fuelIn, fuelOut, fuelUsed, fuelUsedAvg, vehicleTravelRevs, vehicleTravelDiff;
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
@@ -24,7 +25,7 @@ int exhaustSensorOffset = analogRead(exhaustPresPin);
 int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal, avgAtfRef, avgOilRef;
 float alpha = 0.7, gearSlip;
 FilterOnePole filterOneLowpass(LOWPASS, 1);      // for atfTemp
-FilterOnePole filterOneLowpass2(LOWPASS, 5.0);   // for oilTemp
+FilterOnePole filterOneLowpass2(LOWPASS, 5.0);     // for oilTemp
 FilterOnePole boostSensorFilter(LOWPASS, 1);     // for oilTemp
 FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
 
@@ -125,6 +126,7 @@ void pollsensors(Task *me)
       rpmPulse = 0;
     }
 
+
     //fuelUsed = fuelIn - fuelOut;
     //fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
     // fuelIn = 0;
@@ -211,7 +213,7 @@ int tpsRead()
   {
     float refRead = analogRead(refPin);
     float refTps = refRead / 1023 * 3.3;
-    float tpsVoltage = analogRead(tpsPin) * (3.3 / refRead);
+    float tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
     tpsPercentValue = readTPSVoltage(tpsVoltage);
 
     tpsPercentValue = config.tpsAgre * tpsPercentValue;
@@ -237,40 +239,40 @@ void tpsInit(int action)
 {
   switch (action)
   {
-  case 0:
-  {
-    int curValue = EEPROM.read(100);
-    float refRead = analogRead(refPin);
-    int tpsVoltage = analogRead(tpsPin) * (3.3 / refRead);
-    //if (curValue != tpsVoltage)
-    //{
-    byte lowByte = ((tpsVoltage >> 0) & 0xFF);
-    byte highByte = ((tpsVoltage >> 8) & 0xFF);
-    EEPROM.write(1000, lowByte);
-    EEPROM.write(1100, highByte);
-    Serial.print("Written voltage val 1000:");
-    Serial.println(tpsVoltage);
-    //}
-    break;
-  }
-  case 1:
-  {
-    int curValue = EEPROM.read(200);
-    float refRead = analogRead(refPin);
-    int tpsVoltage = analogRead(tpsPin) * (3.3 / refRead);
-    // if (curValue != tpsVoltage)
-    //{
-    byte lowByte = ((tpsVoltage >> 0) & 0xFF);
-    byte highByte = ((tpsVoltage >> 8) & 0xFF);
-    EEPROM.write(2000, lowByte);
-    EEPROM.write(2100, highByte);
-    Serial.print("Written voltage val 2000:");
-    Serial.println(tpsVoltage);
-    //  }
-    break;
-  }
-  default:
-    break;
+    case 0:
+      {
+        int curValue = EEPROM.read(100);
+        float refRead = analogRead(refPin);
+        int tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
+        //if (curValue != tpsVoltage)
+        //{
+        byte lowByte = ((tpsVoltage >> 0) & 0xFF);
+        byte highByte = ((tpsVoltage >> 8) & 0xFF);
+        EEPROM.write(1000, lowByte);
+        EEPROM.write(1100, highByte);
+        Serial.print("Written voltage val 1000:");
+        Serial.println(tpsVoltage);
+        //}
+        break;
+      }
+    case 1:
+      {
+        int curValue = EEPROM.read(200);
+        float refRead = analogRead(refPin);
+        int tpsVoltage = analogRead(tpsPin) * ( 3.3 / refRead );
+        // if (curValue != tpsVoltage)
+        //{
+        byte lowByte = ((tpsVoltage >> 0) & 0xFF);
+        byte highByte = ((tpsVoltage >> 8) & 0xFF);
+        EEPROM.write(2000, lowByte);
+        EEPROM.write(2100, highByte);
+        Serial.print("Written voltage val 2000:");
+        Serial.println(tpsVoltage);
+        //  }
+        break;
+      }
+    default:
+      break;
   }
 }
 
@@ -312,7 +314,7 @@ int oilRead()
   */
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   static float oilTemp;
-  /* if (!shiftBlocker)
+ /* if (!shiftBlocker)
   {
     float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
     float refRead = analogRead(refPin);
@@ -337,24 +339,25 @@ int oilRead()
     avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
     }*/
   if (!shiftBlocker)
-
-    float refRead = analogRead(refPin);
+{
+ float refRead = analogRead(refPin);
   float tempRead = analogRead(oilPin);
   filterOneLowpass2.input(tempRead);
-  float refVoltage = (refRead + 30) * 5.0 / 1024;
-  float ref3V3 = (refRead + 30) * 3.3 / 1024;
+  float refVoltage = (refRead+30) * 5.0 / 1024;
+  float ref3V3 = (refRead+30) * 3.3 / 1024;
   float buffer = tempRead * refVoltage;
-  //  Serial.print("buffer: ");
-  //  Serial.println(buffer);
-  float outVoltage = (buffer) / (refRead + 30);
-  buffer = (refVoltage / outVoltage) - 1;
-
-  int R2 = 4700 * (1 / (((ref3V3) / (outVoltage)) - 1)) - 150;
-  float oilTemp = readTempMapInverted(oilSensorMap, R2);
+//  Serial.print("buffer: ");
+//  Serial.println(buffer);
+  float outVoltage = (buffer)/(refRead+30);
+  buffer = (refVoltage/outVoltage) -1;
+  
+  int R2 = 4700 * (1/(((ref3V3)/(outVoltage))-1)) - 150;
+   float oilTemp = readTempMapInverted(oilSensorMap, R2);
+  
 }
-return oilTemp;
+  return oilTemp;
 
-/*
+  /*
     float tempRead = analogRead(oilPin);
     float refRead = analogRead(refPin);
     float refTemp = refRead / 1023 * 3.0;
@@ -377,8 +380,8 @@ int boostRead()
   {
     //reading MAP/boost
     int refRead = analogRead(refPin);
-    boostVoltage = (analogRead(boostPin) - boostSensorOffset) * (3.3 / refRead);
-    boostValue = boostVoltage * 700 / 2.95;
+    boostVoltage = ( analogRead(boostPin) - boostSensorOffset ) * ( 3.3 / refRead );
+    boostValue =  boostVoltage * 700 / 2.95;
     boostSensorFilter.input(boostValue);
     boostValue = boostSensorFilter.output();
   }
@@ -394,8 +397,8 @@ int exhaustPressureRead()
   {
     //reading exhaust pressure
     int refRead = analogRead(refPin);
-    exhaustPresVol = (analogRead(exhaustPresPin) - exhaustSensorOffset) * (3.3 / refRead);
-    exhaustPresVal = exhaustPresVol * 700 / 2.95;
+    exhaustPresVol = ( analogRead(exhaustPresPin) - exhaustSensorOffset ) * ( 3.3 / refRead );
+    exhaustPresVal =  exhaustPresVol * 700 / 2.95;
     exhaustPressureFilter.input(exhaustPresVal);
     exhaustPresVal = exhaustPressureFilter.output();
   }
@@ -470,16 +473,16 @@ int atfRead()
   float refRead = analogRead(refPin);
   float tempRead = analogRead(atfPin);
   filterOneLowpass.input(tempRead);
-  float refVoltage = (refRead + 30) * 5.0 / 1024;
-  float ref3V3 = (refRead + 30) * 3.3 / 1024;
+  float refVoltage = (refRead+30) * 5.0 / 1024;
+  float ref3V3 = (refRead+30) * 3.3 / 1024;
   float buffer = tempRead * refVoltage;
-  //  Serial.print("buffer: ");
-  //  Serial.println(buffer);
-  float outVoltage = (buffer) / (refRead + 30);
-  buffer = (refVoltage / outVoltage) - 1;
-
-  int R2 = 2740 * (1 / (((ref3V3) / (outVoltage)) - 1)) - 150;
-  /* Serial.print("refRead: ");
+//  Serial.print("buffer: ");
+//  Serial.println(buffer);
+  float outVoltage = (buffer)/(refRead+30);
+  buffer = (refVoltage/outVoltage) -1;
+  
+  int R2 = 2740 * (1/(((ref3V3)/(outVoltage))-1)) - 150;
+ /* Serial.print("refRead: ");
   Serial.println(refRead);
   Serial.print("tempRead: ");
   Serial.println(tempRead);
@@ -494,14 +497,14 @@ int atfRead()
     Serial.print("ref3V3: ");
   Serial.println(ref3V3);*/
   if (R2 < 564)
-  {
+    {
     R2 = 564;
-  }
+    }
 
-  if (R2 > 2479)
-  {
+    if (R2 > 2479)
+    {
     R2 = 2479;
-  }
+    }
 
   int atfTemp = readTempMap(atfSensorMap, R2);
 
