@@ -137,10 +137,10 @@ int readTempMap(const int theMap[23][2], int y)
     }
   }
 
-  int curY = pgm_read_dword_near(&theMap[yidx][0]);              // valittu Y
-  int mapValue = pgm_read_dword_near(&theMap[yidx][1]);          // valittu X
-  int prevXMapValue = pgm_read_dword_near(&theMap[yidx - 1][1]); // edellinen X
-  int prevYMapValue = pgm_read_dword_near(&theMap[yidx - 1][0]); // edellinen Y
+  int curY = pgm_read_dword_near(&theMap[yidx][0]);              // valittu Y // 1644
+  int mapValue = pgm_read_dword_near(&theMap[yidx][1]);          // valittu X // 100
+  int prevXMapValue = pgm_read_dword_near(&theMap[yidx - 1][1]); // edellinen X // 90
+  int prevYMapValue = pgm_read_dword_near(&theMap[yidx - 1][0]); // edellinen Y // 1545
 
   float betweenL1 = ((float(curY) - y) / (curY - prevYMapValue)) * (mapValue - prevXMapValue) + prevXMapValue;
   // valittu Y - annettu luku = xyz -> (xyz / (valittu Y - edellinen Y)) * (valittu X - edellinen X) + edellinen x
