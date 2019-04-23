@@ -109,7 +109,7 @@ void setup()
   pinMode(rpmPin, INPUT);
   pinMode(batteryPin, INPUT);
 
-  //  *portConfigRegister(boostPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+    *portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
