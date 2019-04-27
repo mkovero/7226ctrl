@@ -17,8 +17,8 @@ using namespace std;
 
 
 // Internals
-unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, lastSpeedoSensorTime, rpmPulse, curLog, lastLog, fuelIn, fuelOut, fuelUsed, fuelUsedAvg, vehicleTravelRevs, vehicleTravelDiff;
-int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs, speedoRPM;
+unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog, fuelIn, fuelOut, fuelUsed, fuelUsedAvg, vehicleTravelRevs, vehicleTravelDiff;
+int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 int boostSensorOffset = analogRead(boostPin);
 int exhaustSensorOffset = analogRead(exhaustPresPin);
 
@@ -29,7 +29,6 @@ FilterOnePole filterOneLowpass(LOWPASS, 1);      // for atfTemp
 FilterOnePole filterOneLowpass2(LOWPASS, 5.0);     // for oilTemp
 FilterOnePole boostSensorFilter(LOWPASS, 1);     // for oilTemp
 FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
-FilterOnePole speedoLowPass(LOWPASS, .005); // for oilTemp
 
 Adafruit_MAX31855 kTC(9);
 
@@ -70,14 +69,15 @@ void pollsensors(Task *me)
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
 
-  if (millis() - lastSensorTime >= 1000)
+  if (millis() - lastSensorTime >= 100)
   {
     detachInterrupt(n2pin); // Detach interrupts for calculation
     detachInterrupt(n3pin);
     detachInterrupt(rpmPin);
     detachInterrupt(speedPin);
     //#ifndef MANUAL
-  //  detachInterrupt(fuelOutPin);
+    // detachInterrupt(fuelInPin);
+    //detachInterrupt(fuelOutPin);
     //#endif
     float elapsedTime = millis() - lastSensorTime; // need to have this float in order to get float calculation.
 
@@ -127,13 +127,12 @@ void pollsensors(Task *me)
       rpmPulse = 0;
     }
 
-     
+
     //fuelUsed = fuelIn - fuelOut;
     //fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
     // fuelIn = 0;
     // fuelOut = 0;
 
-    
     gearSlip = getGearSlip();
     evalGearVal = evaluateGear();
 
@@ -149,20 +148,9 @@ void pollsensors(Task *me)
     attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
     //#ifndef MANUAL
-  // attachInterrupt(digitalPinToInterrupt(fuelOutPin), fuelInInterrupt, RISING);
+    //attachInterrupt(digitalPinToInterrupt(fuelInPin), fuelOutInterrupt, RISING);
+    //attachInterrupt(digitalPinToInterrupt(fuelOutPin), fuelInInterrupt, RISING);
     //#endif
-  }
-   if (millis() - lastSpeedoSensorTime >= 100)
-  {
-        float elapsedTime = millis() - lastSpeedoSensorTime; // need to have this float in order to get float calculation.
-         detachInterrupt(fuelInPin);
-        speedoRPM = fuelIn / elapsedTime * 1000;
-        speedoLowPass.input(speedoRPM);
-    fuelIn = 0;
-        speedoRPM = speedoLowPass.output();
-        lastSpeedoSensorTime = millis();
-       attachInterrupt(digitalPinToInterrupt(fuelInPin), fuelInInterrupt, FALLING);
-
   }
 }
 
@@ -216,7 +204,7 @@ int speedRead()
     }
   }
   return speedValue;
-  //return vehicleSpeedPulses;
+  // return vehicleSpeedRevs;
 }
 
 int tpsRead()
@@ -254,7 +242,7 @@ void tpsInit(int action)
   {
   case 0:
   {
-    int curValue = EEPROM.read(1000);
+    int curValue = EEPROM.read(100);
     float refRead = analogRead(refPin);
     int tpsVoltage = analogRead(tpsPin);
     //if (curValue != tpsVoltage)
@@ -270,7 +258,7 @@ void tpsInit(int action)
   }
   case 1:
   {
-    int curValue = EEPROM.read(2000);
+    int curValue = EEPROM.read(200);
     float refRead = analogRead(refPin);
     int tpsVoltage = analogRead(tpsPin);
     // if (curValue != tpsVoltage)
@@ -326,8 +314,8 @@ int oilRead()
     return oilTemp;
   */
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
-  /*static float oilTemp;
-  if (!shiftBlocker)
+  static float oilTemp;
+ /* if (!shiftBlocker)
   {
     float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
     float refRead = analogRead(refPin);
@@ -341,9 +329,9 @@ int oilRead()
     float logR2 = log(R2);
     float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2));
     // float T = (1.0 / (c1 + c2 * logR2 + c3 * logR2 * logR2 * logR2 + c4 * logR2 * logR2 * logR2));
-    oilTemp = T - 273.15 - 150;
+    oilTemp = T - 273.15;
   }
-  return oilTemp;*/
+  return oilTemp;
   /* if (wantedGear == 6 || wantedGear == 8)
     {
     avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
@@ -351,8 +339,8 @@ int oilRead()
     else {
     avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
     }*/
- // if (!shiftBlocker)
-//{
+  if (!shiftBlocker)
+{
  float refRead = analogRead(refPin);
   float tempRead = analogRead(oilPin);
   filterOneLowpass2.input(tempRead);
@@ -364,10 +352,10 @@ int oilRead()
   float outVoltage = (buffer)/(refRead+30);
   buffer = (refVoltage/outVoltage) -1;
   
-  int R2 = 4700 * (1/(((ref3V3)/(outVoltage))-1)) - 112;
+  int R2 = 4700 * (1/(((ref3V3)/(outVoltage))-1)) - 150;
    float oilTemp = readTempMapInverted(oilSensorMap, R2);
   
-//}
+}
   return oilTemp;
 
   /*
@@ -494,7 +482,7 @@ int atfRead()
   float outVoltage = (buffer)/(refRead+30);
   buffer = (refVoltage/outVoltage) -1;
   
-  int R2 = 2740 * (1/(((ref3V3)/(outVoltage))-1)) - 165;
+  int R2 = 2740 * (1/(((ref3V3)/(outVoltage))-1)) - 150;
  /* Serial.print("refRead: ");
   Serial.println(refRead);
   Serial.print("tempRead: ");

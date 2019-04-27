@@ -160,7 +160,7 @@ void initConfig()
 
         for (int i = 0; i < sizeof features / sizeof features[0]; i++)
         {
-            asset = features[i] * 10;
+            asset = features[i] * 11;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setFeatures(features[i], featureVal);
@@ -181,14 +181,14 @@ void initConfig()
         }
         for (int i = 0; i < sizeof upGears / sizeof upGears[0]; i++)
         {
-            asset = upGears[i] * 99;
+            asset = upGears[i] * 199;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setUpGear(upGears[i], featureVal);
         }
         for (int i = 0; i < sizeof downGears / sizeof downGears[0]; i++)
         {
-            asset = downGears[i] * 97;
+            asset = downGears[i] * 197;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setDownGear(downGears[i], featureVal);
@@ -312,7 +312,7 @@ void setFeatures(int asset, int value)
     lastActiveConfig = millis();
     if (asset > 0 && asset < 40)
     {
-        int assetLocation = asset * 10;
+        int assetLocation = asset * 11;
         if (debugEnabled)
         {
             Serial.print("Setting feature: ");
@@ -322,7 +322,7 @@ void setFeatures(int asset, int value)
             Serial.print(":");
             Serial.println(value);
         }
-        EEPROM.put(assetLocation, value);
+        EEPROM.write(assetLocation, value);
     }
 
     switch (asset)
@@ -444,7 +444,7 @@ void setUpGear(int asset, int value)
 
     if (asset > 0 && asset < 6)
     {
-        int assetLocation = asset * 99;
+        int assetLocation = asset * 199;
         if (debugEnabled)
         {
             Serial.print("Setting upGear: ");
@@ -484,7 +484,7 @@ void setDownGear(int asset, int value)
 
     if (asset > 0 && asset < 6)
     {
-        int assetLocation = asset * 97;
+        int assetLocation = asset * 197;
         if (debugEnabled)
         {
             Serial.print("Setting downGear: ");

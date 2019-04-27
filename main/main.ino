@@ -59,7 +59,7 @@ Task pollInjectionControl(100, injectionControl);
 
 void setup()
 {
-  //delay(5000);
+  delay(1000);
   initConfig();
 
   // MPC and SPC should have frequency of 1000hz

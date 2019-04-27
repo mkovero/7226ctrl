@@ -9,10 +9,12 @@
 #include "include/config.h"
 #include "include/maps.h"
 #include "include/input.h"
+#include "include/serial_config.h"
+
 #include <SoftTimer.h>
 #include <AutoPID.h>
 const double speedoKp = 1; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
-double speedoKi = .0001;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
+double speedoKi = .0001;   //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double speedoKd = 0; //100, 1 Pid Derivative Gain.
 double pidSpeedo, speedoPWM, pidSpeedoLim;
 
@@ -83,26 +85,33 @@ void draw(int wantedGear)
     else if (infoDisplay == 2)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
-      if (boostLimit) {
-      u8g2.setCursor(10, 40);
-      u8g2.print(F("boostLimit"));
-      u8g2.setCursor(10, 60);
-      u8g2.print(boostOverride);
-      } else {
-              u8g2.setCursor(10, 40);
-      u8g2.print(F("boostCtrl"));
-      u8g2.setCursor(10, 60);
-      u8g2.print("off");
+      if (boostLimit)
+      {
+        u8g2.setCursor(10, 40);
+        u8g2.print(F("boostLimit"));
+        u8g2.setCursor(10, 60);
+        u8g2.print(boostOverride);
       }
-      
+      else
+      {
+        u8g2.setCursor(10, 40);
+        u8g2.print(F("boostCtrl"));
+        u8g2.setCursor(10, 60);
+        u8g2.print("off");
+      }
     }
     else if (infoDisplay == 3)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
       u8g2.setCursor(10, 40);
-      u8g2.print(F("Speed"));
+      u8g2.print(F("Speedmon"));
       u8g2.setCursor(10, 60);
-      u8g2.print(F("fault"));
+      if (diffSpeed && rpmSpeed) {
+      u8g2.print(F("on"));
+      } else {
+      u8g2.print(F("off"));   
+      }
+      
     }
     else if (infoDisplay == 4)
     {
@@ -165,18 +174,21 @@ void draw(int wantedGear)
       u8g2.print(gear);
       u8g2.print(F(")"));
     }
-    u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(60, 40);
-    u8g2.print(sensor.curSpeed);
-    if (truePower)
+    if (diffSpeed || rpmSpeed)
     {
-      u8g2.setCursor(45, 60);
-      u8g2.print(F("km/h"));
-    }
-    else
-    {
-      u8g2.setCursor(45, 60);
-      u8g2.print(F("km/h"));
+      u8g2.setFont(u8g2_font_fub14_tf);
+      u8g2.setCursor(60, 40);
+      u8g2.print(sensor.curSpeed);
+      if (truePower)
+      {
+        u8g2.setCursor(45, 60);
+        u8g2.print(F("km/h"));
+      }
+      else
+      {
+        u8g2.setCursor(45, 60);
+        u8g2.print(F("km/h"));
+      }
     }
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.setCursor(0, 10);
@@ -191,28 +203,43 @@ void draw(int wantedGear)
     u8g2.print(sensor.curOilTemp);
     u8g2.setCursor(25, 40);
     u8g2.print(maxOilTemp);
-    u8g2.setCursor(0, 50);
-    u8g2.print(F("Boost:"));
-    u8g2.setCursor(0, 60);
-    u8g2.print(sensor.curBoost);
-    u8g2.setCursor(25, 60);
-    u8g2.print(maxBoost);
-    u8g2.setCursor(0, 70);
-    u8g2.print(sensor.curExPres);
-    u8g2.setCursor(25, 70);
-    u8g2.print(maxExPres);
-    u8g2.setCursor(100, 10);
-    u8g2.print(F("RPM:"));
-    u8g2.setCursor(100, 20);
-    u8g2.print(sensor.curRPM);
-    u8g2.setCursor(100, 30);
-    u8g2.print(F("TPS:"));
-    u8g2.setCursor(100, 40);
-    u8g2.print(sensor.curTps);
-    u8g2.setCursor(100, 50);
-    u8g2.print(F("ExTemp:"));
-    u8g2.setCursor(100, 60);
-    u8g2.print(sensor.curExTemp);
+    if (boostCtrl)
+    {
+      u8g2.setCursor(0, 50);
+      u8g2.print(F("Boost:"));
+      u8g2.setCursor(0, 60);
+      u8g2.print(sensor.curBoost);
+      u8g2.setCursor(25, 60);
+      u8g2.print(maxBoost);
+    }
+    if (exhaustPresSensor)
+    {
+      u8g2.setCursor(0, 70);
+      u8g2.print(sensor.curExPres);
+      u8g2.setCursor(25, 70);
+      u8g2.print(maxExPres);
+    }
+    if (w124rpm)
+    {
+      u8g2.setCursor(100, 10);
+      u8g2.print(F("RPM:"));
+      u8g2.setCursor(100, 20);
+      u8g2.print(sensor.curRPM);
+    }
+    if (tpsSensor)
+    {
+      u8g2.setCursor(100, 30);
+      u8g2.print(F("TPS:"));
+      u8g2.setCursor(100, 40);
+      u8g2.print(sensor.curTps);
+    }
+    if (exhaustTempSensor)
+    {
+      u8g2.setCursor(100, 50);
+      u8g2.print(F("ExTemp:"));
+      u8g2.setCursor(100, 60);
+      u8g2.print(sensor.curExTemp);
+    }
   }
   else if (page == 2 && infoDisplay == 0)
   {
@@ -237,7 +264,7 @@ void draw(int wantedGear)
     u8g2.print(sensor.curExPres);
     u8g2.setCursor(50, 56);
     u8g2.print(sensor.curPresDiff);
-   /* if (sensor.curBoostLim < 1)
+    /* if (sensor.curBoostLim < 1)
     {
       u8g2.setCursor(10, 56);
       u8g2.print(F("LOW TEMP"));
@@ -310,16 +337,15 @@ void draw(int wantedGear)
 
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(20, 28);
-    u8g2.print(speedoRPM);
+  //  u8g2.print(speedoRPM);
     u8g2.setCursor(60, 28);
-
   }
   else if (page == 5 && infoDisplay == 0)
   {
     if (tpsConfigMode)
     {
       int tps = analogRead(tpsPin) * 3.0;
-    u8g2.setFont(u8g2_font_5x8_tr);
+      u8g2.setFont(u8g2_font_5x8_tr);
       u8g2.setCursor(20, 28);
       u8g2.print("Don't press throttle");
       u8g2.setCursor(60, 28);
@@ -342,7 +368,7 @@ void draw(int wantedGear)
         tpsInitPhase1 = true;
       }
       int tps = analogRead(tpsPin) * 3.0;
-    u8g2.setFont(u8g2_font_5x8_tr);
+      u8g2.setFont(u8g2_font_5x8_tr);
       u8g2.setCursor(20, 28);
       u8g2.print("Press throttle all the way");
       u8g2.setCursor(60, 28);
@@ -359,12 +385,12 @@ void draw(int wantedGear)
   {
     if (tpsConfigMode)
     {
-          if (!tpsInitPhase2)
+      if (!tpsInitPhase2)
       {
         tpsInit(1);
         tpsInitPhase2 = true;
       }
-    u8g2.setFont(u8g2_font_5x8_tr);
+      u8g2.setFont(u8g2_font_5x8_tr);
       u8g2.setCursor(20, 28);
       u8g2.print("TPS reset done");
       u8g2.setCursor(60, 28);
@@ -427,13 +453,13 @@ void rpmMeterUpdate()
 void updateSpeedo()
 {
   struct SensorVals sensor = readSensors();
-  pidSpeedo = double(sensor.curSpeed) * 0.70;
-    pidSpeedoLim = double(speedoRPM) / 6;
-   // speedoPID.setBangBang(1);
-    speedoPID.setTimeStep(200);
-    speedoPID.run();
+ /* pidSpeedo = double(sensor.curSpeed) * 0.70;
+  pidSpeedoLim = double(speedoRPM) / 6;
+  // speedoPID.setBangBang(1);
+  speedoPID.setTimeStep(200);
+  speedoPID.run();
   //int speedPWM = map(sensor.curSpeed, 0, 255, 0, 255);
-  analogWrite(speedoCtrl, speedoPWM);
+  analogWrite(speedoCtrl, speedoPWM);*/
 }
 
 // Display update
@@ -442,7 +468,7 @@ void updateDisplay(Task *me)
   u8g2.clearBuffer();
   draw(wantedGear);
   u8g2.sendBuffer();
-  
+
   if (w124rpm)
   {
     rpmMeterUpdate();
@@ -458,7 +484,7 @@ void datalog(Task *me)
   static long counter = 0;
   if (datalogger)
   {
-   struct SensorVals sensor = readSensors();
+    struct SensorVals sensor = readSensors();
 
     if (debugEnabled)
     {
