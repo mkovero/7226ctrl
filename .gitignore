@@ -8,6 +8,7 @@
 .vscode
 ehthumbs.db
 Thumbs.db
+c_cpp_properties.json
 
 # Dataviz-related
 node_modules
