@@ -2,8 +2,8 @@
 
 struct SensorVals
 {
-    int curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, fuelUsed, fuelUsedAvg, curLambda;
-    byte curTps, curLoad, curSpeed;
+    int curSpeed, curOilTemp, curExTemp, curBoost, curExPres, curAtfTemp, curRPM, curBoostLim, curEvalGear, curBattery, fuelUsed, fuelUsedAvg, curLambda;
+    byte curTps, curLoad;
     float curSlip, curRatio, curPresDiff;
 };
 
@@ -39,4 +39,4 @@ extern boolean drive;
 extern boolean diffSpeed;
 extern boolean rpmSpeed;
 extern boolean batteryMonitor, exhaustPresSensor, carRunning;
-extern int evalGearVal;
+extern int evalGearVal, speedoRPM;

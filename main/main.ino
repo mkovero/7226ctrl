@@ -40,7 +40,7 @@
 #include <AutoPID.h>
 
 // "Protothreading", we have time slots for different functions to be run.
-//Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
+Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
 Task pollData(33, datalog);               // 200ms to update datalogging
 Task pollStick(100, pollstick);           // 100ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
@@ -82,7 +82,7 @@ void setup()
     }
   }
 
-  U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 17, 5);
+U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
   u8g2.begin();
 
   // Solenoid outputs
@@ -125,9 +125,9 @@ void setup()
   *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 #else*/
-  // pinMode(fuelInPin, INPUT);  // Fuel flow meter in
+   pinMode(fuelInPin, INPUT);  // Fuel flow meter in
   // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
-  // *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //#endif
 
@@ -189,7 +189,7 @@ void setup()
   }
 
   // initialize timers
- // SoftTimer.add(&pollDisplay);
+  SoftTimer.add(&pollDisplay);
   SoftTimer.add(&pollData);
   SoftTimer.add(&pollStick);
   SoftTimer.add(&pollGear);

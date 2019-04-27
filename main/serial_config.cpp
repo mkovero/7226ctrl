@@ -312,14 +312,16 @@ void setFeatures(int asset, int value)
     lastActiveConfig = millis();
     if (asset > 0 && asset < 40)
     {
+        int assetLocation = asset * 10;
         if (debugEnabled)
         {
             Serial.print("Setting feature: ");
+            Serial.print(assetLocation);
+            Serial.print(":");
             Serial.print(asset);
             Serial.print(":");
             Serial.println(value);
         }
-        int assetLocation = asset * 10;
         EEPROM.put(assetLocation, value);
     }
 
@@ -406,14 +408,16 @@ void setConfigFloat(int asset, float value)
 
     if (asset > 49 && asset < 70)
     {
+        int assetLocation = asset * 10;
         if (debugEnabled)
         {
             Serial.print("Setting configF: ");
+            Serial.print(assetLocation);
+            Serial.print(":");
             Serial.print(asset);
             Serial.print(":");
             Serial.println(value);
         }
-        int assetLocation = asset * 10;
         EEPROM.put(assetLocation, value);
     }
 
@@ -440,14 +444,16 @@ void setUpGear(int asset, int value)
 
     if (asset > 0 && asset < 6)
     {
+        int assetLocation = asset * 99;
         if (debugEnabled)
         {
             Serial.print("Setting upGear: ");
+            Serial.print(assetLocation);
+            Serial.print(":");
             Serial.print(asset);
             Serial.print(":");
             Serial.println(value);
         }
-        int assetLocation = asset * 99;
         EEPROM.put(assetLocation, value);
     }
 
@@ -478,14 +484,16 @@ void setDownGear(int asset, int value)
 
     if (asset > 0 && asset < 6)
     {
+        int assetLocation = asset * 97;
         if (debugEnabled)
         {
             Serial.print("Setting downGear: ");
+            Serial.print(assetLocation);
+            Serial.print(":");
             Serial.print(asset);
             Serial.print(":");
             Serial.println(value);
         }
-        int assetLocation = asset * 97;
         EEPROM.put(assetLocation, value);
     }
 
@@ -543,14 +551,16 @@ void setConfig(int asset, int value)
 
     if (asset > 49 && asset < 70)
     {
+        int assetLocation = asset * 10;
         if (debugEnabled)
         {
             Serial.print("Setting config: ");
+            Serial.print(assetLocation);
+            Serial.print(":");
             Serial.print(asset);
             Serial.print(":");
             Serial.println(value);
         }
-        int assetLocation = asset * 10;
         EEPROM.put(assetLocation, value);
     }
 

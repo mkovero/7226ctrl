@@ -430,7 +430,18 @@ void decideGear(Task *me)
 
   // Determine speed related downshift and upshift here.
   int autoGear = readMap(gearMap, sensor.curTps, sensor.curSpeed);
-
+  if (stickCtrl && !fullAuto && wantedGear < 6) {
+    if (wantedGear > gear) {
+      newGear = moreGear;
+      shiftPending = true;
+      gearchangeUp(newGear);
+      
+    } else if (wantedGear < gear) {
+      newGear = lessGear;
+      shiftPending = true;
+      gearchangeDown(newGear);
+    }
+  }
   if (!shiftBlocker && !shiftPending && !speedFault && wantedGear < 6 && millis() - lastShiftPoint > config.nextShiftDelay)
   {
     if (autoGear > gear && fullAuto && sensor.curSpeed > 10)

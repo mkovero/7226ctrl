@@ -18,8 +18,8 @@
 #define mpc 38 // red <-> brown/pink // DOUT5 // FMT3
 #define spc 37 // red <-> brown/yellow // DOUT4 // FMT3
 #define tcc 29 // pink <-> brown/yellow/white // DOUT6
-#define speedoCtrl 8 // ex 7, blue <-> blue/green // DOUT7, 
-#define rpmMeter 30 // FMT2 missing // DOUT10
+#define speedoCtrl 30 // ex 7, blue <-> blue/green // DOUT7, 
+#define rpmMeter 8 // FMT2 missing // DOUT10
 #define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8, 3?
 #define fuelPumpCtrl 2 // missing // DOUT9, 13?
 #define hornPin 12 // Horn
@@ -44,6 +44,7 @@
 #define fuelInPin 31 // ex. 23 <-> NC // DIN6
 #define fuelOutPin 32 // <-> NC // DIN7
 #endif*/
+#define fuelInPin 32
 
 #define exhaustPresPin A9 // A12
 #define exhaustTempPin 12

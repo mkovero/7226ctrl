@@ -74,48 +74,55 @@ void pollstick(Task *me)
   {
     wantedGear = 5;
     garageShiftMove = false; // these should not be necessary after wantedGear <5, but don't want to risk this keeping y5 alive for some reason.
+
   }
   if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH)
   {
     wantedGear = 4;
     garageShiftMove = false;
+
   }
   if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW)
   {
     wantedGear = 3;
     garageShiftMove = false;
+ 
+
   }
   if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW)
   {
     wantedGear = 2;
     garageShiftMove = false;
+
+
   }
   if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH)
   {
     wantedGear = 1;
     garageShiftMove = false;
+
   }
 
   if (autoState == HIGH)
   {
-    if (!fullAuto)
+    if (!stickCtrl)
     {
       if (debugEnabled)
       {
-        Serial.println(F("pollstick: fullAuto on "));
+        Serial.println(F("pollstick: stickCtrl on "));
       }
-      fullAuto = true;
+      stickCtrl = true;
     }
   }
   else
   {
-    if (fullAuto)
+    if (stickCtrl)
     {
       if (debugEnabled)
       {
-        Serial.println(F("pollstick: fullAuto off "));
+        Serial.println(F("pollstick: stickCtrl off "));
       }
-      fullAuto = false;
+      stickCtrl = false;
     }
   }
 }
@@ -123,40 +130,43 @@ void pollstick(Task *me)
 // For manual microswitch control, gear up
 void gearUp()
 {
-  if (wantedGear < 6 && !fullAuto && !stickCtrl && gear < 5)
+  if (wantedGear < 6 && !fullAuto && gear < 5)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker)
     {
+      stickCtrl = false;
       newGear = gear;
       newGear++;
+      shiftPending = true;
+      gearchangeUp(newGear);
     }
 
     if (debugEnabled)
     {
       Serial.println(F("gearup: Gear up requested"));
     }
-    shiftPending = true;
-    gearchangeUp(newGear);
   }
 }
 
 // For manual microswitch control, gear down
 void gearDown()
 {
-  if (wantedGear < 6 && !fullAuto && !stickCtrl && gear > 1)
+  if (wantedGear < 6 && !fullAuto && gear > 1)
   { // Do nothing if we're on N/R/P
     if (!shiftBlocker)
     {
+      stickCtrl = false;
       newGear = gear;
       newGear--;
+      shiftPending = true;
+      gearchangeDown(newGear);
     }
 
     if (debugEnabled)
     {
       Serial.println(F("gearup: Gear down requested"));
     }
-    shiftPending = true;
-    gearchangeDown(newGear);
+
   }
 }
 
@@ -591,7 +601,6 @@ void radioControl()
     if (readData == 100 && !shiftPending && gear < 5)
     {
       lastShift = millis();
-      shiftPending = true;
       gearUp();
       readData = 0;
     }
@@ -603,7 +612,6 @@ void radioControl()
     else if (readData == 200 && !shiftPending && gear > 1)
     {
       lastShift = millis();
-      shiftPending = true;
       gearDown();
       readData = 0;
     }
@@ -628,11 +636,11 @@ void radioControl()
     }
     else if (readData == 201)
     {
-     /* tpsConfigMode = false;*/
-     if (boostOverride > 0) {
+      //tpsConfigMode = false;
+    if (boostOverride > 0) {
        boostOverride = boostOverride - 50;
        infoBoost = false;
-     }
+    }
     }
     else if (readData == 150)
     {

@@ -10,6 +10,13 @@
 #include "include/maps.h"
 #include "include/input.h"
 #include <SoftTimer.h>
+#include <AutoPID.h>
+const double speedoKp = 1; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
+double speedoKi = .0001;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
+const double speedoKd = 0; //100, 1 Pid Derivative Gain.
+double pidSpeedo, speedoPWM, pidSpeedoLim;
+
+AutoPID speedoPID(&pidSpeedoLim, &pidSpeedo, &speedoPWM, 0, 255, speedoKp, speedoKi, speedoKd);
 
 U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
 // 9 moves to A10/
@@ -76,10 +83,18 @@ void draw(int wantedGear)
     else if (infoDisplay == 2)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
+      if (boostLimit) {
       u8g2.setCursor(10, 40);
       u8g2.print(F("boostLimit"));
       u8g2.setCursor(10, 60);
       u8g2.print(boostOverride);
+      } else {
+              u8g2.setCursor(10, 40);
+      u8g2.print(F("boostCtrl"));
+      u8g2.setCursor(10, 60);
+      u8g2.print("off");
+      }
+      
     }
     else if (infoDisplay == 3)
     {
@@ -284,18 +299,18 @@ void draw(int wantedGear)
     u8g2.setCursor(100, 30);
     u8g2.print(F("RGear:"));
     u8g2.setCursor(100, 40);
-    u8g2.print(evalGearVal);
+    u8g2.print(config.rearDiffTeeth);
     u8g2.setCursor(100, 50);
     u8g2.print(F("Ratio;"));
     u8g2.setCursor(100, 60);
-    u8g2.print(sensor.curRatio);
+    u8g2.print(config.diffRatio);
   }
   else if (page == 4 && infoDisplay == 0)
   {
 
     u8g2.setFont(u8g2_font_fub14_tf);
     u8g2.setCursor(20, 28);
-    u8g2.print(vehicleSpeedRevs);
+    u8g2.print(speedoRPM);
     u8g2.setCursor(60, 28);
 
   }
@@ -412,8 +427,13 @@ void rpmMeterUpdate()
 void updateSpeedo()
 {
   struct SensorVals sensor = readSensors();
+  pidSpeedo = double(sensor.curSpeed) * 0.70;
+    pidSpeedoLim = double(speedoRPM) / 6;
+   // speedoPID.setBangBang(1);
+    speedoPID.setTimeStep(200);
+    speedoPID.run();
   //int speedPWM = map(sensor.curSpeed, 0, 255, 0, 255);
-  analogWrite(speedoCtrl, sensor.curSpeed);
+  analogWrite(speedoCtrl, speedoPWM);
 }
 
 // Display update
