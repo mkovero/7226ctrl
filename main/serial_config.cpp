@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include "include/config.h"
+#include "include/sensors.h"
 #include "include/serial_config.h"
 
 #define INPUT_SIZE 256
 long serialTimeout = 120000;
 long lastActiveConfig;
-boolean configMode, configSet, featureSet, upGear, downGear = false;
+boolean configMode, configSet, featureSet, upGear, downGear, tpsInit0, tpsInit1 = false;
 int myVersion = 20190211;
 int asset, value = 0;
 float fvalue = 0.00;
@@ -727,6 +728,8 @@ void serialConfig()
                     downGear = false;
                     upGear = false;
                     configSet = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = false;  
                     featureSet = true;
                 }
                 else if (asset == 50000)
@@ -734,6 +737,8 @@ void serialConfig()
                     downGear = false;
                     upGear = false;
                     featureSet = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = false;  
                     configSet = true;
                 }
                 else if (asset == 440)
@@ -741,6 +746,8 @@ void serialConfig()
                     configSet = false;
                     featureSet = false;
                     downGear = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = false;  
                     upGear = true;
                 }
                 else if (asset == 550)
@@ -748,8 +755,27 @@ void serialConfig()
                     configSet = false;
                     featureSet = false;
                     upGear = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = false;  
                     downGear = true;
                 }
+                else if (asset == 1100) {
+                     configSet = false;
+                    featureSet = false;
+                    upGear = false;
+                    downGear = false;
+                    tpsInit0 = true;  
+                    tpsInit1 = false;                 
+                }
+                else if (asset == 2200) {
+                     configSet = false;
+                    featureSet = false;
+                    upGear = false;
+                    downGear = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = true;                      
+                }
+
                 if (featureSet)
                 {
                     setFeatures(asset, value);
@@ -775,6 +801,12 @@ void serialConfig()
                 if (downGear)
                 {
                     setDownGear(asset, value);
+                }
+                if (tpsInit0) {
+                    tpsInit(0);
+                }
+                if (tpsInit1) {
+                    tpsInit(1);
                 }
             }
             command = strtok(0, ";");

@@ -176,10 +176,10 @@ void pollkeys()
   int gupState = 0;
   int gdownState = 0;
 
-#ifdef MANUAL
+
   gupState = digitalRead(gupSwitch);     // Gear up
   gdownState = digitalRead(gdownSwitch); // Gear down
-#endif
+
 
   if (gdownState == LOW && gupState == HIGH)
   {
