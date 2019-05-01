@@ -124,7 +124,6 @@ U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
   pinMode(gdownSwitch, INPUT); // gear down
   *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-
    pinMode(fuelInPin, INPUT);  // Fuel flow meter in
   // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
   *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
