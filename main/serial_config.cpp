@@ -121,6 +121,7 @@ void initConfig()
         setFeatures(20, 0);
         setFeatures(21, 0);
         setFeatures(22, 0);
+        setFeatures(23, 0);
         setConfig(50, 700);
         setConfig(51, 50);
         setConfig(52, 120);
@@ -153,7 +154,7 @@ void initConfig()
     }
     else
     {
-        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
+        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
         int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66};
         int configF[] = {58, 61, 67};
         int upGears[] = {1,2,3,4};
@@ -305,7 +306,10 @@ void getFeatures()
     Serial.print(int(boostLimit));
     Serial.print(";");
     Serial.print("22:");
-    Serial.println(int(boostLimitShift));
+    Serial.print(int(boostLimitShift));
+    Serial.print(";");
+    Serial.print("23:");
+    Serial.println(int(resistiveStick));
 }
 
 void setFeatures(int asset, int value)
@@ -393,6 +397,9 @@ void setFeatures(int asset, int value)
         break;
     case 22:
         boostLimitShift = boolean(value);
+        break;
+    case 23:
+        resistiveStick = boolean(value);
         break;
     default:
         break;

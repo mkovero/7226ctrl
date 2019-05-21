@@ -30,6 +30,7 @@ extern boolean w124rpm;
 extern boolean exhaustTempSensor;
 extern boolean boostLimit;
 extern boolean boostLimitShift;
+extern boolean resistiveStick;
 extern struct ConfigParam config;
 void initConfig();
 void pollConfigMode();

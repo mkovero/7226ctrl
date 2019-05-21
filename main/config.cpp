@@ -3,7 +3,7 @@
 
 // Environment configuration, THIS IS DEPRECATED, CONFIG NOW RESIDES IN EEPROM AND IS VIRGIN INITIALIZED FROM serial_config.cpp.
 boolean boostLimit,boostLimitShift,stickCtrl,radioEnabled,manual,fullAuto,tccLock,evalGear,tpsSensor,boostSensor,exhaustPresSensor,w124speedo,w124rpm = false;
-boolean fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batteryMonitor, truePower, datalogger, exhaustTempSensor = false;
+boolean fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batteryMonitor, truePower, datalogger, exhaustTempSensor, resistiveStick = false;
 boolean debugEnabled = true;
 
 struct ConfigParam config = {

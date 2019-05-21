@@ -8,6 +8,7 @@
 #include "include/input.h"
 #include "include/config.h"
 #include "include/ui.h"
+#include "include/serial_config.h"
 #include <SoftTimer.h>
 #include <AutoPID.h>
 
@@ -17,8 +18,8 @@ byte wantedGear = 100;
 
 // Pid tuning parameters, for boostCtrl
 const double boostKp = 21; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
-double boostKi = 7;      //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
-const double boostKd = 0; //100, 1 Pid Derivative Gain.
+double boostKi = 7;        //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
+const double boostKd = 0;  //100, 1 Pid Derivative Gain.
 double pidBoost, boostPWM, pidBoostLim;
 int boostOverride = 150;
 
@@ -43,88 +44,107 @@ int lockVal = 0;
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
 void pollstick(Task *me)
 {
-  // Read the stick.
-  int whiteState = digitalRead(whitepin);
-  int blueState = digitalRead(bluepin);
-  int greenState = digitalRead(greenpin);
-  int yellowState = digitalRead(yellowpin);
-  int autoState = digitalRead(autoSwitch);
-  garageShiftMove = true;
-  // Determine position
-  if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
-  {
-    wantedGear = 8;
-    gear = 2; // force reset gear to 2
-    shiftPending = false;
-    shiftBlocker = false;
-    garageShiftMove = false;
-  } // P
-  if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
-  {
-    wantedGear = 7;
-    gear = 2; // force reset gear to 2
-    garageShiftMove = false;
-  } // R
-  if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
-  {
-    wantedGear = 6;
-    garageShiftMove = false;
-  } // N
-  if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW)
-  {
-    wantedGear = 5;
-    garageShiftMove = false; // these should not be necessary after wantedGear <5, but don't want to risk this keeping y5 alive for some reason.
 
-  }
-  if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH)
+  if (!resistiveStick)
   {
-    wantedGear = 4;
-    garageShiftMove = false;
-
-  }
-  if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW)
-  {
-    wantedGear = 3;
-    garageShiftMove = false;
- 
-
-  }
-  if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW)
-  {
-    wantedGear = 2;
-    garageShiftMove = false;
-
-
-  }
-  if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH)
-  {
-    wantedGear = 1;
-    garageShiftMove = false;
-
-  }
-
-  if (autoState == HIGH)
-  {
-    if (!stickCtrl)
+    // Read the stick.
+    int whiteState = digitalRead(whitepin);
+    int blueState = digitalRead(bluepin);
+    int greenState = digitalRead(greenpin);
+    int yellowState = digitalRead(yellowpin);
+    int autoState = digitalRead(autoSwitch);
+    garageShiftMove = true;
+    // Determine position
+    if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
     {
-      if (debugEnabled)
+      wantedGear = 8;
+      gear = 2; // force reset gear to 2
+      shiftPending = false;
+      shiftBlocker = false;
+      garageShiftMove = false;
+    } // P
+    if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
+    {
+      wantedGear = 7;
+      gear = 2; // force reset gear to 2
+      garageShiftMove = false;
+    } // R
+    if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
+    {
+      wantedGear = 6;
+      garageShiftMove = false;
+    } // N
+    if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW)
+    {
+      wantedGear = 5;
+      garageShiftMove = false; // these should not be necessary after wantedGear <5, but don't want to risk this keeping y5 alive for some reason.
+    }
+    if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH)
+    {
+      wantedGear = 4;
+      garageShiftMove = false;
+    }
+    if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW)
+    {
+      wantedGear = 3;
+      garageShiftMove = false;
+    }
+    if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW)
+    {
+      wantedGear = 2;
+      garageShiftMove = false;
+    }
+    if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH)
+    {
+      wantedGear = 1;
+      garageShiftMove = false;
+    }
+
+    if (autoState == HIGH)
+    {
+      if (!stickCtrl)
       {
-        Serial.println(F("pollstick: stickCtrl on "));
+        if (debugEnabled)
+        {
+          Serial.println(F("pollstick: stickCtrl on "));
+        }
+        stickCtrl = true;
       }
-      stickCtrl = true;
+    }
+    else
+    {
+      if (stickCtrl)
+      {
+        if (debugEnabled)
+        {
+          Serial.println(F("pollstick: stickCtrl off "));
+        }
+        stickCtrl = false;
+      }
     }
   }
   else
-  {
-    if (stickCtrl)
     {
-      if (debugEnabled)
-      {
-        Serial.println(F("pollstick: stickCtrl off "));
-      }
-      stickCtrl = false;
+        int blueState = analogRead(bluepin);
+        if (blueState > 450 && blueState < 750) {
+          wantedGear = 8;
+          gear = 2; // force reset gear to 2
+          shiftPending = false;
+          shiftBlocker = false;
+          garageShiftMove = false;
+        } if (blueState > 300 && blueState < 400) {
+          wantedGear = 7;
+          gear = 2; // force reset gear to 2
+          garageShiftMove = false;
+        } if (blueState > 200 && blueState < 300) {
+          wantedGear = 6;
+          garageShiftMove = false;
+        } if (blueState > 100 && blueState < 200) {
+          wantedGear = 5;
+          garageShiftMove = false;
+        }
+
     }
-  }
 }
 
 // For manual microswitch control, gear up
@@ -166,7 +186,6 @@ void gearDown()
     {
       Serial.println(F("gearup: Gear down requested"));
     }
-
   }
 }
 
@@ -176,6 +195,7 @@ void pollkeys()
   int gupState = 0;
   int gdownState = 0;
 
+  if (!resistiveStick) {
   gupState = digitalRead(gupSwitch);     // Gear up
   gdownState = digitalRead(gdownSwitch); // Gear down
 
@@ -196,7 +216,31 @@ void pollkeys()
     }
     gearDown();
   }
+  } else {
+    
+  gupState = analogRead(gupSwitchalt);     // Gear up
+  gdownState = analogRead(gdownSwitch); // Gear down
+
+  if (gupState < 20) {
+        if (debugEnabled)
+    {
+      Serial.println(F("pollkeys: Gear up button"));
+    }
+    gearUp();
+  }
+  if (gdownState < 100) {
+        if (debugEnabled)
+    {
+      Serial.println(F("pollkeys: Gear down button"));
+    }
+    gearDown();
+  }
+ /* Serial.print(gdownState);
+  Serial.print("-");
+  Serial.println(gupState);*/
+  }
 }
+  
 
 void hornOn()
 {
@@ -227,12 +271,11 @@ void boostControl(Task *me)
     struct SensorVals sensor = readSensors();
     pidBoost = double(sensor.curBoost);
     pidBoostLim = double(sensor.curBoostLim);
-  // pidBoost = double(sensor.curTps);
-  // pidBoostLim = double(50);
+    // pidBoost = double(sensor.curTps);
+    // pidBoostLim = double(50);
     boostPID.setBangBang(100, 20);
     boostPID.setTimeStep(50);
     boostPID.run();
-    
 
     // Just a sanity check to make sure PID library is not doing anything stupid.
     if (truePower)
@@ -249,9 +292,8 @@ void boostControl(Task *me)
     {
       if (sensor.curBoost > 150 && ((sensor.curExPres - sensor.curBoost) > 50))
       {
-          analogWrite(boostCtrl, 0);
-          Serial.println("Exhaust pressure 0.5bar greater than boost, overriding boost control for relief. ");
-        
+        analogWrite(boostCtrl, 0);
+        Serial.println("Exhaust pressure 0.5bar greater than boost, overriding boost control for relief. ");
       }
     }
 
@@ -625,20 +667,22 @@ void radioControl()
     }
     else if (readData == 101)
     {
-    /*  tpsConfigMode = true;
+      /*  tpsConfigMode = true;
       tpsInitPhase1, tpsInitPhase2 = false;*/
-    if (boostOverride < 300) {
-      boostOverride = boostOverride + 50;
-      infoBoost = false;
-    }
+      if (boostOverride < 300)
+      {
+        boostOverride = boostOverride + 50;
+        infoBoost = false;
+      }
     }
     else if (readData == 201)
     {
       //tpsConfigMode = false;
-    if (boostOverride > 0) {
-       boostOverride = boostOverride - 50;
-       infoBoost = false;
-    }
+      if (boostOverride > 0)
+      {
+        boostOverride = boostOverride - 50;
+        infoBoost = false;
+      }
     }
     else if (readData == 150)
     {

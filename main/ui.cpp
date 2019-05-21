@@ -13,6 +13,9 @@
 
 #include <SoftTimer.h>
 #include <AutoPID.h>
+
+#define DISPLAYTYPE1 // Can be DISPLAYTYPE2 also.
+
 const double speedoKp = 1; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
 double speedoKi = .0001;   //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double speedoKd = 0; //100, 1 Pid Derivative Gain.
@@ -20,7 +23,14 @@ double pidSpeedo, speedoPWM, pidSpeedoLim;
 
 AutoPID speedoPID(&pidSpeedoLim, &pidSpeedo, &speedoPWM, 0, 255, speedoKp, speedoKi, speedoKd);
 
-U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
+
+
+#ifdef DISPLAYTYPE1
+  U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
+#elif DISPLAYTYPE2
+  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
+#endif
+
 // 9 moves to A10/
 // UI STAGE
 // Control for what user sees and how gearbox is used with
