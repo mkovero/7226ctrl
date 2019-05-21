@@ -39,6 +39,8 @@
 #include <U8g2lib.h>
 #include <AutoPID.h>
 
+#define DISPLAYTYPE1 // Can be DISPLAYTYPE2 also.
+
 // "Protothreading", we have time slots for different functions to be run.
 Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
 Task pollData(33, datalog);               // 200ms to update datalogging
@@ -82,7 +84,11 @@ void setup()
     }
   }
 
-U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
+#ifdef DISPLAYTYPE1
+  U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
+#elif DISPLAYTYPE2
+  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
+#endif
   u8g2.begin();
 
   // Solenoid outputs
