@@ -40,7 +40,7 @@
 
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6
 #define gupSwitch 24 // <-> NC // DIN7
-
+#define gupSwitchalt 31
 #define fuelInPin 32
 
 #define exhaustPresPin A12 // A12, A9 used in coupe.

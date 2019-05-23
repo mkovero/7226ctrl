@@ -13,6 +13,7 @@
 
 #include <SoftTimer.h>
 #include <AutoPID.h>
+
 #define DISPLAYTYPE1 // Can be DISPLAYTYPE2 also.
 
 const double speedoKp = 1; //80,21 Pid Proporional Gain. Initial ramp up i.e Spool, Lower if over boost
@@ -27,7 +28,6 @@ AutoPID speedoPID(&pidSpeedoLim, &pidSpeedo, &speedoPWM, 0, 255, speedoKp, speed
 #elif DISPLAYTYPE2
   U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
 #endif
-
 
 // 9 moves to A10/
 // UI STAGE

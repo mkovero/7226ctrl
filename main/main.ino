@@ -53,11 +53,9 @@ Task pollBoostControl(100, boostControl); // 100ms for boost control*/
 //Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
 Task pollSerialWatch(100, serialWatch);
 
-
 #ifdef ECU
 Task pollInjectionControl(100, injectionControl);
 #endif
-
 
 void setup()
 {
@@ -115,7 +113,7 @@ void setup()
   pinMode(rpmPin, INPUT);
   pinMode(batteryPin, INPUT);
 
-    *portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
@@ -125,12 +123,19 @@ void setup()
 
   //For manual control
   pinMode(autoSwitch, INPUT);
+  
+  if (!resistiveStick)
+  {
+     pinMode(gupSwitch, INPUT);   // gear up
+     pinMode(gdownSwitch, INPUT); // gear down
+    *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+    *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  } else {
+      pinMode(gupSwitchalt, INPUT_PULLUP);   // gear up
+      pinMode(gdownSwitch, INPUT_PULLUP); // gear down
+  }
 
-  pinMode(gupSwitch, INPUT);   // gear up
-  pinMode(gdownSwitch, INPUT); // gear down
-  *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-   pinMode(fuelInPin, INPUT);  // Fuel flow meter in
+  pinMode(fuelInPin, INPUT); // Fuel flow meter in
   // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
   *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
@@ -199,7 +204,7 @@ void setup()
   SoftTimer.add(&pollStick);
   SoftTimer.add(&pollGear);
   SoftTimer.add(&pollSensors);
- SoftTimer.add(&pollTrans);
+  SoftTimer.add(&pollTrans);
   SoftTimer.add(&pollFuelControl);
   SoftTimer.add(&pollBoostControl);
   SoftTimer.add(&pollSerialWatch);
