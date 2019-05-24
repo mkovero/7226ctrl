@@ -339,7 +339,8 @@ int oilRead()
     else {
     avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
     }*/
-  if (!shiftBlocker)
+ //   int R2 = 0;
+ if (!shiftBlocker)
 {
  float refRead = analogRead(refPin);
   float tempRead = analogRead(oilPin);
@@ -352,8 +353,8 @@ int oilRead()
   float outVoltage = (buffer)/(refRead+30);
   buffer = (refVoltage/outVoltage) -1;
   
-  int R2 = 4700 * (1/(((ref3V3)/(outVoltage))-1)) - 150;
-   float oilTemp = readTempMapInverted(oilSensorMap, R2);
+  int R2 = 4700 * (1/(((ref3V3)/(outVoltage))-1)) - 70;
+    oilTemp = readTempMapInverted(oilSensorMap, R2);
   
 }
   return oilTemp;
