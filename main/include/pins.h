@@ -21,8 +21,8 @@
 #define speedoCtrl 30 // ex 7, blue <-> blue/green // DOUT7, 
 #define rpmMeter 8 // FMT2 missing // DOUT10
 #define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8, 3?
-#define fuelPumpCtrl 2 // missing // DOUT9, 13?
-#define hornPin 12 // Horn
+#define fuelPumpCtrl 12 // missing // DOUT9, 13?
+#define hornPin 2 // Horn
 // END OUTPUT PINS
 #define injectionPin 36 // should be 16.
 

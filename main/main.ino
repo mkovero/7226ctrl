@@ -59,7 +59,7 @@ Task pollInjectionControl(100, injectionControl);
 
 void setup()
 {
-  //delay(5000);
+  delay(5000);
   initConfig();
 
   // MPC and SPC should have frequency of 1000hz
@@ -116,6 +116,7 @@ U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
   //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
   //For manual control
   pinMode(autoSwitch, INPUT);
