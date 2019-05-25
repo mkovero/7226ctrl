@@ -12,14 +12,14 @@
 #define TEENSY // we're running this on TEENSY
 
 
-#define y3 16 // FMT3, orange<->brown/red // DOUT3, I need to use 16 as testing instead of 36.
+#define y3 36 // FMT3, orange<->brown/red // DOUT3, I need to use 16 as testing instead of 36.
 #define y4 35 // orange <-> brown/grey // DOUT2
-#define y5 7 //ex 14, orange <-> brown/black // DOUT1
+#define y5 8 //ex 14, orange <-> brown/black // DOUT1
 #define mpc 38 // red <-> brown/pink // DOUT5 // FMT3
 #define spc 37 // red <-> brown/yellow // DOUT4 // FMT3
 #define tcc 29 // pink <-> brown/yellow/white // DOUT6
-#define speedoCtrl 30 // ex 7, blue <-> blue/green // DOUT7, 
-#define rpmMeter 8 // FMT2 missing // DOUT10
+#define speedoCtrl 7 // ex 7, blue <-> blue/green // DOUT7, 
+#define rpmMeter 30 // FMT2 missing // DOUT10
 #define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8, 3?
 #define fuelPumpCtrl 12 // missing // DOUT9, 13?
 #define hornPin 2 // Horn
@@ -37,16 +37,13 @@
 // Switches
 #define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey // DIN5
 
-/*#ifdef MANUAL
+
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6
 #define gupSwitch 24 // <-> NC // DIN7
-#else
-#define fuelInPin 31 // ex. 23 <-> NC // DIN6
-#define fuelOutPin 32 // <-> NC // DIN7
-#endif*/
+#define gupSwitchalt 31
 #define fuelInPin 32
 
-#define exhaustPresPin A9 // A12
+#define exhaustPresPin A12 // A12, A9 used in coupe.
 #define exhaustTempPin 12
 
 // Car sensor input pins, black

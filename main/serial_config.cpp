@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include "include/config.h"
+#include "include/sensors.h"
 #include "include/serial_config.h"
 
 #define INPUT_SIZE 256
 long serialTimeout = 120000;
 long lastActiveConfig;
-boolean configMode, configSet, featureSet, upGear, downGear = false;
+boolean configMode, configSet, featureSet, upGear, downGear, tpsInit0, tpsInit1 = false;
 int myVersion = 20190211;
 int asset, value = 0;
 float fvalue = 0.00;
@@ -120,6 +121,7 @@ void initConfig()
         setFeatures(20, 0);
         setFeatures(21, 0);
         setFeatures(22, 0);
+        setFeatures(23, 0);
         setConfig(50, 700);
         setConfig(51, 50);
         setConfig(52, 120);
@@ -152,7 +154,7 @@ void initConfig()
     }
     else
     {
-        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
+        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
         int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66};
         int configF[] = {58, 61, 67};
         int upGears[] = {1,2,3,4};
@@ -160,7 +162,7 @@ void initConfig()
 
         for (int i = 0; i < sizeof features / sizeof features[0]; i++)
         {
-            asset = features[i] * 10;
+            asset = features[i] * 11;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setFeatures(features[i], featureVal);
@@ -181,14 +183,14 @@ void initConfig()
         }
         for (int i = 0; i < sizeof upGears / sizeof upGears[0]; i++)
         {
-            asset = upGears[i] * 99;
+            asset = upGears[i] * 199;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setUpGear(upGears[i], featureVal);
         }
         for (int i = 0; i < sizeof downGears / sizeof downGears[0]; i++)
         {
-            asset = downGears[i] * 97;
+            asset = downGears[i] * 197;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setDownGear(downGears[i], featureVal);
@@ -304,7 +306,10 @@ void getFeatures()
     Serial.print(int(boostLimit));
     Serial.print(";");
     Serial.print("22:");
-    Serial.println(int(boostLimitShift));
+    Serial.print(int(boostLimitShift));
+    Serial.print(";");
+    Serial.print("23:");
+    Serial.println(int(resistiveStick));
 }
 
 void setFeatures(int asset, int value)
@@ -312,7 +317,7 @@ void setFeatures(int asset, int value)
     lastActiveConfig = millis();
     if (asset > 0 && asset < 40)
     {
-        int assetLocation = asset * 10;
+        int assetLocation = asset * 11;
         if (debugEnabled)
         {
             Serial.print("Setting feature: ");
@@ -322,7 +327,7 @@ void setFeatures(int asset, int value)
             Serial.print(":");
             Serial.println(value);
         }
-        EEPROM.put(assetLocation, value);
+        EEPROM.write(assetLocation, value);
     }
 
     switch (asset)
@@ -393,6 +398,9 @@ void setFeatures(int asset, int value)
     case 22:
         boostLimitShift = boolean(value);
         break;
+    case 23:
+        resistiveStick = boolean(value);
+        break;
     default:
         break;
     }
@@ -444,7 +452,7 @@ void setUpGear(int asset, int value)
 
     if (asset > 0 && asset < 6)
     {
-        int assetLocation = asset * 99;
+        int assetLocation = asset * 199;
         if (debugEnabled)
         {
             Serial.print("Setting upGear: ");
@@ -484,7 +492,7 @@ void setDownGear(int asset, int value)
 
     if (asset > 0 && asset < 6)
     {
-        int assetLocation = asset * 97;
+        int assetLocation = asset * 197;
         if (debugEnabled)
         {
             Serial.print("Setting downGear: ");
@@ -727,6 +735,8 @@ void serialConfig()
                     downGear = false;
                     upGear = false;
                     configSet = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = false;  
                     featureSet = true;
                 }
                 else if (asset == 50000)
@@ -734,6 +744,8 @@ void serialConfig()
                     downGear = false;
                     upGear = false;
                     featureSet = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = false;  
                     configSet = true;
                 }
                 else if (asset == 440)
@@ -741,6 +753,8 @@ void serialConfig()
                     configSet = false;
                     featureSet = false;
                     downGear = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = false;  
                     upGear = true;
                 }
                 else if (asset == 550)
@@ -748,8 +762,27 @@ void serialConfig()
                     configSet = false;
                     featureSet = false;
                     upGear = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = false;  
                     downGear = true;
                 }
+                else if (asset == 1100) {
+                     configSet = false;
+                    featureSet = false;
+                    upGear = false;
+                    downGear = false;
+                    tpsInit0 = true;  
+                    tpsInit1 = false;                 
+                }
+                else if (asset == 2200) {
+                     configSet = false;
+                    featureSet = false;
+                    upGear = false;
+                    downGear = false;
+                    tpsInit0 = false;  
+                    tpsInit1 = true;                      
+                }
+
                 if (featureSet)
                 {
                     setFeatures(asset, value);
@@ -775,6 +808,12 @@ void serialConfig()
                 if (downGear)
                 {
                     setDownGear(asset, value);
+                }
+                if (tpsInit0) {
+                    tpsInit(0);
+                }
+                if (tpsInit1) {
+                    tpsInit(1);
                 }
             }
             command = strtok(0, ";");
