@@ -20,6 +20,7 @@ const double speedoKp = 1; //80,21 Pid Proporional Gain. Initial ramp up i.e Spo
 double speedoKi = .0001;   //40,7 Pid Integral Gain. Overall change while near Target Boost, higher value means less change, possible boost spikes
 const double speedoKd = 0; //100, 1 Pid Derivative Gain.
 double pidSpeedo, speedoPWM, pidSpeedoLim;
+int updateCount;
 
 AutoPID speedoPID(&pidSpeedoLim, &pidSpeedo, &speedoPWM, 0, 255, speedoKp, speedoKi, speedoKd);
 
@@ -473,6 +474,12 @@ void updateSpeedo()
 // Display update
 void updateDisplay(Task *me)
 {
+  updateCount++;
+  if (updateCount > 100) {
+    u8g2.initDisplay();
+    updateCount = 0;
+  }
+
   u8g2.clearBuffer();
   draw(wantedGear);
   u8g2.sendBuffer();
