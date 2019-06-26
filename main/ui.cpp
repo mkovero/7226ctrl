@@ -475,7 +475,7 @@ void updateSpeedo()
 void updateDisplay(Task *me)
 {
   updateCount++;
-  if (updateCount > 100) {
+  if (updateCount > 10) {
     u8g2.initDisplay();
     updateCount = 0;
   }
