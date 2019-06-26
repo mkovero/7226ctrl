@@ -69,7 +69,7 @@ void pollsensors(Task *me)
   const int n2PulsesPerRev = 60;
   const int n3PulsesPerRev = 60;
 
-  if (millis() - lastSensorTime >= 100)
+  if (millis() - lastSensorTime >= 1000)
   {
     detachInterrupt(n2pin); // Detach interrupts for calculation
     detachInterrupt(n3pin);
