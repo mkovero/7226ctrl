@@ -59,7 +59,7 @@ Task pollInjectionControl(100, injectionControl);
 
 void setup()
 {
-  delay(1000);
+  delay(5000);
   initConfig();
 
   // MPC and SPC should have frequency of 1000hz
@@ -120,6 +120,7 @@ void setup()
   //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
   //For manual control
   pinMode(autoSwitch, INPUT);

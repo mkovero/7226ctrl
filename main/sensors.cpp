@@ -387,7 +387,10 @@ int boostRead()
     boostSensorFilter.input(boostValue);
     boostValue = boostSensorFilter.output();
   }
-
+  if (boostValue < 0) { 
+    boostValue = 0;
+  }
+  
   return boostValue;
 }
 
@@ -404,7 +407,10 @@ int exhaustPressureRead()
     exhaustPressureFilter.input(exhaustPresVal);
     exhaustPresVal = exhaustPressureFilter.output();
   }
-
+  if (exhaustPresVal < 0) {
+    exhaustPresVal = 0;
+  }
+  
   return exhaustPresVal;
 }
 

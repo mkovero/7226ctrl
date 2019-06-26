@@ -390,7 +390,7 @@ void setFeatures(int asset, int value)
         datalogger = boolean(value);
         break;
     case 20:
-        exhaustTempSensor = boolean(value);
+        exhaustTempSensor = true;
         break;
     case 21:
         boostLimit = boolean(value);
