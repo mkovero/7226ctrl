@@ -109,6 +109,7 @@ void pollstick(Task *me)
           Serial.println(F("pollstick: stickCtrl on "));
         }
         stickCtrl = true;
+        fullAuto = true;
       }
     }
     else
@@ -120,6 +121,7 @@ void pollstick(Task *me)
           Serial.println(F("pollstick: stickCtrl off "));
         }
         stickCtrl = false;
+        fullAuto = false;
       }
     }
   }
