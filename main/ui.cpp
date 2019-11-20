@@ -474,11 +474,11 @@ void updateSpeedo()
 // Display update
 void updateDisplay(Task *me)
 {
-  updateCount++;
+ /* updateCount++;
   if (updateCount > 10) {
     u8g2.initDisplay();
     updateCount = 0;
-  }
+  }*/
 
   u8g2.clearBuffer();
   draw(wantedGear);
