@@ -315,7 +315,7 @@ void gearchangeUp(int newGear)
   {
     Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
   }
-  else if (debugEnabled && sensor.curRPM > config.lowRPMshiftLimit)
+  else if (debugEnabled && sensor.curRPM < config.lowRPMshiftLimit)
   {
     Serial.print(F("[gearChangeUp->gearChangeUp] Blocking change, low rpm limit hit with RPM:"));
     Serial.print(sensor.curRPM);
