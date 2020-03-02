@@ -139,6 +139,8 @@ void initConfig()
         setConfig(64, 5);
         setConfig(65, 6);
         setConfig(66, 2);
+        setConfig(68, 5000);
+        setConfig(69, 1000);
         setConfigFloat(67, 1.00);
         setUpGear(1, 35);
         setUpGear(2, 72);
@@ -155,10 +157,10 @@ void initConfig()
     else
     {
         int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
-        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66};
+        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 68, 69};
         int configF[] = {58, 61, 67};
-        int upGears[] = {1,2,3,4};
-        int downGears[] = {2,3,4,5};
+        int upGears[] = {1, 2, 3, 4};
+        int downGears[] = {2, 3, 4, 5};
 
         for (int i = 0; i < sizeof features / sizeof features[0]; i++)
         {
@@ -528,7 +530,7 @@ void setDownGear(int asset, int value)
 
 void getGears()
 {
-      Serial.print("440:440;");
+    Serial.print("440:440;");
     Serial.print("1:");
     Serial.print(config.oneTotwo);
     Serial.print(";");
@@ -619,6 +621,12 @@ void setConfig(int asset, int value)
     case 66:
         config.tpsAgre = value;
         break;
+    case 68:
+        config.highRPMshiftLimit = value;
+        break;
+    case 69:
+        config.lowRPMshiftLimit = value;
+        break;
     default:
         break;
     }
@@ -684,7 +692,13 @@ void getConfig()
     Serial.print(config.tpsAgre);
     Serial.print(";");
     Serial.print("67:");
-    Serial.println(config.transSloppy);
+    Serial.print(config.transSloppy);
+    Serial.print(";");
+    Serial.print("68:");
+    Serial.print(config.highRPMshiftLimit);
+    Serial.print(";");
+    Serial.print("69:");
+    Serial.println(config.lowRPMshiftLimit);
 }
 
 void serialConfig()
@@ -735,8 +749,8 @@ void serialConfig()
                     downGear = false;
                     upGear = false;
                     configSet = false;
-                    tpsInit0 = false;  
-                    tpsInit1 = false;  
+                    tpsInit0 = false;
+                    tpsInit1 = false;
                     featureSet = true;
                 }
                 else if (asset == 50000)
@@ -744,8 +758,8 @@ void serialConfig()
                     downGear = false;
                     upGear = false;
                     featureSet = false;
-                    tpsInit0 = false;  
-                    tpsInit1 = false;  
+                    tpsInit0 = false;
+                    tpsInit1 = false;
                     configSet = true;
                 }
                 else if (asset == 440)
@@ -753,8 +767,8 @@ void serialConfig()
                     configSet = false;
                     featureSet = false;
                     downGear = false;
-                    tpsInit0 = false;  
-                    tpsInit1 = false;  
+                    tpsInit0 = false;
+                    tpsInit1 = false;
                     upGear = true;
                 }
                 else if (asset == 550)
@@ -762,25 +776,27 @@ void serialConfig()
                     configSet = false;
                     featureSet = false;
                     upGear = false;
-                    tpsInit0 = false;  
-                    tpsInit1 = false;  
+                    tpsInit0 = false;
+                    tpsInit1 = false;
                     downGear = true;
                 }
-                else if (asset == 1100) {
-                     configSet = false;
+                else if (asset == 1100)
+                {
+                    configSet = false;
                     featureSet = false;
                     upGear = false;
                     downGear = false;
-                    tpsInit0 = true;  
-                    tpsInit1 = false;                 
+                    tpsInit0 = true;
+                    tpsInit1 = false;
                 }
-                else if (asset == 2200) {
-                     configSet = false;
+                else if (asset == 2200)
+                {
+                    configSet = false;
                     featureSet = false;
                     upGear = false;
                     downGear = false;
-                    tpsInit0 = false;  
-                    tpsInit1 = true;                      
+                    tpsInit0 = false;
+                    tpsInit1 = true;
                 }
 
                 if (featureSet)
@@ -809,10 +825,12 @@ void serialConfig()
                 {
                     setDownGear(asset, value);
                 }
-                if (tpsInit0) {
+                if (tpsInit0)
+                {
                     tpsInit(0);
                 }
-                if (tpsInit1) {
+                if (tpsInit1)
+                {
                     tpsInit(1);
                 }
             }
