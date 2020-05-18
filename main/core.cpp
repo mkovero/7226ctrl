@@ -216,7 +216,7 @@ void switchGearStop()
 void gearchangeUp(int newGear)
 {
   struct SensorVals sensor = readSensors();
-  if (shiftBlocker == false && shiftPending == true && sensor.curRPM > config.lowRPMshiftLimit)
+  if (shiftBlocker == false && shiftPending == true && sensor.curRPM >= config.lowRPMshiftLimit)
   {
     pendingGear = newGear;
     shiftLoad = sensor.curLoad;
@@ -311,16 +311,27 @@ void gearchangeUp(int newGear)
       break;
     }
   }
-  else if (debugEnabled)
+  else
   {
-    Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
-  }
-  else if (debugEnabled && sensor.curRPM < config.lowRPMshiftLimit)
-  {
-    Serial.print(F("[gearChangeUp->gearChangeUp] Blocking change, low rpm limit hit with RPM:"));
-    Serial.print(sensor.curRPM);
-    Serial.print(F(" and limit:"));
-    Serial.println(config.lowRPMshiftLimit);
+    if (debugEnabled)
+    {
+      Serial.print(F("[gearChangeUp->gearChangeUp] Blocking change "));
+      Serial.print(shiftBlocker);
+      Serial.print("/");
+      Serial.println(shiftPending);
+    }
+    if (debugEnabled && sensor.curRPM < config.lowRPMshiftLimit)
+    {
+
+      Serial.print(F("[gearChangeUp->gearChangeUp] low rpm limit hit with RPM:"));
+      Serial.print(sensor.curRPM);
+      Serial.print(F(" and limit:"));
+      Serial.println(config.lowRPMshiftLimit);
+      if (!shiftBlocker)
+      {
+        shiftPending = false;
+      }
+    }
   }
 }
 
@@ -422,16 +433,27 @@ void gearchangeDown(int newGear)
       break;
     }
   }
-  else if (debugEnabled)
+  else
   {
-    Serial.println(F("[gearChangeUp->gearChangeUp] Blocking change"));
-  }
-  else if (debugEnabled && sensor.curRPM > config.highRPMshiftLimit)
-  {
-    Serial.print(F("[gearChangeUp->gearChangeUp] Blocking change, high rpm limit hit with RPM:"));
-    Serial.print(sensor.curRPM);
-    Serial.print(F(" and limit:"));
-    Serial.println(config.highRPMshiftLimit);
+    if (debugEnabled)
+    {
+      Serial.print(F("[gearChangeDown->gearChangeDown] Blocking change "));
+      Serial.print(shiftBlocker);
+      Serial.print("/");
+      Serial.println(shiftPending);
+    }
+    if (debugEnabled && sensor.curRPM >= config.highRPMshiftLimit)
+    {
+
+      Serial.print(F("[gearChangeDown->gearChangeDown] high rpm limit hit with RPM:"));
+      Serial.print(sensor.curRPM);
+      Serial.print(F(" and limit:"));
+      Serial.println(config.highRPMshiftLimit);
+      if (!shiftBlocker)
+      {
+        shiftPending = false;
+      }
+    }
   }
 }
 

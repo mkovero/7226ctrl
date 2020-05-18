@@ -140,7 +140,7 @@ void initConfig()
         setConfig(65, 6);
         setConfig(66, 2);
         setConfig(68, 5000);
-        setConfig(69, 1000);
+        setConfig(69, 0);
         setConfigFloat(67, 1.00);
         setUpGear(1, 35);
         setUpGear(2, 72);

@@ -126,27 +126,33 @@ void pollstick(Task *me)
     }
   }
   else
+  {
+    int blueState = analogRead(bluepin);
+    if (blueState > 450 && blueState < 750)
     {
-        int blueState = analogRead(bluepin);
-        if (blueState > 450 && blueState < 750) {
-          wantedGear = 8;
-          gear = 2; // force reset gear to 2
-          shiftPending = false;
-          shiftBlocker = false;
-          garageShiftMove = false;
-        } if (blueState > 300 && blueState < 400) {
-          wantedGear = 7;
-          gear = 2; // force reset gear to 2
-          garageShiftMove = false;
-        } if (blueState > 200 && blueState < 300) {
-          wantedGear = 6;
-          garageShiftMove = false;
-        } if (blueState > 100 && blueState < 200) {
-          wantedGear = 5;
-          garageShiftMove = false;
-        }
-
+      wantedGear = 8;
+      gear = 2; // force reset gear to 2
+      shiftPending = false;
+      shiftBlocker = false;
+      garageShiftMove = false;
     }
+    if (blueState > 300 && blueState < 400)
+    {
+      wantedGear = 7;
+      gear = 2; // force reset gear to 2
+      garageShiftMove = false;
+    }
+    if (blueState > 200 && blueState < 300)
+    {
+      wantedGear = 6;
+      garageShiftMove = false;
+    }
+    if (blueState > 100 && blueState < 200)
+    {
+      wantedGear = 5;
+      garageShiftMove = false;
+    }
+  }
 }
 
 // For manual microswitch control, gear up
@@ -186,7 +192,7 @@ void gearDown()
 
     if (debugEnabled)
     {
-      Serial.println(F("gearup: Gear down requested"));
+      Serial.println(F("geardown: Gear down requested"));
     }
   }
 }
@@ -197,52 +203,56 @@ void pollkeys()
   int gupState = 0;
   int gdownState = 0;
 
-  if (!resistiveStick) {
-  gupState = digitalRead(gupSwitch);     // Gear up
-  gdownState = digitalRead(gdownSwitch); // Gear down
-
-  if (gdownState == LOW && gupState == HIGH)
+  if (!resistiveStick)
   {
-    if (debugEnabled)
+    gupState = digitalRead(gupSwitch);     // Gear up
+    gdownState = digitalRead(gdownSwitch); // Gear down
+
+    if (gdownState == LOW && gupState == HIGH)
     {
-      Serial.println(F("pollkeys: Gear up button"));
+      if (debugEnabled)
+      {
+        Serial.println(F("pollkeys: Gear up button"));
+      }
+      gearUp();
     }
-    gearUp();
+    else if (gupState == LOW && gdownState == HIGH)
+    {
+
+      if (debugEnabled)
+      {
+        Serial.println(F("pollkeys: Gear down button"));
+      }
+      gearDown();
+    }
   }
-  else if (gupState == LOW && gdownState == HIGH)
+  else
   {
 
-    if (debugEnabled)
-    {
-      Serial.println(F("pollkeys: Gear down button"));
-    }
-    gearDown();
-  }
-  } else {
-    
-  gupState = analogRead(gupSwitchalt);     // Gear up
-  gdownState = analogRead(gdownSwitch); // Gear down
+    gupState = analogRead(gupSwitchalt);  // Gear up
+    gdownState = analogRead(gdownSwitch); // Gear down
 
-  if (gupState < 20) {
-        if (debugEnabled)
+    if (gupState < 20)
     {
-      Serial.println(F("pollkeys: Gear up button"));
+      if (debugEnabled)
+      {
+        Serial.println(F("pollkeys: Gear up button"));
+      }
+      gearUp();
     }
-    gearUp();
-  }
-  if (gdownState < 100) {
-        if (debugEnabled)
+    if (gdownState < 100)
     {
-      Serial.println(F("pollkeys: Gear down button"));
+      if (debugEnabled)
+      {
+        Serial.println(F("pollkeys: Gear down button"));
+      }
+      gearDown();
     }
-    gearDown();
-  }
- /* Serial.print(gdownState);
+    /* Serial.print(gdownState);
   Serial.print("-");
   Serial.println(gupState);*/
   }
 }
-  
 
 void hornOn()
 {
