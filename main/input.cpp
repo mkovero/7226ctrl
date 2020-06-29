@@ -11,8 +11,17 @@
 #include "include/serial_config.h"
 #include <SoftTimer.h>
 #include <AutoPID.h>
+#include <IFCT.h>
 
+#define cbsize 16
+bool canbus = false;
 byte wantedGear = 100;
+
+if (canbus)
+{
+  Circular_Buffer<uint32_t, cbsize> ids;
+  Circular_Buffer<uint32_t, cbsize, 10> storage;
+}
 
 // INPUT
 
@@ -35,122 +44,220 @@ double pidInject, injectPWM, pidInjectLim;
 //Load PID controller
 AutoPID injectPID(&pidInject, &pidInjectLim, &injectPWM, 0, 255, injectKp, injectKi, injectKd);
 #endif
-
+bool justStarted = true;
 boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase2 = false;
 double garageTime, lastShift, lastInput, hornPressTime;
 int lockVal = 0;
 
+void canSniff(const CAN_message_t &msg)
+{ // global callback
+  uint32_t frame[10] = {msg.id};
+
+  if (!storage.find(frame, 10, 0, 0, 0))
+  {
+    if (storage.size() == storage.capacity())
+    {
+      Serial.print("Buffer full, couldn't add CAN ID to the list!");
+      return;
+    }
+    frame[0] = msg.id;
+    for (uint8_t i = 0; i < 8; i++)
+      frame[i + 1] = msg.buf[i];
+    frame[9] = 1;
+    storage.push_back(frame, 10);
+    ids.push_back(msg.id);
+    ids.sort_ascending();
+  }
+  else
+  {
+    frame[9]++;
+    for (uint8_t i = 0; i < 8; i++)
+      frame[i + 1] = msg.buf[i];
+    storage.replace(frame, 10, 0, 0, 0);
+  }
+
+  if (frame[0] == 560)
+  {
+    if (frame[1] == 8)
+    {
+      wantedGear = 8;
+      gear = 2; // force reset gear to 2
+      shiftPending = false;
+      shiftBlocker = false;
+      garageShiftMove = false;
+      if (debugEnabled)
+      {
+        Serial.println("Park requested via canbus");
+      }
+    }
+    if (frame[1] == 7)
+    {
+      wantedGear = 7;
+      gear = 2; // force reset gear to 2
+      garageShiftMove = false;
+      if (debugEnabled)
+      {
+        Serial.println("Reverse requested via canbus");
+      }
+    }
+    if (frame[1] == 6)
+    {
+      wantedGear = 6;
+      garageShiftMove = false;
+      if (debugEnabled)
+      {
+        Serial.println("Neutral requested via canbus");
+      }
+    }
+    if (frame[1] == 5)
+    {
+      wantedGear = 5;
+      garageShiftMove = false;
+      if (debugEnabled)
+      {
+        Serial.println("D requested via canbus");
+      }
+    }
+    if (frame[1] == 10)
+    {
+      gearDown();
+      if (debugEnabled)
+      {
+        Serial.println("Downshift requested via canbus");
+      }
+    }
+    if (frame[1] == 9)
+    {
+      gearUp();
+      if (debugEnabled)
+      {
+        Serial.println("Upshift requested via canbus");
+      }
+    }
+  }
+}
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
 void pollstick(Task *me)
 {
-
-  if (!resistiveStick)
+  if (justStarted && canbus)
   {
-    // Read the stick.
-    int whiteState = digitalRead(whitepin);
-    int blueState = digitalRead(bluepin);
-    int greenState = digitalRead(greenpin);
-    int yellowState = digitalRead(yellowpin);
-    int autoState = digitalRead(autoSwitch);
-    garageShiftMove = true;
-    // Determine position
-    if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
+    Can0.setBaudRate(500000);
+    Can0.enableFIFO(1);
+    Can0.enableFIFOInterrupt(1);
+    Can0.onReceive(canSniff);
+    Can0.intervalTimer(); // enable queue system and run callback in background.
+    justStarted = false;
+  }
+  if (!canbus)
+  {
+    if (!resistiveStick)
     {
-      wantedGear = 8;
-      gear = 2; // force reset gear to 2
-      shiftPending = false;
-      shiftBlocker = false;
-      garageShiftMove = false;
-    } // P
-    if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
-    {
-      wantedGear = 7;
-      gear = 2; // force reset gear to 2
-      garageShiftMove = false;
-    } // R
-    if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
-    {
-      wantedGear = 6;
-      garageShiftMove = false;
-    } // N
-    if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW)
-    {
-      wantedGear = 5;
-      garageShiftMove = false; // these should not be necessary after wantedGear <5, but don't want to risk this keeping y5 alive for some reason.
-    }
-    if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH)
-    {
-      wantedGear = 4;
-      garageShiftMove = false;
-    }
-    if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW)
-    {
-      wantedGear = 3;
-      garageShiftMove = false;
-    }
-    if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW)
-    {
-      wantedGear = 2;
-      garageShiftMove = false;
-    }
-    if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH)
-    {
-      wantedGear = 1;
-      garageShiftMove = false;
-    }
-
-    if (autoState == HIGH)
-    {
-      if (!stickCtrl)
+      // Read the stick.
+      int whiteState = digitalRead(whitepin);
+      int blueState = digitalRead(bluepin);
+      int greenState = digitalRead(greenpin);
+      int yellowState = digitalRead(yellowpin);
+      int autoState = digitalRead(autoSwitch);
+      garageShiftMove = true;
+      // Determine position
+      if (whiteState == HIGH && blueState == HIGH && greenState == HIGH && yellowState == LOW)
       {
-        if (debugEnabled)
+        wantedGear = 8;
+        gear = 2; // force reset gear to 2
+        shiftPending = false;
+        shiftBlocker = false;
+        garageShiftMove = false;
+      } // P
+      if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
+      {
+        wantedGear = 7;
+        gear = 2; // force reset gear to 2
+        garageShiftMove = false;
+      } // R
+      if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
+      {
+        wantedGear = 6;
+        garageShiftMove = false;
+      } // N
+      if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW)
+      {
+        wantedGear = 5;
+        garageShiftMove = false; // these should not be necessary after wantedGear <5, but don't want to risk this keeping y5 alive for some reason.
+      }
+      if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH)
+      {
+        wantedGear = 4;
+        garageShiftMove = false;
+      }
+      if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW)
+      {
+        wantedGear = 3;
+        garageShiftMove = false;
+      }
+      if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW)
+      {
+        wantedGear = 2;
+        garageShiftMove = false;
+      }
+      if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH)
+      {
+        wantedGear = 1;
+        garageShiftMove = false;
+      }
+
+      if (autoState == HIGH)
+      {
+        if (!stickCtrl)
         {
-          Serial.println(F("pollstick: stickCtrl on "));
+          if (debugEnabled)
+          {
+            Serial.println(F("pollstick: stickCtrl on "));
+          }
+          stickCtrl = true;
+          fullAuto = true;
         }
-        stickCtrl = true;
-        fullAuto = true;
+      }
+      else
+      {
+        if (stickCtrl)
+        {
+          if (debugEnabled)
+          {
+            Serial.println(F("pollstick: stickCtrl off "));
+          }
+          stickCtrl = false;
+          fullAuto = false;
+        }
       }
     }
     else
     {
-      if (stickCtrl)
+      int blueState = analogRead(bluepin);
+      if (blueState > 450 && blueState < 750)
       {
-        if (debugEnabled)
-        {
-          Serial.println(F("pollstick: stickCtrl off "));
-        }
-        stickCtrl = false;
-        fullAuto = false;
+        wantedGear = 8;
+        gear = 2; // force reset gear to 2
+        shiftPending = false;
+        shiftBlocker = false;
+        garageShiftMove = false;
       }
-    }
-  }
-  else
-  {
-    int blueState = analogRead(bluepin);
-    if (blueState > 450 && blueState < 750)
-    {
-      wantedGear = 8;
-      gear = 2; // force reset gear to 2
-      shiftPending = false;
-      shiftBlocker = false;
-      garageShiftMove = false;
-    }
-    if (blueState > 300 && blueState < 400)
-    {
-      wantedGear = 7;
-      gear = 2; // force reset gear to 2
-      garageShiftMove = false;
-    }
-    if (blueState > 200 && blueState < 300)
-    {
-      wantedGear = 6;
-      garageShiftMove = false;
-    }
-    if (blueState > 100 && blueState < 200)
-    {
-      wantedGear = 5;
-      garageShiftMove = false;
+      if (blueState > 300 && blueState < 400)
+      {
+        wantedGear = 7;
+        gear = 2; // force reset gear to 2
+        garageShiftMove = false;
+      }
+      if (blueState > 200 && blueState < 300)
+      {
+        wantedGear = 6;
+        garageShiftMove = false;
+      }
+      if (blueState > 100 && blueState < 200)
+      {
+        wantedGear = 5;
+        garageShiftMove = false;
+      }
     }
   }
 }
@@ -365,7 +472,7 @@ void polltrans(Task *me)
     }
     else
     {
-      shiftDelay = 800;
+      shiftDelay = 1200;
     }
     shiftDuration = millis() - shiftStartTime;
     if (shiftDuration > shiftDelay && shiftDone)
