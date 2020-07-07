@@ -14,14 +14,9 @@
 #include <IFCT.h>
 
 #define cbsize 16
-bool canbus = false;
+//#define CANBUS true
 byte wantedGear = 100;
 
-if (canbus)
-{
-  Circular_Buffer<uint32_t, cbsize> ids;
-  Circular_Buffer<uint32_t, cbsize, 10> storage;
-}
 
 // INPUT
 
@@ -49,6 +44,10 @@ boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase
 double garageTime, lastShift, lastInput, hornPressTime;
 int lockVal = 0;
 
+#ifdef CANBUS
+  Circular_Buffer<uint32_t, cbsize> ids;
+  Circular_Buffer<uint32_t, cbsize, 10> storage;
+  
 void canSniff(const CAN_message_t &msg)
 { // global callback
   uint32_t frame[10] = {msg.id};
@@ -136,21 +135,23 @@ void canSniff(const CAN_message_t &msg)
     }
   }
 }
+#endif
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
 void pollstick(Task *me)
 {
-  if (justStarted && canbus)
+  if (justStarted)
   {
+    #ifdef CANBUS
     Can0.setBaudRate(500000);
     Can0.enableFIFO(1);
     Can0.enableFIFOInterrupt(1);
     Can0.onReceive(canSniff);
     Can0.intervalTimer(); // enable queue system and run callback in background.
     justStarted = false;
+    #endif
   }
-  if (!canbus)
-  {
+  #ifndef CANBUS
     if (!resistiveStick)
     {
       // Read the stick.
@@ -259,7 +260,7 @@ void pollstick(Task *me)
         garageShiftMove = false;
       }
     }
-  }
+    #endif
 }
 
 // For manual microswitch control, gear up
